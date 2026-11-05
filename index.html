@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RaelInfo | Launching Soon</title>
+    <title>RaelInfo | Smart Finance & Travel Tools (CAN & USA)</title>
     <style>
         :root {
             --bg: #090d16;
@@ -11,8 +11,10 @@
             --text: #f3f4f6;
             --subtext: #9ca3af;
             --accent: #38bdf8;
-            --glow: rgba(56, 189, 248, 0.4);
+            --accent-hover: #0284c7;
+            --glow: rgba(56, 189, 248, 0.35);
             --border: #1f2937;
+            --success: #10b981;
         }
 
         [data-theme="light"] {
@@ -21,94 +23,152 @@
             --text: #0f172a;
             --subtext: #475569;
             --accent: #0284c7;
-            --glow: rgba(2, 132, 199, 0.2);
+            --accent-hover: #0369a1;
+            --glow: rgba(2, 132, 199, 0.15);
             --border: #e2e8f0;
+            --success: #059669;
         }
 
         * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text); padding: 1.5rem; text-align: center; }
 
-        .container { max-width: 800px; margin: 0 auto; }
-        
-        /* Cyber Neon Header */
-        header { position: relative; padding: 2rem 0; }
-        h1.logo { font-size: 3rem; margin: 0; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px var(--glow); }
-        p.tagline { color: var(--subtext); font-size: 1.1rem; margin-top: 0.5rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+
+        header { position: relative; padding: 2.5rem 0 1.5rem 0; }
+        h1.logo { font-size: 3.2rem; margin: 0; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px var(--glow)); }
+        p.tagline { color: var(--subtext); font-size: 1.15rem; margin-top: 0.5rem; }
 
         .theme-btn { position: absolute; top: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-        /* Pulse Banner */
-        .pulse-banner { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent); padding: 0.8rem; border-radius: 10px; margin: 1.5rem 0; color: var(--accent); font-weight: 600; animation: pulse 2.5s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { box-shadow: 0 0 5px var(--glow); } 50% { box-shadow: 0 0 20px var(--glow); } }
+        .pulse-banner { background: rgba(56, 189, 248, 0.08); border: 1px solid var(--accent); padding: 0.85rem; border-radius: 10px; margin: 1.5rem 0; color: var(--accent); font-weight: 600; animation: pulse 2.5s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 5px var(--glow); } 50% { box-shadow: 0 0 18px var(--glow); } }
 
-        /* Interactive Grid Layout */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: left; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .card h3 { margin-top: 0; color: var(--accent); }
+        .section-title { text-align: left; margin-top: 2rem; font-size: 1.4rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
 
-        /* Interactive Savings Tool */
-        .calc-input { width: 100%; padding: 0.6rem; margin: 0.5rem 0; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
-        .calc-result { font-weight: bold; color: #10b981; font-size: 1.1rem; margin-top: 0.5rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: left; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
+        .card h3 { margin-top: 0; color: var(--accent); font-size: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
 
-        /* Arcade Mini-Game Canvas */
-        #gameCanvas { background: #000; border-radius: 8px; width: 100%; height: 180px; display: block; margin: 0.5rem 0; }
-        .btn { display: inline-block; width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.7rem; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; }
+        .badge-region { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border); color: var(--text); font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .badge-live { background: var(--success); color: white; font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
 
-        footer { margin-top: 3rem; color: var(--subtext); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        .calc-group { margin-bottom: 0.8rem; }
+        .calc-group label { display: block; font-size: 0.8rem; color: var(--subtext); margin-bottom: 0.2rem; }
+        .calc-input, .calc-select { width: 100%; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem; }
+        .calc-result { font-weight: bold; color: var(--success); font-size: 1.1rem; margin-top: 0.75rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; text-align: center; }
+
+        .btn { display: inline-block; width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.8rem; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; margin-top: 1rem; }
+        .btn:hover { background: var(--accent-hover); box-shadow: 0 0 12px var(--glow); }
+
+        footer { margin-top: 3.5rem; color: var(--subtext); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
     </style>
 </head>
 <body>
+
+    <script>
+        // Integrated Configuration Environment
+        const CONFIG = {
+            WEALTHSIMPLE_URL: "www.wealthsimple.com/invite/PYW5LA",
+            CARLA_RENTAL_URL: "<a href="https://www.anrdoezrs.net/click-101920800-17064454" target="_top">
+<img src="https://www.ftjcfx.com/image-101920800-17064454" width="150" height="40" alt="" border="0"/></a>"
+        };
+    </script>
 
     <div class="container">
         <header>
             <button class="theme-btn" onclick="toggleTheme()" id="tBtn">☀️ Mode</button>
             <h1 class="logo">RaelInfo</h1>
-            <p class="tagline">The Canadian Hub for Smart Money & Digital Services</p>
+            <p class="tagline">North American Hub for Finance, Mobility & Digital Services</p>
         </header>
 
         <div class="pulse-banner">
-            🚀 <strong>Directory Launch Underway!</strong> We are actively integrating our verified referral portals.
+            🌐 <strong>Cross-Border Expansion Active:</strong> Serving verified utility recommendations for 🇨🇦 Canada & 🇺🇸 USA.
         </div>
 
+        <!-- Section 1: Financial Utilities -->
+        <h2 class="section-title">⚙️ Financial Utilities</h2>
         <div class="grid">
-            <!-- Tool 1: Quick Interest Calculator -->
+            <!-- Tool 1: Compound Savings Calculator -->
             <div class="card">
-                <h3>🧮 Interactive Savings Calculator</h3>
-                <p style="font-size: 0.85rem; color: var(--subtext);">Estimate annual returns using high-interest savings accounts (e.g. 4.0% APY).</p>
-                <label style="font-size: 0.8rem;">Initial Deposit ($ CAD):</label>
-                <input type="number" id="deposit" class="calc-input" value="5000" oninput="calculateSavings()">
-                <div class="calc-result" id="savingsOutput">Est. 1-Year Interest: $200.00 CAD</div>
+                <div>
+                    <h3>🧮 Savings Growth Engine</h3>
+                    <p style="font-size: 0.85rem; color: var(--subtext);">Calculate projected interest accumulation across high-yield deposit accounts.</p>
+                    <div class="calc-group">
+                        <label>Initial Deposit ($):</label>
+                        <input type="number" id="deposit" class="calc-input" value="5000" oninput="calculateSavings()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Estimated APY (%):</label>
+                        <input type="number" id="apy" class="calc-input" value="4.0" step="0.1" oninput="calculateSavings()">
+                    </div>
+                </div>
+                <div class="calc-result" id="savingsOutput">1-Year Yield: $200.00</div>
             </div>
 
-            <!-- Arcade Mini Game -->
+            <!-- Tool 2: USD / CAD Currency Converter -->
             <div class="card">
-                <h3>🕹️ While You Wait: Space Avoidance</h3>
-                <p style="font-size: 0.85rem; color: var(--subtext);">Use Left/Right buttons to dodge falling blocks!</p>
-                <canvas id="gameCanvas"></canvas>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn" onclick="moveLeft()">◀ Left</button>
-                    <button class="btn" onclick="moveRight()">Right ▶</button>
+                <div>
+                    <h3>💱 Cross-Border Converter</h3>
+                    <p style="font-size: 0.85rem; color: var(--subtext);">Quick conversion estimator for cross-border transactions (USD/CAD).</p>
+                    <div class="calc-group">
+                        <label>Amount:</label>
+                        <input type="number" id="convertAmt" class="calc-input" value="100" oninput="convertCurrency()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Direction:</label>
+                        <select id="convertDir" class="calc-select" onchange="convertCurrency()">
+                            <option value="USD2CAD">USD to CAD</option>
+                            <option value="CAD2USD">CAD to USD</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result" id="convertOutput">100.00 USD ≈ 138.00 CAD</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Verified Partner Recommendations -->
+        <h2 class="section-title">🚀 Verified Recommendations</h2>
+        <div class="grid">
+            <!-- Wealthsimple (Canada) -->
+            <div class="card">
+                <div>
+                    <h3>Wealthsimple <span class="badge-region">🇨🇦 CANADA</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Commission-free stock & ETF trading, high-interest cash accounts, and automated tax solutions.</p>
+                </div>
+                <div>
+                    <span class="badge-live">ACTIVE PARTNER</span>
+                    <a id="link-wealthsimple" href="#" target="_blank" rel="noopener" class="btn">Launch Wealthsimple Portal &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Carla Car Rental (USA & Canada) -->
+            <div class="card">
+                <div>
+                    <h3>Carla Car Rental <span class="badge-region">🇨🇦 CAN & 🇺🇸 USA</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Compare car rentals worldwide across major brands with low rates and instant booking confirmation.</p>
+                </div>
+                <div>
+                    <span class="badge-live">ACTIVE PARTNER</span>
+                    <a id="link-carla" href="#" target="_blank" rel="noopener" class="btn">Explore Carla Rental Rates &rarr;</a>
                 </div>
             </div>
         </div>
 
-        <!-- Wealthsimple Card (Active Link) -->
-        <div class="grid" style="grid-template-columns: 1fr;">
-            <div class="card" style="border-color: var(--accent);">
-                <span style="position: absolute; top: 1rem; right: 1rem; background: #10b981; color: white; font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px;">ACTIVE</span>
-                <h3>Featured Early Partner: Wealthsimple</h3>
-                <p style="color: var(--subtext);">Get commission-free stock trading, high-interest cash accounts, and smart automated tax software.</p>
-                <!-- Replace with your actual referral link -->
-                <a href="YOUR_WEALTHSIMPLE_LINK" target="_blank" class="btn" style="text-decoration: none;">Launch Wealthsimple Portal &rarr;</a>
-            </div>
-        </div>
-
         <footer>
-            <p>&copy; 2026 RaelInfo. All rights reserved. | Canadian Digital Resource Hub</p>
+            <p><strong>Affiliate Disclosure:</strong> RaelInfo curates financial and digital tools across North America. Some outbound links contain referral trackers that earn a commission at zero additional cost to you.</p>
+            <p>&copy; 2026 RaelInfo. All rights reserved.</p>
         </footer>
     </div>
 
     <script>
+        // Apply Dynamic Configuration Links safely on DOM load
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("link-wealthsimple").href = CONFIG.WEALTHSIMPLE_URL;
+            document.getElementById("link-carla").href = CONFIG.CARLA_RENTAL_URL;
+            calculateSavings();
+            convertCurrency();
+        });
+
         // Theme Switcher Logic
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
@@ -117,49 +177,28 @@
             document.getElementById('tBtn').textContent = target === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
         }
 
-        // Savings Calculator Logic
+        // Savings Engine Calculation
         function calculateSavings() {
-            const val = parseFloat(document.getElementById('deposit').value) || 0;
-            const interest = val * 0.04;
-            document.getElementById('savingsOutput').textContent = `Est. 1-Year Interest: $${interest.toFixed(2)} CAD`;
+            const dep = parseFloat(document.getElementById('deposit').value) || 0;
+            const rate = parseFloat(document.getElementById('apy').value) || 0;
+            const yieldAmt = dep * (rate / 100);
+            document.getElementById('savingsOutput').textContent = `1-Year Yield: $${yieldAmt.toFixed(2)}`;
         }
 
-        // Mini Game Engine
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 300; canvas.height = 180;
+        // Cross-Border Currency Estimation (Rough FX Base Rate)
+        function convertCurrency() {
+            const amt = parseFloat(document.getElementById('convertAmt').value) || 0;
+            const dir = document.getElementById('convertDir').value;
+            const fxRate = 1.38; // Estimated USD/CAD conversion rate
 
-        let playerX = 135;
-        let enemyY = 0;
-        let enemyX = Math.random() * 260;
-        let score = 0;
-
-        function drawGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Player
-            ctx.fillStyle = '#38bdf8';
-            ctx.fillRect(playerX, 150, 30, 20);
-            // Enemy Block
-            ctx.fillStyle = '#ef4444';
-            ctx.fillRect(enemyX, enemyY, 25, 25);
-
-            enemyY += 3;
-            if (enemyY > 180) {
-                enemyY = 0;
-                enemyX = Math.random() * 260;
-                score++;
+            if (dir === 'USD2CAD') {
+                const res = amt * fxRate;
+                document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} USD ≈ ${res.toFixed(2)} CAD`;
+            } else {
+                const res = amt / fxRate;
+                document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} CAD ≈ ${res.toFixed(2)} USD`;
             }
-
-            // Score Display
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '12px sans-serif';
-            ctx.fillText('Blocks Dodged: ' + score, 10, 20);
-
-            requestAnimationFrame(drawGame);
         }
-        function moveLeft() { if(playerX > 10) playerX -= 25; }
-        function moveRight() { if(playerX < 260) playerX += 25; }
-        drawGame();
     </script>
 </body>
 </html>
