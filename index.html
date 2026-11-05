@@ -65,15 +65,6 @@
 </head>
 <body>
 
-    <script>
-        // Integrated Configuration Environment
-        const CONFIG = {
-            WEALTHSIMPLE_URL: "www.wealthsimple.com/invite/PYW5LA",
-            CARLA_RENTAL_URL: "<a href="https://www.anrdoezrs.net/click-101920800-17064454" target="_top">
-<img src="https://www.ftjcfx.com/image-101920800-17064454" width="150" height="40" alt="" border="0"/></a>"
-        };
-    </script>
-
     <div class="container">
         <header>
             <button class="theme-btn" onclick="toggleTheme()" id="tBtn">☀️ Mode</button>
@@ -137,7 +128,7 @@
                 </div>
                 <div>
                     <span class="badge-live">ACTIVE PARTNER</span>
-                    <a id="link-wealthsimple" href="#" target="_blank" rel="noopener" class="btn">Launch Wealthsimple Portal &rarr;</a>
+                    <a href="YOUR_WEALTHSIMPLE_LINK" target="_blank" rel="noopener" class="btn">Launch Wealthsimple Portal &rarr;</a>
                 </div>
             </div>
 
@@ -149,7 +140,7 @@
                 </div>
                 <div>
                     <span class="badge-live">ACTIVE PARTNER</span>
-                    <a id="link-carla" href="#" target="_blank" rel="noopener" class="btn">Explore Carla Rental Rates &rarr;</a>
+                    <a href="YOUR_CARLA_CJ_LINK" target="_blank" rel="noopener" class="btn">Explore Carla Rental Rates &rarr;</a>
                 </div>
             </div>
         </div>
@@ -161,15 +152,11 @@
     </div>
 
     <script>
-        // Apply Dynamic Configuration Links safely on DOM load
         document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("link-wealthsimple").href = CONFIG.WEALTHSIMPLE_URL;
-            document.getElementById("link-carla").href = CONFIG.CARLA_RENTAL_URL;
             calculateSavings();
             convertCurrency();
         });
 
-        // Theme Switcher Logic
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'light' ? 'dark' : 'light';
@@ -177,7 +164,6 @@
             document.getElementById('tBtn').textContent = target === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
         }
 
-        // Savings Engine Calculation
         function calculateSavings() {
             const dep = parseFloat(document.getElementById('deposit').value) || 0;
             const rate = parseFloat(document.getElementById('apy').value) || 0;
@@ -185,11 +171,10 @@
             document.getElementById('savingsOutput').textContent = `1-Year Yield: $${yieldAmt.toFixed(2)}`;
         }
 
-        // Cross-Border Currency Estimation (Rough FX Base Rate)
         function convertCurrency() {
             const amt = parseFloat(document.getElementById('convertAmt').value) || 0;
             const dir = document.getElementById('convertDir').value;
-            const fxRate = 1.38; // Estimated USD/CAD conversion rate
+            const fxRate = 1.38;
 
             if (dir === 'USD2CAD') {
                 const res = amt * fxRate;
