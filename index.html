@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RaelInfo | North American Finance, Travel & Digital Utilities</title>
+    <title>RaelInfo | North American Financial, Mobility & Digital Utilities</title>
     <style>
         :root {
             --bg: #0b0f19;
@@ -47,7 +47,7 @@
         .theme-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.5rem 0.9rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
         .theme-btn:hover { border-color: var(--accent); }
 
-        /* Ticker & Filter Header */
+        /* Ticker Bar */
         .live-ticker { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.88rem; gap: 0.5rem; }
         .status-dot { display: inline-block; width: 8px; height: 8px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); margin-right: 0.4rem; }
 
@@ -114,7 +114,39 @@
         <!-- Section 1: Financial & Tax Utilities -->
         <h2 class="section-title">⚙️ Interactive Calculations</h2>
         <div class="grid">
-            <!-- Tool 1: Mortgage & Loan Estimator -->
+
+            <!-- Tool 1: Inflation & Purchasing Power Estimator -->
+            <div class="card" data-region="can usa">
+                <div>
+                    <h3>📉 Purchasing Power & Inflation</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Calculate real future purchasing value under inflation rates.</p>
+                    <div class="calc-group">
+                        <label>Current Cash Value ($):</label>
+                        <input type="number" id="infCash" class="calc-input" value="10000" step="500" oninput="calculateInflation()">
+                    </div>
+                    <div class="calc-group" style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label>Avg Inflation (%):</label>
+                            <input type="number" id="infRate" class="calc-input" value="3.1" step="0.1" oninput="calculateInflation()">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Time Horizon:</label>
+                            <select id="infYears" class="calc-select" onchange="calculateInflation()">
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                                <option value="15">15 Years</option>
+                                <option value="20">20 Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="infOutput">Future Power: $8,584.09</span>
+                    <button class="copy-btn" onclick="copyResult('infOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 2: Mortgage & Loan Estimator -->
             <div class="card" data-region="can usa realestate">
                 <div>
                     <h3>🏡 Mortgage & Loan Estimator</h3>
@@ -144,7 +176,7 @@
                 </div>
             </div>
 
-            <!-- Tool 2: Savings Growth Yield -->
+            <!-- Tool 3: Savings Growth Yield -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>🧮 Savings Growth Yield</h3>
@@ -164,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- Tool 3: Cross-Border FX -->
+            <!-- Tool 4: Cross-Border FX Estimator -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>💱 Cross-Border FX Estimator</h3>
@@ -187,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- Tool 4: Regional Tax Estimator -->
+            <!-- Tool 5: Regional Tax Estimator -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>🏷️ Regional Tax Estimator</h3>
@@ -212,6 +244,7 @@
                     <button class="copy-btn" onclick="copyResult('taxOutput')">Copy</button>
                 </div>
             </div>
+
         </div>
 
         <!-- Section 2: Verified Partner Recommendations -->
@@ -276,6 +309,7 @@
         let liveFxRate = 1.38;
 
         document.addEventListener("DOMContentLoaded", function() {
+            calculateInflation();
             calculateMortgage();
             calculateSavings();
             calculateTax();
@@ -301,6 +335,20 @@
             } catch(e) {
                 convertCurrency();
             }
+        }
+
+        function calculateInflation() {
+            const p = parseFloat(document.getElementById('infCash').value) || 0;
+            const r = parseFloat(document.getElementById('infRate').value) || 0;
+            const t = parseInt(document.getElementById('infYears').value) || 5;
+
+            if (p <= 0 || r <= 0) {
+                document.getElementById('infOutput').textContent = 'Future Power: $0.00';
+                return;
+            }
+
+            const futureVal = p / Math.pow(1 + (r / 100), t);
+            document.getElementById('infOutput').textContent = `Future Power: $${futureVal.toFixed(2)}`;
         }
 
         function calculateMortgage() {
