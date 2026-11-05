@@ -182,15 +182,15 @@
                 </div>
             </div>
 
-            <!-- NordVPN (Pending Slot) -->
+            <!-- NordVPN (Active) -->
             <div class="card">
                 <div>
                     <h3>NordVPN Security <span class="flag-icon">🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--subtext); font-size: 0.9rem;">Encrypted cross-border browsing, public Wi-Fi protection, and streaming unblocks.</p>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Encrypted cross-border browsing, public Wi-Fi protection, and global streaming access.</p>
                 </div>
                 <div>
-                    <span class="badge-pending">CJ APPROVAL PENDING</span>
-                    <a href="https://www.anrdoezrs.net/click-101920800-13795051" class="btn" onclick="return false;">Explore Deal &rarr;</a>
+                    <span class="badge-live">ACTIVE PARTNER</span>
+                    <a href="https://www.jdoqocy.com/click-101920800-13795051" target="_blank" rel="noopener" class="btn">Get NordVPN Security &rarr;</a>
                 </div>
             </div>
 
@@ -240,7 +240,6 @@
                     convertCurrency();
                 }
             } catch(e) {
-                // Fallback to static rate if fetch fails
                 convertCurrency();
             }
         }
@@ -260,7 +259,7 @@
                 const res = amt * liveFxRate;
                 document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} USD ≈ ${res.toFixed(2)} CAD`;
             } else {
-                const res = amt / liveFxRate;
+                const res = amt / fxRate;
                 document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} CAD ≈ ${res.toFixed(2)} USD`;
             }
         }
