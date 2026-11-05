@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RaelInfo | Smart Finance & Travel Tools (CAN & USA)</title>
+    <title>RaelInfo | Smart Finance, Travel & Digital Tools (CAN & USA)</title>
     <style>
         :root {
             --bg: #090d16;
@@ -15,6 +15,7 @@
             --glow: rgba(56, 189, 248, 0.35);
             --border: #1f2937;
             --success: #10b981;
+            --pending: #f59e0b;
         }
 
         [data-theme="light"] {
@@ -27,40 +28,47 @@
             --glow: rgba(2, 132, 199, 0.15);
             --border: #e2e8f0;
             --success: #059669;
+            --pending: #d97706;
         }
 
         * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; background-color: var(--bg); color: var(--text); padding: 1.5rem; text-align: center; }
 
-        .container { max-width: 900px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
 
         header { position: relative; padding: 2.5rem 0 1.5rem 0; }
-        h1.logo { font-size: 3.2rem; margin: 0; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px var(--glow)); }
+        h1.logo { font-size: 3.4rem; margin: 0; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px var(--glow)); }
         p.tagline { color: var(--subtext); font-size: 1.15rem; margin-top: 0.5rem; }
 
         .theme-btn { position: absolute; top: 0; right: 0; background: var(--card-bg); border: 1px solid var(--border); color: var(--text); padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-        .pulse-banner { background: rgba(56, 189, 248, 0.08); border: 1px solid var(--accent); padding: 0.85rem; border-radius: 10px; margin: 1.5rem 0; color: var(--accent); font-weight: 600; animation: pulse 2.5s infinite ease-in-out; }
+        /* Ticker & Pulse Banner */
+        .live-ticker { display: flex; justify-content: space-around; flex-wrap: wrap; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; }
+        .ticker-item { display: flex; align-items: center; gap: 0.4rem; }
+
+        .pulse-banner { background: rgba(56, 189, 248, 0.08); border: 1px solid var(--accent); padding: 0.85rem; border-radius: 10px; margin: 1rem 0 2rem 0; color: var(--accent); font-weight: 600; animation: pulse 2.5s infinite ease-in-out; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 5px var(--glow); } 50% { box-shadow: 0 0 18px var(--glow); } }
 
-        .section-title { text-align: left; margin-top: 2rem; font-size: 1.4rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .section-title { text-align: left; margin-top: 2.5rem; font-size: 1.4rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
         .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: left; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; justify-content: space-between; }
-        .card h3 { margin-top: 0; color: var(--accent); font-size: 1.25rem; display: flex; align-items: center; justify-content: space-between; }
+        .card h3 { margin-top: 0; color: var(--accent); font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between; }
 
-        .badge-region { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border); color: var(--text); font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .flag-icon { font-size: 1.2rem; margin-left: 0.3rem; }
         .badge-live { background: var(--success); color: white; font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .badge-pending { background: var(--pending); color: white; font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
 
         .calc-group { margin-bottom: 0.8rem; }
         .calc-group label { display: block; font-size: 0.8rem; color: var(--subtext); margin-bottom: 0.2rem; }
         .calc-input, .calc-select { width: 100%; padding: 0.65rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.95rem; }
-        .calc-result { font-weight: bold; color: var(--success); font-size: 1.1rem; margin-top: 0.75rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; text-align: center; }
+        .calc-result { font-weight: bold; color: var(--success); font-size: 1.05rem; margin-top: 0.75rem; padding: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 6px; text-align: center; }
 
         .btn { display: inline-block; width: 100%; background: var(--accent); color: #fff; border: none; padding: 0.8rem; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; margin-top: 1rem; }
         .btn:hover { background: var(--accent-hover); box-shadow: 0 0 12px var(--glow); }
+        .btn-disabled { background: var(--border); color: var(--subtext); cursor: not-allowed; opacity: 0.7; }
 
-        footer { margin-top: 3.5rem; color: var(--subtext); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+        footer { margin-top: 4rem; color: var(--subtext); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
     </style>
 </head>
 <body>
@@ -72,18 +80,25 @@
             <p class="tagline">North American Hub for Finance, Mobility & Digital Services</p>
         </header>
 
-        <div class="pulse-banner">
-            🌐 <strong>Cross-Border Expansion Active:</strong> Serving verified utility recommendations for 🇨🇦 Canada & 🇺🇸 USA.
+        <!-- Live Ticker Bar -->
+        <div class="live-ticker">
+            <div class="ticker-item">📊 FX Live: 1 USD = <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
+            <div class="ticker-item">🇨🇦 Base Rate: <span style="color:var(--success);">3.75%</span></div>
+            <div class="ticker-item">🇺🇸 Fed Rate: <span style="color:var(--success);">4.75%</span></div>
         </div>
 
-        <!-- Section 1: Financial Utilities -->
-        <h2 class="section-title">⚙️ Financial Utilities</h2>
+        <div class="pulse-banner">
+            🌐 <strong>Cross-Border Expansion Active:</strong> Serving verified tools & portals for 🇨🇦 Canada & 🇺🇸 USA.
+        </div>
+
+        <!-- Section 1: Interactive Financial Tools -->
+        <h2 class="section-title">⚙️ Interactive Utilities <span>🇨🇦 🇺🇸</span></h2>
         <div class="grid">
-            <!-- Tool 1: Compound Savings Calculator -->
+            <!-- Tool 1: Compound Savings -->
             <div class="card">
                 <div>
                     <h3>🧮 Savings Growth Engine</h3>
-                    <p style="font-size: 0.85rem; color: var(--subtext);">Calculate projected interest accumulation across high-yield deposit accounts.</p>
+                    <p style="font-size: 0.85rem; color: var(--subtext);">Project return yields across high-yield savings accounts.</p>
                     <div class="calc-group">
                         <label>Initial Deposit ($):</label>
                         <input type="number" id="deposit" class="calc-input" value="5000" oninput="calculateSavings()">
@@ -96,11 +111,11 @@
                 <div class="calc-result" id="savingsOutput">1-Year Yield: $200.00</div>
             </div>
 
-            <!-- Tool 2: USD / CAD Currency Converter -->
+            <!-- Tool 2: FX Converter -->
             <div class="card">
                 <div>
-                    <h3>💱 Cross-Border Converter</h3>
-                    <p style="font-size: 0.85rem; color: var(--subtext);">Quick conversion estimator for cross-border transactions (USD/CAD).</p>
+                    <h3>💱 Cross-Border FX Estimator</h3>
+                    <p style="font-size: 0.85rem; color: var(--subtext);">Real-time cross-border exchange calculator.</p>
                     <div class="calc-group">
                         <label>Amount:</label>
                         <input type="number" id="convertAmt" class="calc-input" value="100" oninput="convertCurrency()">
@@ -108,23 +123,46 @@
                     <div class="calc-group">
                         <label>Direction:</label>
                         <select id="convertDir" class="calc-select" onchange="convertCurrency()">
-                            <option value="USD2CAD">USD to CAD</option>
-                            <option value="CAD2USD">CAD to USD</option>
+                            <option value="USD2CAD">USD ➔ CAD</option>
+                            <option value="CAD2USD">CAD ➔ USD</option>
                         </select>
                     </div>
                 </div>
                 <div class="calc-result" id="convertOutput">100.00 USD ≈ 138.00 CAD</div>
             </div>
-        </div>
 
-        <!-- Section 2: Verified Partner Recommendations -->
-        <h2 class="section-title">🚀 Verified Recommendations</h2>
-        <div class="grid">
-            <!-- Wealthsimple (Canada) -->
+            <!-- Tool 3: Sales Tax Estimator -->
             <div class="card">
                 <div>
-                    <h3>Wealthsimple <span class="badge-region">🇨🇦 CANADA</span></h3>
-                    <p style="color: var(--subtext); font-size: 0.9rem;">Commission-free stock & ETF trading, high-interest cash accounts, and automated tax solutions.</p>
+                    <h3>🏷️ Regional Tax Calculator</h3>
+                    <p style="font-size: 0.85rem; color: var(--subtext);">Quickly compute sales tax across provinces & states.</p>
+                    <div class="calc-group">
+                        <label>Purchase Price ($):</label>
+                        <input type="number" id="taxPrice" class="calc-input" value="250" oninput="calculateTax()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Region Rate:</label>
+                        <select id="taxRegion" class="calc-select" onchange="calculateTax()">
+                            <option value="0.13">🇨🇦 Ontario (13% HST)</option>
+                            <option value="0.15">🇨🇦 Nova Scotia / NB (15% HST)</option>
+                            <option value="0.05">🇨🇦 Alberta (5% GST)</option>
+                            <option value="0.08875">🇺🇸 New York City (8.875%)</option>
+                            <option value="0.07">🇺🇸 Florida (7% Avg)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result" id="taxOutput">Total with Tax: $282.50</div>
+            </div>
+        </div>
+
+        <!-- Section 2: Verified Partner Portals -->
+        <h2 class="section-title">🚀 Verified Recommendations <span>🇨🇦 🇺🇸</span></h2>
+        <div class="grid">
+            <!-- Wealthsimple (Active) -->
+            <div class="card">
+                <div>
+                    <h3>Wealthsimple <span class="flag-icon">🇨🇦</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Commission-free trading, high-interest cash accounts, and automated tax software.</p>
                 </div>
                 <div>
                     <span class="badge-live">ACTIVE PARTNER</span>
@@ -132,29 +170,56 @@
                 </div>
             </div>
 
-            <!-- Carla Car Rental (USA & Canada) -->
+            <!-- Carla Car Rental (Active) -->
             <div class="card">
                 <div>
-                    <h3>Carla Car Rental <span class="badge-region">🇨🇦 CAN & 🇺🇸 USA</span></h3>
-                    <p style="color: var(--subtext); font-size: 0.9rem;">Compare car rentals worldwide across major brands with low rates and instant booking confirmation.</p>
+                    <h3>Carla Car Rental <span class="flag-icon">🇨🇦 🇺🇸</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Compare car rentals globally across top brands with low rates and instant booking.</p>
                 </div>
                 <div>
                     <span class="badge-live">ACTIVE PARTNER</span>
-                    <a href="https://www.anrdoezrs.net/click-101920800-17064454" target="_blank" rel="noopener" class="btn">Explore Carla Rental Rates &rarr;</a>
+                    <a href="https://www.anrdoezrs.net/click-101920800-17064454" target="_blank" rel="noopener" class="btn">Explore Carla Rates &rarr;</a>
+                </div>
+            </div>
+
+            <!-- NordVPN (Pending Slot) -->
+            <div class="card">
+                <div>
+                    <h3>NordVPN Security <span class="flag-icon">🇨🇦 🇺🇸</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">Encrypted cross-border browsing, public Wi-Fi protection, and streaming unblocks.</p>
+                </div>
+                <div>
+                    <span class="badge-pending">CJ APPROVAL PENDING</span>
+                    <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
+                </div>
+            </div>
+
+            <!-- Hostinger (Pending Slot) -->
+            <div class="card">
+                <div>
+                    <h3>Hostinger Web Solutions <span class="flag-icon">🇨🇦 🇺🇸</span></h3>
+                    <p style="color: var(--subtext); font-size: 0.9rem;">High-performance web hosting, domain management, and cloud infrastructure.</p>
+                </div>
+                <div>
+                    <span class="badge-pending">CJ APPROVAL PENDING</span>
+                    <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p><strong>Affiliate Disclosure:</strong> RaelInfo curates financial and digital tools across North America. Some outbound links contain referral trackers that earn a commission at zero additional cost to you.</p>
+            <p><strong>Affiliate Disclosure:</strong> RaelInfo curates financial and digital tools across North America. Outbound links contain verified tracking codes that may earn a commission at zero extra cost to you.</p>
             <p>&copy; 2026 RaelInfo. All rights reserved.</p>
         </footer>
     </div>
 
     <script>
+        let liveFxRate = 1.38;
+
         document.addEventListener("DOMContentLoaded", function() {
             calculateSavings();
-            convertCurrency();
+            calculateTax();
+            fetchLiveFx();
         });
 
         function toggleTheme() {
@@ -162,6 +227,22 @@
             const target = current === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', target);
             document.getElementById('tBtn').textContent = target === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+        }
+
+        // Live Exchange Rate API Fetcher
+        async function fetchLiveFx() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/USD');
+                const data = await res.json();
+                if(data && data.rates && data.rates.CAD) {
+                    liveFxRate = data.rates.CAD;
+                    document.getElementById('tickerFx').textContent = `${liveFxRate.toFixed(4)} CAD`;
+                    convertCurrency();
+                }
+            } catch(e) {
+                // Fallback to static rate if fetch fails
+                convertCurrency();
+            }
         }
 
         function calculateSavings() {
@@ -174,15 +255,21 @@
         function convertCurrency() {
             const amt = parseFloat(document.getElementById('convertAmt').value) || 0;
             const dir = document.getElementById('convertDir').value;
-            const fxRate = 1.38;
 
             if (dir === 'USD2CAD') {
-                const res = amt * fxRate;
+                const res = amt * liveFxRate;
                 document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} USD ≈ ${res.toFixed(2)} CAD`;
             } else {
-                const res = amt / fxRate;
+                const res = amt / liveFxRate;
                 document.getElementById('convertOutput').textContent = `${amt.toFixed(2)} CAD ≈ ${res.toFixed(2)} USD`;
             }
+        }
+
+        function calculateTax() {
+            const price = parseFloat(document.getElementById('taxPrice').value) || 0;
+            const rate = parseFloat(document.getElementById('taxRegion').value) || 0;
+            const total = price * (1 + rate);
+            document.getElementById('taxOutput').textContent = `Total with Tax: $${total.toFixed(2)}`;
         }
     </script>
 </body>
