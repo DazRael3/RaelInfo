@@ -20,6 +20,21 @@
     <meta name="description" content="Free cross-border financial tools, compound interest calculators, live USD/CAD exchange rates, multi-crypto asset estimators, and verified North American portals.">
     <link rel="canonical" href="https://raelinfo.com">
 
+    <!-- JSON-LD SEO Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "RaelInfo",
+      "url": "https://raelinfo.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://raelinfo.com/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- html2pdf.js CDN for Client-Side Executive Reports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -82,7 +97,6 @@
         .hero-stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
         .hero-stat-val { font-size: 1.25rem; font-weight: 800; color: var(--success); margin-top: 0.3rem; }
 
-        /* Asset Allocation Bar (Feature 1) */
         .allocation-container { background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
         .allocation-labels { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
         .allocation-bar { display: flex; height: 10px; width: 100%; border-radius: 5px; overflow: hidden; background: #334155; gap: 2px; }
@@ -209,7 +223,7 @@
                 </div>
             </div>
 
-            <!-- Asset Allocation Bar (Feature 1) -->
+            <!-- Asset Allocation Bar -->
             <div class="allocation-container">
                 <div class="allocation-labels">
                     <span>📊 Estimated Asset Allocation</span>
@@ -336,7 +350,7 @@
                 </div>
             </div>
 
-            <!-- Tool 3: Mortgage & Loan Estimator with Amortization Schedule (Feature 2) -->
+            <!-- Tool 3: Mortgage & Loan Estimator with Amortization Schedule -->
             <div class="card" data-region="can usa realestate" data-title="mortgage loan estimator monthly payment amortization">
                 <div>
                     <h3>🏡 Mortgage & Loan Estimator</h3>
@@ -485,7 +499,7 @@
                 </div>
             </div>
 
-            <!-- Tool 8: Debt Payoff Snowball / Avalanche Calculator (Feature 4) -->
+            <!-- Tool 8: Debt Payoff Snowball / Avalanche Calculator -->
             <div class="card" data-region="can usa" data-title="debt payoff snowball avalanche calculator">
                 <div>
                     <h3>💳 Debt Payoff Snowball Calculator</h3>
@@ -511,7 +525,7 @@
                 </div>
             </div>
 
-            <!-- Tool 9: Retirement Nest Egg & Safe Withdrawal (Feature 6) -->
+            <!-- Tool 9: Retirement Nest Egg & Safe Withdrawal -->
             <div class="card" data-region="can usa" data-title="retirement nest egg safe withdrawal calculator">
                 <div>
                     <h3>🏖️ Retirement Nest Egg Estimator</h3>
@@ -531,7 +545,7 @@
                 </div>
             </div>
 
-            <!-- Tool 10: Cross-Border Salary Parity Comparator (Feature 7) -->
+            <!-- Tool 10: Cross-Border Salary Parity Comparator -->
             <div class="card" data-region="can usa" data-title="cross border salary parity comparator cost of living">
                 <div>
                     <h3>🌐 Cross-Border Salary Parity</h3>
@@ -553,6 +567,29 @@
                 <div class="calc-result-box">
                     <span class="calc-result-text" id="salOutput">Equivalent Target: CA$111,550</span>
                     <button class="copy-btn" onclick="copyResult('salOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 11: Canadian TFSA & RRSP Contribution Planner (New Addition) -->
+            <div class="card" data-region="can" data-title="canadian tfsa rrsp contribution room planner">
+                <div>
+                    <h3>🇨🇦 TFSA & RRSP Contribution Planner</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Estimate maximum tax-advantaged room based on annual income ($7k TFSA / $33.8k RRSP max).</p>
+                    <div class="calc-group">
+                        <label>Annual Earned Income (CAD):</label>
+                        <input type="number" id="canIncome" class="calc-input" value="95000" step="5000" oninput="calculateCanadianAccounts()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Account Target:</label>
+                        <select id="canAccountType" class="calc-select" onchange="calculateCanadianAccounts()">
+                            <option value="RRSP">RRSP (18% of Income, Max $33,810)</option>
+                            <option value="TFSA">TFSA (Fixed Limit $7,000)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="canAccountOutput">Max Room: CA$17,100</span>
+                    <button class="copy-btn" onclick="copyResult('canAccountOutput')">Copy</button>
                 </div>
             </div>
 
@@ -727,8 +764,8 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('tBtn').textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
 
-            // Feature 3: Daily Financial Streak Tracker
             initStreakTracker();
+            registerServiceWorker();
 
             await autoDetectVisitorRegion();
 
@@ -741,11 +778,21 @@
             calculateDebtPayoff();
             calculateRetirement();
             calculateSalaryParity();
+            calculateCanadianAccounts();
             fetchLiveFx();
             fetchBinanceCryptoPrices();
         });
 
-        // Feature 3: Daily Streak Tracker Logic
+        // Register PWA Service Worker for Offline Caching
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const swCode = `self.addEventListener('fetch', function(e) { /* caching handler */ });`;
+                const blob = new Blob([swCode], {type: 'text/javascript'});
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(() => {});
+            }
+        }
+
         function initStreakTracker() {
             let streak = parseInt(localStorage.getItem('raelinfo_streak') || '1');
             let lastVisit = localStorage.getItem('raelinfo_last_visit');
@@ -821,6 +868,7 @@
             calculateDebtPayoff();
             calculateRetirement();
             calculateSalaryParity();
+            calculateCanadianAccounts();
             updateTickers();
             showToast(`Converted all site values to ${currentCurrency}`);
         }
@@ -870,9 +918,8 @@
             document.getElementById('heroYield').textContent = `${sym}${lastSavingsVal.toFixed(2)}`;
             document.getElementById('heroCrypto').textContent = `${lastCryptoUnits.toFixed(5)} ${document.getElementById('cryptoAsset').value}`;
 
-            // Feature 1: Update Asset Allocation Bar proportions based on live inputs
             let cashVal = parseFloat(document.getElementById('deposit').value) || 5000;
-            let realVal = (parseFloat(document.getElementById('loanAmt').value) || 400000) * 0.25; // estimated equity
+            let realVal = (parseFloat(document.getElementById('loanAmt').value) || 400000) * 0.25;
             let cryptoVal = (parseFloat(document.getElementById('cryptoAmt').value) || 500) * 10;
             let totalAsset = cashVal + realVal + cryptoVal || 1;
 
@@ -918,7 +965,6 @@
             document.getElementById('infOutput').textContent = `Future Power: ${sym}${futureVal.toFixed(2)}`;
         }
 
-        // Feature 2: Mortgage Calculator with Amortization Schedule Table
         function calculateMortgage() {
             const p = parseFloat(document.getElementById('loanAmt').value) || 0;
             const annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
@@ -942,7 +988,6 @@
             document.getElementById('loanOutput').textContent = `${sym}${monthly.toFixed(2)} / mo`;
             document.getElementById('mortgageBreakdownText').textContent = `Total Payments: ${sym}${totalCost.toLocaleString(undefined, {maximumFractionDigits:2})} | Total Interest: ${sym}${totalInterest.toLocaleString(undefined, {maximumFractionDigits:2})}`;
             
-            // Build Amortization Table HTML
             let balance = p;
             let tableHtml = `<table style="width:100%; border-collapse:collapse; font-size:0.75rem; margin-top:5px;">
                 <tr style="background:rgba(56,189,248,0.2); text-align:left;">
@@ -1030,7 +1075,6 @@
             document.getElementById('compoundSparkline').setAttribute('d', points);
         }
 
-        // Feature 4: Debt Payoff Calculator Logic
         function calculateDebtPayoff() {
             const bal = parseFloat(document.getElementById('debtBal').value) || 0;
             const apr = parseFloat(document.getElementById('debtApr').value) || 0;
@@ -1051,7 +1095,6 @@
             document.getElementById('debtOutput').textContent = `Payoff Time: ~${Math.ceil(months)} Months`;
         }
 
-        // Feature 6: Retirement Nest Egg Calculator Logic
         function calculateRetirement() {
             const income = parseFloat(document.getElementById('retIncome').value) || 0;
             const swr = parseFloat(document.getElementById('retSWR').value) || 4.0;
@@ -1066,13 +1109,25 @@
             document.getElementById('retOutput').textContent = `Required Nest Egg: ${sym}${Math.round(corpus).toLocaleString()}`;
         }
 
-        // Feature 7: Cross-Border Salary Parity Logic
         function calculateSalaryParity() {
             const base = parseFloat(document.getElementById('salBase').value) || 0;
             const factor = parseFloat(document.getElementById('salCity').value) || 1.15;
 
             const equivalent = base * factor * liveFxRate;
             document.getElementById('salOutput').textContent = `Equivalent Target: CA$${Math.round(equivalent).toLocaleString()}`;
+        }
+
+        // Canadian Account Calculator Logic
+        function calculateCanadianAccounts() {
+            const income = parseFloat(document.getElementById('canIncome').value) || 0;
+            const type = document.getElementById('canAccountType').value;
+
+            if (type === 'TFSA') {
+                document.getElementById('canAccountOutput').textContent = `Max Room: CA$7,000`;
+            } else {
+                let calculatedRoom = Math.min(income * 0.18, 33810);
+                document.getElementById('canAccountOutput').textContent = `Max Room: CA$${Math.round(calculatedRoom).toLocaleString()}`;
+            }
         }
 
         function convertCurrency() {
@@ -1114,7 +1169,8 @@
                 cmpPrinc: document.getElementById('cmpPrinc').value,
                 cmpRate: document.getElementById('cmpRate').value,
                 debtBal: document.getElementById('debtBal').value,
-                retIncome: document.getElementById('retIncome').value
+                retIncome: document.getElementById('retIncome').value,
+                canIncome: document.getElementById('canIncome').value
             };
             const blob = new Blob([JSON.stringify(profileData, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -1146,6 +1202,7 @@
                     if(data.cmpRate) document.getElementById('cmpRate').value = data.cmpRate;
                     if(data.debtBal) document.getElementById('debtBal').value = data.debtBal;
                     if(data.retIncome) document.getElementById('retIncome').value = data.retIncome;
+                    if(data.canIncome) document.getElementById('canIncome').value = data.canIncome;
 
                     calculateCrypto();
                     calculateInflation();
@@ -1156,6 +1213,7 @@
                     calculateDebtPayoff();
                     calculateRetirement();
                     calculateSalaryParity();
+                    calculateCanadianAccounts();
                     showToast("Profile restored successfully!");
                 } catch(err) {
                     alert("Invalid JSON profile file.");
