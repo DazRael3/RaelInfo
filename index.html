@@ -117,7 +117,7 @@
         .copy-btn:hover { color: var(--accent); }
 
         .crypto-header-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
-        .crypto-logo { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .crypto-logo { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
         .chart-container { margin-top: 0.75rem; height: 50px; width: 100%; background: rgba(0,0,0,0.15); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
         .chart-svg { width: 100%; height: 100%; }
@@ -166,13 +166,13 @@
             </div>
         </header>
 
-        <!-- Live Ticker Bar with Multi-Crypto Prices -->
+        <!-- Live Ticker Bar with Binance Public Feed & Geo IP Rates -->
         <div class="live-ticker">
             <div><span class="status-dot"></span><strong>USD/CAD:</strong> <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
             <div><strong>BTC:</strong> <span id="tickerBtc" style="color:var(--success);">$75,000</span></div>
             <div><strong>ETH:</strong> <span id="tickerEth" style="color:#818cf8;">$2,750</span></div>
             <div><strong>SOL:</strong> <span id="tickerSol" style="color:#a855f7;">$180</span></div>
-            <div>🇨🇦 BoC: <strong>2.50%</strong> | 🇺🇸 Fed: <strong>3.75-4.00%</strong>[cite: 5]</div>
+            <div>🇨🇦 BoC: <strong id="bocRateDisplay">2.50%</strong> | 🇺🇸 Fed: <strong id="fedRateDisplay">3.75-4.00%</strong>[cite: 5]</div>
         </div>
 
         <!-- Unified Cross-Tool Hero Dashboard -->
@@ -206,7 +206,7 @@
             <div class="native-banner">
                 <div>
                     <h3>Wealthsimple Cash & Invest 🇨🇦</h3>
-                    <p>Commission-free stocks & ETFs, automated tax software, and high-yield interest cash balances for Canadians.</p>
+                    <p>Commission-free stocks & ETFs, automated tax software, and high-interest cash balances for Canadians.</p>
                 </div>
                 <a href="https://www.wealthsimple.com/invite/PYW5LA" target="_blank" rel="noopener" class="native-banner-btn">Claim Wealthsimple Bonus &rarr;</a>
             </div>
@@ -239,11 +239,10 @@
         <h2 class="section-title">⚙️ Interactive Calculations</h2>
         <div class="grid" id="toolGrid">
 
-            <!-- Tool 1: Multi-Crypto Asset Estimator (BTC, ETH, SOL with Logos) -->
+            <!-- Tool 1: Multi-Crypto Asset Estimator -->
             <div class="card" data-region="can usa crypto" data-title="crypto asset estimator bitcoin ethereum solana">
                 <div>
                     <div class="crypto-header-row">
-                        <!-- Official Inline SVG Logos -->
                         <div class="crypto-logo" style="background:#f7931a;" title="Bitcoin">
                             <svg width="14" height="14" viewBox="0 0 32 32" fill="#fff"><path d="M21.9 14.7c.3-2-1.2-3.1-3.3-3.8l.7-2.8-1.6-.4-.7 2.7c-.4-.1-.8-.2-1.2-.3l.7-2.7-1.6-.4-.7 2.8c-.3-.1-.7-.2-1-.3l-2.2-.6-.4 1.7s1.2.3 1.2.3c.7.2.8.6.8 1l-.8 3.3c0 .1.1.2.2.3h-.2l-1.1 4.5c-.1.2-.3.5-.8.4 0 0-1.2-.3-1.2-.3l-.8 1.9 2.1.5c.4.1.8.2 1.2.3l-.7 2.8 1.6.4.7-2.7c.4.1.8.2 1.2.3l-.7 2.7 1.6.4.7-2.8c2.8.5 4.9.3 5.8-2.2.7-2-.1-3.1-1.5-3.8 1.1-.3 1.9-1 2.1-2.5zm-3.7 5.2c-.5 2-3.9.9-5 .7l.9-3.6c1.1.3 4.6.9 4.1 2.9zm.5-5.3c-.5 1.8-3.3.9-4.2.7l.8-3.3c.9.2 3.7.9 3.4 2.6z"/></svg>
                         </div>
@@ -253,7 +252,7 @@
                         <div class="crypto-logo" style="background:linear-gradient(135deg, #9945FF, #14F195);" title="Solana">
                             <svg width="12" height="12" viewBox="0 0 397 312" fill="#fff"><path d="M64.6 237.9c-2.4 2.4-5.7 3.8-9.1 3.8H12c-6.6 0-10.7-7.2-7.3-12.8l56.8-93.5c2.4-2.4 5.7-3.8 9.1-3.8h43.5c6.6 0 10.7 7.2 7.3 12.8l-56.8 93.5zm320.4-159.2c-2.4-2.4-5.7-3.8-9.1-3.8h-43.5c-6.6 0-10.7 7.2-7.3 12.8l56.8 93.5c2.4 2.4 5.7 3.8 9.1 3.8h43.5c6.6 0 10.7-7.2 7.3-12.8l-56.8-93.5zM375.9 7.3c-2.4-2.4-5.7-3.8-9.1-3.8H55.4c-6.6 0-10.7 7.2-7.3 12.8l56.8 93.5c2.4 2.4 5.7 3.8 9.1 3.8h311.4c6.6 0 10.7-7.2 7.3-12.8L375.9 7.3zM114 304.7c2.4 2.4 5.7 3.8 9.1 3.8h311.4c6.6 0 10.7-7.2 7.3-12.8l-56.8-93.5c-2.4-2.4-5.7-3.8-9.1-3.8H121.6c-6.6 0-10.7 7.2-7.3 12.8l56.8 93.5z"/></svg>
                         </div>
-                        <h3 style="margin:0;">Multi-Crypto Asset Estimator</h3>
+                        <h3 style="margin:0;">Multi-Crypto Estimator</h3>
                     </div>
                     <p style="font-size: 0.82rem; color: var(--text-muted);">Calculate recurring allocation across BTC, ETH, and SOL.</p>
                     <div class="calc-group">
@@ -419,7 +418,7 @@
                 </div>
             </div>
 
-            <!-- Tool 7: Compounding Interest Calculator with Stress-Test -->
+            <!-- Tool 7: Compounding Interest Calculator -->
             <div class="card" data-region="can usa" data-title="compounding interest calculator growth wealth investment">
                 <div>
                     <h3>📈 Compounding Interest Engine</h3>
@@ -548,7 +547,7 @@
     <!-- Floating Toast Notification -->
     <div id="toast">Copied to clipboard!</div>
 
-    <!-- Dedicated Clean Executive PDF Report Template -->
+    <!-- Executive PDF Report Template -->
     <div id="pdfPrintTemplate">
         <div style="font-family: Arial, sans-serif; color: #111; padding: 40px; background: #fff; max-width: 800px; margin: 0 auto;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0284c7; padding-bottom: 20px; margin-bottom: 30px;">
@@ -606,7 +605,7 @@
                     </tr>
                     <tr>
                         <td style="padding: 10px; border: 1px solid #cbd5e1;">Multi-Crypto Asset Estimator</td>
-                        <td style="padding: 10px; border: 1px id="pdfTblCryIn">Allocation: $500 | Bitcoin (BTC)</td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1;" id="pdfTblCryIn">Allocation: $500 | Bitcoin (BTC)</td>
                         <td style="padding: 10px; border: 1px solid #cbd5e1; font-weight: bold; color: #0284c7;" id="pdfTblCryOut">0.00667 BTC</td>
                     </tr>
                 </tbody>
@@ -629,10 +628,13 @@
         let lastSavingsVal = 200.00;
         let lastCryptoUnits = 0.00667;
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", async function() {
             const savedTheme = localStorage.getItem('raelinfo_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('tBtn').textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+
+            // Auto-detect visitor location to set currency base (CAD for Canadian visitors)
+            await autoDetectVisitorRegion();
 
             calculateCrypto();
             calculateInflation();
@@ -641,8 +643,20 @@
             calculateTax();
             calculateCompound();
             fetchLiveFx();
-            fetchCryptoPrices();
+            fetchBinanceCryptoPrices();
         });
+
+        async function autoDetectVisitorRegion() {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                if (data && data.country_code === 'CA') {
+                    currentCurrency = 'CAD';
+                    document.getElementById('cBtn').textContent = `💵 Currency: CAD`;
+                    document.querySelectorAll('.curr-label').forEach(el => el.textContent = 'CAD');
+                }
+            } catch(e) {}
+        }
 
         function showToast(msg) {
             const t = document.getElementById("toast");
@@ -698,14 +712,17 @@
             } catch(e) {}
         }
 
-        async function fetchCryptoPrices() {
+        async function fetchBinanceCryptoPrices() {
             try {
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd');
+                const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]`);
                 const data = await res.json();
-                if(data) {
-                    if(data.bitcoin && data.bitcoin.usd) cryptoUsdPrices.btc = data.bitcoin.usd;
-                    if(data.ethereum && data.ethereum.usd) cryptoUsdPrices.eth = data.ethereum.usd;
-                    if(data.solana && data.solana.usd) cryptoUsdPrices.sol = data.solana.usd;
+                
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        if (item.symbol === 'BTCUSDT') cryptoUsdPrices.btc = parseFloat(item.price);
+                        if (item.symbol === 'ETHUSDT') cryptoUsdPrices.eth = parseFloat(item.price);
+                        if (item.symbol === 'SOLUSDT') cryptoUsdPrices.sol = parseFloat(item.price);
+                    });
                     updateTickers();
                     calculateCrypto();
                 }
