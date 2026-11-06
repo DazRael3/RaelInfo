@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Impact.com Site Verification -->
-    <meta name='impact-site-verification' value='4c6753a9-629f-4a31-8692-9dfd8e5cf059'>
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Bing / Microsoft Webmaster Verification -->
+    <!-- Impact.com & Bing Verifications -->
+    <meta name='impact-site-verification' value='4c6753a9-629f-4a31-8692-9dfd8e5cf059'>
     <meta name="msvalidate.01" content="B0116E98CB0D9B335C85C51ABFF08127" />
 
     <!-- Embedded High-Res SVG Favicon -->
@@ -124,6 +127,10 @@
         .copy-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.78rem; font-weight: 600; text-decoration: underline; transition: var(--transition); }
         .copy-btn:hover { color: var(--accent); }
 
+        /* SVG Sparkline Graph Container */
+        .chart-container { margin-top: 0.75rem; height: 45px; width: 100%; background: rgba(0,0,0,0.15); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
+        .chart-svg { width: 100%; height: 100%; }
+
         .details-drawer { display: none; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); }
         .toggle-details { background: none; border: none; color: var(--accent); font-size: 0.78rem; cursor: pointer; padding: 0; margin-top: 0.5rem; text-decoration: underline; }
 
@@ -135,9 +142,19 @@
         .btn:hover { filter: brightness(1.1); box-shadow: 0 0 16px var(--accent-glow); transform: translateY(-1px); }
         .btn-disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; opacity: 0.6; transform: none !important; box-shadow: none !important; }
 
+        /* Toast Notifications */
+        #toast { visibility: hidden; min-width: 220px; background-color: var(--surface); color: var(--text-main); text-align: center; border-radius: 30px; border: 1px solid var(--accent); padding: 0.6rem 1.2rem; position: fixed; z-index: 999; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px var(--accent-glow); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
+        #toast.show { visibility: visible; opacity: 1; bottom: 40px; }
+
         footer { margin-top: 4rem; color: var(--text-muted); font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 1.5rem; text-align: center; }
         footer a { color: var(--accent); text-decoration: none; margin: 0 0.5rem; }
         footer a:hover { text-decoration: underline; }
+
+        @media print {
+            .header-controls, .controls-bar, .native-banner-grid, footer { display: none !important; }
+            body { background: #fff; color: #000; padding: 0; }
+            .card { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -199,7 +216,10 @@
         </div>
 
         <!-- Section 1: Financial Utilities -->
-        <h2 class="section-title">⚙️ Interactive Calculations</h2>
+        <h2 class="section-title">
+            ⚙️ Interactive Calculations
+            <button class="ctrl-btn" onclick="window.print()" style="font-size:0.75rem; padding:0.3rem 0.7rem;">🖨️ Export PDF Report</button>
+        </h2>
         <div class="grid" id="toolGrid">
 
             <!-- Tool 1: Crypto Asset Estimator -->
@@ -368,7 +388,7 @@
                 </div>
             </div>
 
-            <!-- Tool 7: Compounding Interest Calculator -->
+            <!-- Tool 7: Compounding Interest Calculator with Live Sparkline -->
             <div class="card" data-region="can usa" data-title="compounding interest calculator growth wealth investment">
                 <div>
                     <h3>📈 Compounding Interest Engine</h3>
@@ -394,6 +414,14 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Live SVG Sparkline Growth Curve -->
+                <div class="chart-container">
+                    <svg class="chart-svg" viewBox="0 0 100 30" preserveAspectRatio="none">
+                        <path id="compoundSparkline" d="M0,30 L100,30" fill="rgba(56, 189, 248, 0.2)" stroke="#38bdf8" stroke-width="1.5" />
+                    </svg>
+                </div>
+
                 <div class="calc-result-box">
                     <span class="calc-result-text" id="cmpOutput">Future Value: $2,805.10</span>
                     <button class="copy-btn" onclick="copyResult('cmpOutput')">Copy</button>
@@ -482,6 +510,9 @@
         </footer>
     </div>
 
+    <!-- Floating Toast Notification -->
+    <div id="toast">Copied to clipboard!</div>
+
     <script>
         let liveFxRate = 1.38;
         let btcUsdPrice = 68500;
@@ -503,12 +534,20 @@
             fetchCryptoPrice();
         });
 
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.className = "show";
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 2000);
+        }
+
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
             const target = current === 'light' ? 'dark' : 'light';
             document.documentElement.setAttribute('data-theme', target);
             localStorage.setItem('raelinfo_theme', target);
             document.getElementById('tBtn').textContent = target === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            showToast(`Switched to ${target.toUpperCase()} mode`);
         }
 
         function toggleCurrency() {
@@ -516,6 +555,7 @@
             document.getElementById('cBtn').textContent = `💵 Currency: ${currentCurrency}`;
             document.getElementById('cryptoCurr').value = currentCurrency;
             calculateCrypto();
+            showToast(`Global currency set to ${currentCurrency}`);
         }
 
         async function fetchLiveFx() {
@@ -613,6 +653,18 @@
 
             const fv = p * Math.pow(1 + (r / 100), t);
             document.getElementById('cmpOutput').textContent = `Future Value: $${fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Generate SVG Sparkline Curve Coordinates
+            let points = "M0,30 ";
+            for (let i = 0; i <= 10; i++) {
+                let yr = (t / 10) * i;
+                let val = p * Math.pow(1 + (r / 100), yr);
+                let x = i * 10;
+                let y = 30 - Math.min(28, ((val - p) / (fv - p || 1)) * 26);
+                points += `L${x},${y.toFixed(1)} `;
+            }
+            points += "L100,30 Z";
+            document.getElementById('compoundSparkline').setAttribute('d', points);
         }
 
         function convertCurrency() {
@@ -638,15 +690,7 @@
         function copyResult(elementId) {
             const text = document.getElementById(elementId).textContent;
             navigator.clipboard.writeText(text);
-            
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = "Copied!";
-            btn.style.color = "var(--success)";
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.color = "";
-            }, 1200);
+            showToast("Result copied to clipboard!");
         }
 
         function filterCategory(category, btn) {
