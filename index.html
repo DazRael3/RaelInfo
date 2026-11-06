@@ -38,7 +38,7 @@
     <meta name="twitter:description" content="Interconnected cross-border financial calculators, live FX/Crypto engines, and verified portal links.">
     <meta name="twitter:image" content="https://raelinfo.com/og-card.png">
 
-    <!-- HTML2PDF Library for Client-side Report Generation -->
+    <!-- HTML2PDF Library for Client-side Executive PDF Report Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -389,14 +389,14 @@
         footer a { color: var(--accent); text-decoration: none; margin: 0 0.5rem; }
         footer a:hover { text-decoration: underline; }
 
-        /* Print Media Styles */
-        @media print {
-            .header-controls, .controls-bar, .native-banner-grid, footer, #toast, .copy-btn, .toggle-details { display: none !important; }
-            body { background: #fff; color: #000; padding: 0; }
-            .card, .summary-hero { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; color: #000; background: #fff; }
-            .calc-result-box { background: #f0f0f0; border-color: #ccc; }
-            .calc-result-text { color: #000; }
-            h1.logo, .summary-title, .card h3 { -webkit-text-fill-color: initial; color: #000; }
+        /* Hidden Dedicated Executive PDF Report Template Container */
+        #pdfPrintTemplate {
+            display: none;
+            background: #ffffff;
+            color: #0f172a;
+            padding: 30px;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 780px;
         }
     </style>
 </head>
@@ -434,11 +434,11 @@
             <div class="summary-grid">
                 <div class="summary-metric">
                     <div class="summary-metric-label">Projected 10-Yr Wealth</div>
-                    <div class="summary-metric-val" id="sumWealth">$0.00</div>
+                    <div class="summary-metric-val" id="sumWealth">$0.00 USD</div>
                 </div>
                 <div class="summary-metric">
                     <div class="summary-metric-label">Monthly Debt Obligation</div>
-                    <div class="summary-metric-val" style="color: #ef4444;" id="sumMortgage">$0.00</div>
+                    <div class="summary-metric-val" style="color: #ef4444;" id="sumMortgage">$0.00 / mo</div>
                 </div>
                 <div class="summary-metric">
                     <div class="summary-metric-label">Annual Yield (Savings)</div>
@@ -526,7 +526,7 @@
                 </div>
 
                 <div class="calc-result-box">
-                    <span class="calc-result-text" id="cmpOutput">Future Value: $0.00</span>
+                    <span class="calc-result-text" id="cmpOutput">Future Value: $0.00 USD</span>
                     <button class="copy-btn" onclick="copyResult('cmpOutput')">Copy</button>
                 </div>
             </div>
@@ -564,7 +564,7 @@
                 </div>
 
                 <div class="calc-result-box">
-                    <span class="calc-result-text" id="loanOutput">$0.00 / mo</span>
+                    <span class="calc-result-text" id="loanOutput">$0.00 USD / mo</span>
                     <button class="copy-btn" onclick="copyResult('loanOutput')">Copy</button>
                 </div>
                 <button class="toggle-details" onclick="toggleMortgageDrawer()">Toggle Amortization Drawer &darr;</button>
@@ -620,7 +620,7 @@
                     </div>
                 </div>
                 <div class="calc-result-box">
-                    <span class="calc-result-text" id="savingsOutput">1-Year Yield: $0.00</span>
+                    <span class="calc-result-text" id="savingsOutput">1-Year Yield: $0.00 USD</span>
                     <button class="copy-btn" onclick="copyResult('savingsOutput')">Copy</button>
                 </div>
             </div>
@@ -660,7 +660,7 @@
                     <h3>🏷️ Regional Sales Tax & Net Cost</h3>
                     <p style="font-size: 0.82rem; color: var(--text-muted);">Estimate state and provincial purchase tax totals.</p>
                     <div class="calc-group">
-                        <label>Pre-Tax Purchase Amount ($):</label>
+                        <label>Pre-Tax Purchase Amount (<span class="currLabel">USD</span>):</label>
                         <input type="number" id="taxPrice" class="calc-input" value="500" oninput="runGlobalCalculations()">
                     </div>
                     <div class="calc-group">
@@ -675,7 +675,7 @@
                     </div>
                 </div>
                 <div class="calc-result-box">
-                    <span class="calc-result-text" id="taxOutput">Total with Tax: $0.00</span>
+                    <span class="calc-result-text" id="taxOutput">Total with Tax: $0.00 USD</span>
                     <button class="copy-btn" onclick="copyResult('taxOutput')">Copy</button>
                 </div>
             </div>
@@ -762,6 +762,110 @@
         </footer>
     </div>
 
+    <!-- Hidden Dedicated Executive PDF Document Template Structure -->
+    <div id="pdfPrintTemplate">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0284c7; padding-bottom:12px; margin-bottom:20px;">
+            <div>
+                <h1 style="margin:0; font-size:24px; color:#0f172a; font-weight:800;">RaelInfo Financial Intelligence</h1>
+                <p style="margin:4px 0 0 0; font-size:12px; color:#64748b;">North American Cross-Border Utility Statement & Forecast</p>
+            </div>
+            <div style="text-align:right;">
+                <span style="background:#e0f2fe; color:#0284c7; font-weight:bold; font-size:11px; padding:4px 10px; border-radius:4px;">EXECUTIVE REPORT</span>
+                <p style="margin:6px 0 0 0; font-size:11px; color:#64748b;" id="pdfDate"></p>
+            </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:16px; margin-bottom:20px;">
+            <h3 style="margin:0 0 8px 0; font-size:14px; color:#0f172a;">Executive Portfolio Summary (<span id="pdfCurrLabel">USD</span>)</h3>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; text-align:center;">
+                <div style="background:#fff; border:1px solid #cbd5e1; padding:8px; border-radius:6px;">
+                    <div style="font-size:10px; color:#64748b; font-weight:bold;">10-YR WEALTH</div>
+                    <div style="font-size:13px; font-weight:bold; color:#0284c7; margin-top:2px;" id="pdfValWealth">$0.00</div>
+                </div>
+                <div style="background:#fff; border:1px solid #cbd5e1; padding:8px; border-radius:6px;">
+                    <div style="font-size:10px; color:#64748b; font-weight:bold;">MONTHLY DEBT</div>
+                    <div style="font-size:13px; font-weight:bold; color:#ef4444; margin-top:2px;" id="pdfValMortgage">$0.00</div>
+                </div>
+                <div style="background:#fff; border:1px solid #cbd5e1; padding:8px; border-radius:6px;">
+                    <div style="font-size:10px; color:#64748b; font-weight:bold;">SAVINGS YIELD</div>
+                    <div style="font-size:13px; font-weight:bold; color:#059669; margin-top:2px;" id="pdfValSavings">$0.00</div>
+                </div>
+                <div style="background:#fff; border:1px solid #cbd5e1; padding:8px; border-radius:6px;">
+                    <div style="font-size:10px; color:#64748b; font-weight:bold;">CRYPTO HOLDINGS</div>
+                    <div style="font-size:13px; font-weight:bold; color:#d97706; margin-top:2px;" id="pdfValCrypto">0 BTC</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+            <h3 style="margin:0 0 10px 0; font-size:14px; color:#0f172a;">10-Year Projected Wealth Trajectory vs Amortization Curve</h3>
+            <div style="border:1px solid #e2e8f0; border-radius:8px; padding:12px; background:#fff;">
+                <svg width="100%" height="110" viewBox="0 0 400 100" style="overflow:visible;">
+                    <!-- SVG Background grid lines -->
+                    <line x1="0" y1="20" x2="400" y2="20" stroke="#f1f5f9" stroke-width="1" />
+                    <line x1="0" y1="50" x2="400" y2="50" stroke="#f1f5f9" stroke-width="1" />
+                    <line x1="0" y1="80" x2="400" y2="80" stroke="#f1f5f9" stroke-width="1" />
+                    <!-- Wealth Growth Path -->
+                    <path id="pdfChartGrowth" d="M0,90 L400,10" fill="none" stroke="#0284c7" stroke-width="3" />
+                    <!-- Debt Curve Path -->
+                    <path id="pdfChartDebt" d="M0,20 L400,95" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4" />
+                </svg>
+                <div style="display:flex; justify-content:center; gap:20px; font-size:10px; margin-top:6px; font-weight:bold;">
+                    <span style="color:#0284c7;">━━ Compounding Growth Curve</span>
+                    <span style="color:#ef4444;">┈ ┈ Remaining Loan Principal</span>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin:0 0 10px 0; font-size:14px; color:#0f172a;">Itemized Input Parameters & Analytical Output</h3>
+        <table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">
+            <thead>
+                <tr style="background:#0f172a; color:#fff;">
+                    <th style="padding:8px; border-radius:4px 0 0 0;">Utility Engine</th>
+                    <th style="padding:8px;">Input Parameters</th>
+                    <th style="padding:8px; border-radius:0 4px 0 0;">Computed Output Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:8px; font-weight:bold;">Compounding Wealth Engine</td>
+                    <td style="padding:8px;" id="pdfParamCompound">-</td>
+                    <td style="padding:8px; font-weight:bold; color:#0284c7;" id="pdfResCompound">-</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+                    <td style="padding:8px; font-weight:bold;">Mortgage & Property Equity</td>
+                    <td style="padding:8px;" id="pdfParamMortgage">-</td>
+                    <td style="padding:8px; font-weight:bold; color:#ef4444;" id="pdfResMortgage">-</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:8px; font-weight:bold;">Crypto Asset & DCA</td>
+                    <td style="padding:8px;" id="pdfParamCrypto">-</td>
+                    <td style="padding:8px; font-weight:bold; color:#d97706;" id="pdfResCrypto">-</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+                    <td style="padding:8px; font-weight:bold;">High-Yield Savings Growth</td>
+                    <td style="padding:8px;" id="pdfParamSavings">-</td>
+                    <td style="padding:8px; font-weight:bold; color:#059669;" id="pdfResSavings">-</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0;">
+                    <td style="padding:8px; font-weight:bold;">Cross-Border FX & Inflation</td>
+                    <td style="padding:8px;" id="pdfParamFX">-</td>
+                    <td style="padding:8px; font-weight:bold;" id="pdfResFX">-</td>
+                </tr>
+                <tr style="border-bottom:1px solid #e2e8f0; background:#f8fafc;">
+                    <td style="padding:8px; font-weight:bold;">Regional Sales Tax</td>
+                    <td style="padding:8px;" id="pdfParamTax">-</td>
+                    <td style="padding:8px; font-weight:bold;" id="pdfResTax">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top:25px; border-top:1px solid #e2e8f0; padding-top:10px; display:flex; justify-content:space-between; font-size:9px; color:#94a3b8;">
+            <span>Generated by RaelInfo.com | Financial & Digital Utilities Portal</span>
+            <span>Live FX Rate Applied: 1 USD = <span id="pdfFxRate">1.3800</span> CAD</span>
+        </div>
+    </div>
+
     <!-- Floating Toast Component -->
     <div id="toast">Action completed successfully</div>
 
@@ -769,7 +873,16 @@
         let liveFxRate = 1.38;
         let btcUsdPrice = 68500;
         let activeCategory = 'all';
-        let currentCurrency = 'USD';
+        let currentCurrency = 'USD'; // 'USD' or 'CAD'
+
+        // Raw input values tracking in USD base for accurate dynamic conversion
+        let lastCmpOutputVal = 0;
+        let lastMortgageMonthlyVal = 0;
+        let lastMortgageTotalCostVal = 0;
+        let lastMortgageInterestVal = 0;
+        let lastSavingsYieldVal = 0;
+        let lastCryptoUnitsVal = 0;
+        let lastTaxTotalVal = 0;
 
         document.addEventListener("DOMContentLoaded", function() {
             const savedTheme = localStorage.getItem('raelinfo_theme') || 'dark';
@@ -797,13 +910,18 @@
             showToast(`Switched to ${target.toUpperCase()} mode`);
         }
 
+        // 1. DYNAMIC SITE-WIDE CURRENCY TOGGLE (USD <-> CAD)
         function toggleCurrency() {
             currentCurrency = currentCurrency === 'USD' ? 'CAD' : 'USD';
             document.getElementById('cBtn').textContent = `💵 Currency: ${currentCurrency}`;
+            
+            // Update currency label indicators across all inputs & cards
             document.querySelectorAll('.currLabel').forEach(el => el.textContent = currentCurrency);
             document.getElementById('cryptoCurr').value = currentCurrency;
+            
+            // Recalculate and update all numbers dynamically site-wide
             runGlobalCalculations();
-            showToast(`Global currency flipped to ${currentCurrency}`);
+            showToast(`Global currency updated to ${currentCurrency}`);
         }
 
         async function fetchLiveFx() {
@@ -813,6 +931,7 @@
                 if(data && data.rates && data.rates.CAD) {
                     liveFxRate = data.rates.CAD;
                     document.getElementById('tickerFx').textContent = `${liveFxRate.toFixed(4)} CAD`;
+                    document.getElementById('pdfFxRate').textContent = liveFxRate.toFixed(4);
                     runGlobalCalculations();
                 }
             } catch(e) { runGlobalCalculations(); }
@@ -830,44 +949,57 @@
             } catch(e) {}
         }
 
-        // Master Interconnected Recalculation Routine
+        // Master Interconnected Recalculation Routine with Currency Factor
         function runGlobalCalculations() {
-            // 1. Compounding Wealth
-            const pCmp = parseFloat(document.getElementById('cmpPrinc').value) || 0;
+            const mult = currentCurrency === 'CAD' ? liveFxRate : 1.0;
+            const symbol = currentCurrency;
+
+            // 1. Compounding Wealth Engine
+            const pCmpInput = parseFloat(document.getElementById('cmpPrinc').value) || 0;
             const rCmp = parseFloat(document.getElementById('cmpRate').value) || 0;
             const tCmp = parseInt(document.getElementById('cmpYears').value) || 10;
-            const fvCmp = pCmp * Math.pow(1 + (rCmp / 100), tCmp);
-            document.getElementById('cmpOutput').textContent = `Future Value: $${fvCmp.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            // Convert input base according to active mode
+            const pCmpUsd = pCmpInput;
+            const fvCmp = pCmpUsd * Math.pow(1 + (rCmp / 100), tCmp) * mult;
+            lastCmpOutputVal = fvCmp;
+
+            document.getElementById('cmpOutput').textContent = `Future Value: $${fvCmp.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol}`;
 
             // Draw Compounding SVG Sparkline
             let pointsCmp = "M0,30 ";
             for (let i = 0; i <= 10; i++) {
                 let yr = (tCmp / 10) * i;
-                let val = pCmp * Math.pow(1 + (rCmp / 100), yr);
+                let val = pCmpUsd * Math.pow(1 + (rCmp / 100), yr);
                 let x = i * 10;
-                let y = 30 - Math.min(28, ((val - pCmp) / (fvCmp - pCmp || 1)) * 26);
+                let y = 30 - Math.min(28, ((val - pCmpUsd) / ((fvCmp/mult) - pCmpUsd || 1)) * 26);
                 pointsCmp += `L${x},${y.toFixed(1)} `;
             }
             pointsCmp += "L100,30 Z";
             document.getElementById('compoundSparkline').setAttribute('d', pointsCmp);
 
-            // 2. Mortgage & Equity
-            const pLoan = parseFloat(document.getElementById('loanAmt').value) || 0;
+            // 2. Mortgage & Equity Engine
+            const pLoanInput = parseFloat(document.getElementById('loanAmt').value) || 0;
             const rateLoan = parseFloat(document.getElementById('loanRate').value) || 0;
             const termLoan = parseInt(document.getElementById('loanTerm').value) || 25;
             let monthlyPayment = 0;
             let totalLoanCost = 0;
             let totalInterest = 0;
 
-            if (pLoan > 0 && rateLoan > 0) {
+            if (pLoanInput > 0 && rateLoan > 0) {
+                const pLoanConverted = pLoanInput * mult;
                 const r = (rateLoan / 100) / 12;
                 const n = termLoan * 12;
-                monthlyPayment = pLoan * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+                monthlyPayment = pLoanConverted * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
                 totalLoanCost = monthlyPayment * n;
-                totalInterest = totalLoanCost - pLoan;
+                totalInterest = totalLoanCost - pLoanConverted;
             }
-            document.getElementById('loanOutput').textContent = `$${monthlyPayment.toFixed(2)} / mo`;
-            document.getElementById('mortgageBreakdownText').textContent = `Total Payments: $${totalLoanCost.toLocaleString(undefined, {maximumFractionDigits:2})} | Total Interest: $${totalInterest.toLocaleString(undefined, {maximumFractionDigits:2})}`;
+            lastMortgageMonthlyVal = monthlyPayment;
+            lastMortgageTotalCostVal = totalLoanCost;
+            lastMortgageInterestVal = totalInterest;
+
+            document.getElementById('loanOutput').textContent = `$${monthlyPayment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol} / mo`;
+            document.getElementById('mortgageBreakdownText').textContent = `Total Payments: $${totalLoanCost.toLocaleString(undefined, {maximumFractionDigits:2})} ${symbol} | Total Interest: $${totalInterest.toLocaleString(undefined, {maximumFractionDigits:2})} ${symbol}`;
 
             // Draw Mortgage SVG Sparkline (Remaining Balance Curve)
             let pointsMort = "M0,2 ";
@@ -879,22 +1011,24 @@
             pointsMort += "L100,30 L0,30 Z";
             document.getElementById('mortgageSparkline').setAttribute('d', pointsMort);
 
-            // 3. Crypto DCA Accumulation
-            const amtCrypto = parseFloat(document.getElementById('cryptoAmt').value) || 0;
+            // 3. Crypto DCA Accumulation Engine
+            const amtCryptoInput = parseFloat(document.getElementById('cryptoAmt').value) || 0;
             const assetType = document.getElementById('cryptoAsset').value;
             const assetCurr = document.getElementById('cryptoCurr').value;
             let unitPrice = assetType === 'BTC' ? btcUsdPrice : (btcUsdPrice / 19);
             if (assetCurr === 'CAD') { unitPrice = unitPrice * liveFxRate; }
-            const cryptoUnits = amtCrypto / (unitPrice || 1);
+            const cryptoUnits = amtCryptoInput / (unitPrice || 1);
+            lastCryptoUnitsVal = cryptoUnits;
             document.getElementById('cryptoOutput').textContent = `Est: ~${cryptoUnits.toFixed(5)} ${assetType}`;
 
-            // 4. Savings Yield
-            const depSavings = parseFloat(document.getElementById('deposit').value) || 0;
+            // 4. Savings Yield Engine
+            const depSavingsInput = parseFloat(document.getElementById('deposit').value) || 0;
             const apySavings = parseFloat(document.getElementById('apy').value) || 0;
-            const yieldVal = depSavings * (apySavings / 100);
-            document.getElementById('savingsOutput').textContent = `1-Year Yield: $${yieldVal.toFixed(2)}`;
+            const yieldVal = (depSavingsInput * mult) * (apySavings / 100);
+            lastSavingsYieldVal = yieldVal;
+            document.getElementById('savingsOutput').textContent = `1-Year Yield: $${yieldVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol}`;
 
-            // 5. FX & Inflation Engine
+            // 5. FX & Purchasing Power Inflation Engine
             const amtFX = parseFloat(document.getElementById('convertAmt').value) || 0;
             const dirFX = document.getElementById('convertDir').value;
             const infRateVal = parseFloat(document.getElementById('infRate').value) || 3.0;
@@ -911,13 +1045,14 @@
             // 6. Regional Sales Tax
             const taxPriceVal = parseFloat(document.getElementById('taxPrice').value) || 0;
             const taxRateVal = parseFloat(document.getElementById('taxRegion').value) || 0;
-            const totalWithTax = taxPriceVal * (1 + taxRateVal);
-            document.getElementById('taxOutput').textContent = `Total with Tax: $${totalWithTax.toFixed(2)}`;
+            const totalWithTax = (taxPriceVal * mult) * (1 + taxRateVal);
+            lastTaxTotalVal = totalWithTax;
+            document.getElementById('taxOutput').textContent = `Total with Tax: $${totalWithTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol}`;
 
             // 7. SYNC UNIFIED PORTFOLIO SIMULATOR METRICS
-            document.getElementById('sumWealth').textContent = `$${fvCmp.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
-            document.getElementById('sumMortgage').textContent = `$${monthlyPayment.toFixed(2)} / mo`;
-            document.getElementById('sumSavings').textContent = `$${yieldVal.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
+            document.getElementById('sumWealth').textContent = `$${fvCmp.toLocaleString(undefined, {maximumFractionDigits: 0})} ${symbol}`;
+            document.getElementById('sumMortgage').textContent = `$${monthlyPayment.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol} / mo`;
+            document.getElementById('sumSavings').textContent = `$${yieldVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${symbol}`;
             document.getElementById('sumCrypto').textContent = `${cryptoUnits.toFixed(4)} ${assetType}`;
         }
 
@@ -932,17 +1067,62 @@
             showToast("Result copied to clipboard!");
         }
 
+        // 2. EXECUTIVE PDF REPORT GENERATOR (PROGRAMMATIC DOCUMENT BUILDER)
         function generatePDFReport() {
-            showToast("Generating PDF summary report...");
-            const element = document.getElementById('pdfReportArea');
+            showToast("Building executive PDF financial report...");
+            
+            // Populate Executive PDF Template with fresh interactive values
+            const now = new Date();
+            document.getElementById('pdfDate').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            document.getElementById('pdfCurrLabel').textContent = currentCurrency;
+
+            // Summary metrics
+            document.getElementById('pdfValWealth').textContent = document.getElementById('sumWealth').textContent;
+            document.getElementById('pdfValMortgage').textContent = document.getElementById('sumMortgage').textContent;
+            document.getElementById('pdfValSavings').textContent = document.getElementById('sumSavings').textContent;
+            document.getElementById('pdfValCrypto').textContent = document.getElementById('sumCrypto').textContent;
+
+            // Table details
+            document.getElementById('pdfParamCompound').textContent = `Princ: $${document.getElementById('cmpPrinc').value} | Return: ${document.getElementById('cmpRate').value}% | ${document.getElementById('cmpYears').value} Yrs`;
+            document.getElementById('pdfResCompound').textContent = document.getElementById('cmpOutput').textContent;
+
+            document.getElementById('pdfParamMortgage').textContent = `Loan: $${document.getElementById('loanAmt').value} | Rate: ${document.getElementById('loanRate').value}% | ${document.getElementById('loanTerm').value} Yrs`;
+            document.getElementById('pdfResMortgage').textContent = document.getElementById('loanOutput').textContent;
+
+            document.getElementById('pdfParamCrypto').textContent = `Capital: $${document.getElementById('cryptoAmt').value} ${document.getElementById('cryptoCurr').value} | Asset: ${document.getElementById('cryptoAsset').value}`;
+            document.getElementById('pdfResCrypto').textContent = document.getElementById('cryptoOutput').textContent;
+
+            document.getElementById('pdfParamSavings').textContent = `Deposit: $${document.getElementById('deposit').value} | APY: ${document.getElementById('apy').value}%`;
+            document.getElementById('pdfResSavings').textContent = document.getElementById('savingsOutput').textContent;
+
+            document.getElementById('pdfParamFX').textContent = `Amount: ${document.getElementById('convertAmt').value} | Dir: ${document.getElementById('convertDir').value} | Inf: ${document.getElementById('infRate').value}%`;
+            document.getElementById('pdfResFX').textContent = document.getElementById('convertOutput').textContent;
+
+            document.getElementById('pdfParamTax').textContent = `Pre-Tax: $${document.getElementById('taxPrice').value}`;
+            document.getElementById('pdfResTax').textContent = document.getElementById('taxOutput').textContent;
+
+            // Render PDF Chart vectors
+            document.getElementById('pdfChartGrowth').setAttribute('d', document.getElementById('compoundSparkline').getAttribute('d'));
+            document.getElementById('pdfChartDebt').setAttribute('d', document.getElementById('mortgageSparkline').getAttribute('d'));
+
+            // Temporarily reveal template for HTML2PDF compilation
+            const element = document.getElementById('pdfPrintTemplate');
+            element.style.display = 'block';
+
             const opt = {
-                margin:       0.3,
-                filename:     'RaelInfo_Financial_Report.pdf',
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `RaelInfo_Executive_Financial_Report_${currentCurrency}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                html2canvas:  { scale: 2, logging: false },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save();
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none';
+                showToast("Executive PDF report generated!");
+            }).catch(() => {
+                element.style.display = 'none';
+            });
         }
 
         function filterCategory(category, btn) {
