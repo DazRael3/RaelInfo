@@ -69,18 +69,26 @@
         .ctrl-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.55rem 1rem; border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: var(--transition); }
         .ctrl-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
 
-        .live-ticker { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.85rem; gap: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .live-ticker { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.82rem; gap: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .status-dot { display: inline-block; width: 9px; height: 9px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); margin-right: 0.4rem; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-        /* Unified Hero Dashboard */
+        /* Unified Hero Dashboard & Asset Allocation Bar */
         .unified-hero { background: linear-gradient(135deg, var(--surface), var(--surface-card)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
         .hero-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
         .hero-title { font-size: 1.1rem; color: var(--accent); font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-        .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
         .hero-stat-box { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: left; }
-        .hero-stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .hero-stat-val { font-size: 1.3rem; font-weight: 800; color: var(--success); margin-top: 0.3rem; }
+        .hero-stat-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .hero-stat-val { font-size: 1.25rem; font-weight: 800; color: var(--success); margin-top: 0.3rem; }
+
+        /* Asset Allocation Bar (Feature 1) */
+        .allocation-container { background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+        .allocation-labels { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .allocation-bar { display: flex; height: 10px; width: 100%; border-radius: 5px; overflow: hidden; background: #334155; gap: 2px; }
+        .alloc-seg-cash { background: #10b981; transition: width 0.5s; }
+        .alloc-seg-real { background: #38bdf8; transition: width 0.5s; }
+        .alloc-seg-crypto { background: #818cf8; transition: width 0.5s; }
 
         .native-banner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
         .native-banner { background: linear-gradient(135deg, rgba(24, 34, 56, 0.9), rgba(17, 24, 39, 0.95)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius); padding: 1.5rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 8px 30px rgba(0,0,0,0.2); transition: var(--transition); overflow: hidden; }
@@ -112,7 +120,7 @@
         .calc-input:focus, .calc-select:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
         
         .calc-result-box { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding: 0.7rem 0.9rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; }
-        .calc-result-text { font-weight: 700; color: var(--success); font-size: 0.95rem; }
+        .calc-result-text { font-weight: 700; color: var(--success); font-size: 0.92rem; }
         .copy-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.78rem; font-weight: 600; text-decoration: underline; transition: var(--transition); }
         .copy-btn:hover { color: var(--accent); }
 
@@ -122,7 +130,7 @@
         .chart-container { margin-top: 0.75rem; height: 50px; width: 100%; background: rgba(0,0,0,0.15); border-radius: 6px; overflow: hidden; border: 1px solid var(--border); }
         .chart-svg { width: 100%; height: 100%; }
 
-        .details-drawer { display: none; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); }
+        .details-drawer { display: none; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 6px; border: 1px solid var(--border); max-height: 180px; overflow-y: auto; }
         .toggle-details { background: none; border: none; color: var(--accent); font-size: 0.78rem; cursor: pointer; padding: 0; margin-top: 0.5rem; text-decoration: underline; }
 
         .badge { font-size: 0.68rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -157,7 +165,8 @@
                 </div>
             </div>
             <div class="header-controls">
-                <button class="ctrl-btn" onclick="exportExecutivePDF()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none;">📥 Export Executive PDF</button>
+                <button class="ctrl-btn" id="streakBadgeBtn" style="background:rgba(245,158,11,0.15); color:var(--pending); border-color:rgba(245,158,11,0.3);">🔥 Streak: 1 Day</button>
+                <button class="ctrl-btn" onclick="exportExecutivePDF()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none;">📥 Export PDF</button>
                 <button class="ctrl-btn" onclick="saveProfileJson()">💾 Save</button>
                 <button class="ctrl-btn" onclick="triggerLoadJson()">📂 Load</button>
                 <input type="file" id="jsonFileInput" style="display:none" accept=".json" onchange="loadProfileJson(event)">
@@ -166,16 +175,16 @@
             </div>
         </header>
 
-        <!-- Live Ticker Bar with Binance Public Feed & Geo IP Rates -->
+        <!-- Live Ticker Bar with Binance Public Feed -->
         <div class="live-ticker">
             <div><span class="status-dot"></span><strong>USD/CAD:</strong> <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
             <div><strong>BTC:</strong> <span id="tickerBtc" style="color:var(--success);">$75,000</span></div>
             <div><strong>ETH:</strong> <span id="tickerEth" style="color:#818cf8;">$2,750</span></div>
             <div><strong>SOL:</strong> <span id="tickerSol" style="color:#a855f7;">$180</span></div>
-            <div>🇨🇦 BoC: <strong id="bocRateDisplay">2.50%</strong> | 🇺🇸 Fed: <strong id="fedRateDisplay">3.75-4.00%</strong>[cite: 5]</div>
+            <div>🇨🇦 BoC: <strong>2.50%</strong> | 🇺🇸 Fed: <strong>3.75-4.00%</strong>[cite: 5]</div>
         </div>
 
-        <!-- Unified Cross-Tool Hero Dashboard -->
+        <!-- Unified Cross-Tool Hero Dashboard & Asset Allocation Bar -->
         <div class="unified-hero">
             <div class="hero-header">
                 <h3 class="hero-title">⚡ Cross-Tool Wealth & Net Worth Forecast</h3>
@@ -195,8 +204,21 @@
                     <div class="hero-stat-val" id="heroYield">$200.00</div>
                 </div>
                 <div class="hero-stat-box">
-                    <div class="hero-stat-label">Est. Crypto Asset Holding</div>
+                    <div class="hero-stat-label">Est. Crypto Holding</div>
                     <div class="hero-stat-val" id="heroCrypto" style="color:var(--accent);">0.00667 BTC</div>
+                </div>
+            </div>
+
+            <!-- Asset Allocation Bar (Feature 1) -->
+            <div class="allocation-container">
+                <div class="allocation-labels">
+                    <span>📊 Estimated Asset Allocation</span>
+                    <span id="allocationRatioText">Cash: 50% | Real Estate: 40% | Crypto: 10%</span>
+                </div>
+                <div class="allocation-bar">
+                    <div class="alloc-seg-cash" id="allocSegCash" style="width: 50%;" title="Cash Savings"></div>
+                    <div class="alloc-seg-real" id="allocSegReal" style="width: 40%;" title="Real Estate Equity"></div>
+                    <div class="alloc-seg-crypto" id="allocSegCrypto" style="width: 10%;" title="Crypto Holdings"></div>
                 </div>
             </div>
         </div>
@@ -314,7 +336,7 @@
                 </div>
             </div>
 
-            <!-- Tool 3: Mortgage & Loan Estimator -->
+            <!-- Tool 3: Mortgage & Loan Estimator with Amortization Schedule (Feature 2) -->
             <div class="card" data-region="can usa realestate" data-title="mortgage loan estimator monthly payment amortization">
                 <div>
                     <h3>🏡 Mortgage & Loan Estimator</h3>
@@ -342,9 +364,10 @@
                     <span class="calc-result-text" id="loanOutput">$2,440.43 / mo</span>
                     <button class="copy-btn" onclick="copyResult('loanOutput')">Copy</button>
                 </div>
-                <button class="toggle-details" onclick="toggleMortgageDrawer()">Toggle Breakdown &darr;</button>
+                <button class="toggle-details" onclick="toggleMortgageDrawer()">Toggle Amortization Schedule &darr;</button>
                 <div id="mortgageDrawer" class="details-drawer">
-                    <div id="mortgageBreakdownText">Total Payments: $732,129.00 | Total Interest: $332,129.00</div>
+                    <div id="mortgageBreakdownText" style="font-weight:700; margin-bottom:5px;"></div>
+                    <div id="amortizationTableContainer"></div>
                 </div>
             </div>
 
@@ -459,6 +482,77 @@
                 <div class="calc-result-box">
                     <span class="calc-result-text" id="cmpOutput">Future Value: $3,934.30</span>
                     <button class="copy-btn" onclick="copyResult('cmpOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 8: Debt Payoff Snowball / Avalanche Calculator (Feature 4) -->
+            <div class="card" data-region="can usa" data-title="debt payoff snowball avalanche calculator">
+                <div>
+                    <h3>💳 Debt Payoff Snowball Calculator</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Estimate months to eliminate total unsecured credit debt.</p>
+                    <div class="calc-group">
+                        <label>Total Debt Balance (<span class="curr-label">USD</span>):</label>
+                        <input type="number" id="debtBal" class="calc-input" value="15000" step="500" oninput="calculateDebtPayoff()">
+                    </div>
+                    <div class="calc-group" style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label>Avg APR (%):</label>
+                            <input type="number" id="debtApr" class="calc-input" value="19.9" step="0.5" oninput="calculateDebtPayoff()">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Monthly Payment:</label>
+                            <input type="number" id="debtPmt" class="calc-input" value="450" step="25" oninput="calculateDebtPayoff()">
+                        </div>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="debtOutput">Payoff Time: ~44 Months</span>
+                    <button class="copy-btn" onclick="copyResult('debtOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 9: Retirement Nest Egg & Safe Withdrawal (Feature 6) -->
+            <div class="card" data-region="can usa" data-title="retirement nest egg safe withdrawal calculator">
+                <div>
+                    <h3>🏖️ Retirement Nest Egg Estimator</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Calculate required portfolio corpus using the 4% rule.</p>
+                    <div class="calc-group">
+                        <label>Desired Annual Income (<span class="curr-label">USD</span>):</label>
+                        <input type="number" id="retIncome" class="calc-input" value="60000" step="2500" oninput="calculateRetirement()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Safe Withdrawal Rate (%):</label>
+                        <input type="number" id="retSWR" class="calc-input" value="4.0" step="0.25" oninput="calculateRetirement()">
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="retOutput">Required Nest Egg: $1,500,000</span>
+                    <button class="copy-btn" onclick="copyResult('retOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 10: Cross-Border Salary Parity Comparator (Feature 7) -->
+            <div class="card" data-region="can usa" data-title="cross border salary parity comparator cost of living">
+                <div>
+                    <h3>🌐 Cross-Border Salary Parity</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Compare equivalent purchasing power salary across US/CAD.</p>
+                    <div class="calc-group">
+                        <label>Base Salary (USD):</label>
+                        <input type="number" id="salBase" class="calc-input" value="85000" step="2500" oninput="calculateSalaryParity()">
+                    </div>
+                    <div class="calc-group">
+                        <label>Target City Adjustment:</label>
+                        <select id="salCity" class="calc-select" onchange="calculateSalaryParity()">
+                            <option value="1.15">🇨🇦 Toronto, ON (Cost Parity ~1.15x CAD)</option>
+                            <option value="1.08">🇨🇦 Vancouver, BC (Cost Parity ~1.08x CAD)</option>
+                            <option value="1.25">🇺🇸 New York City, NY (High Cost 1.25x)</option>
+                            <option value="0.95">🇺🇸 Austin, TX (Moderate Cost 0.95x)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="salOutput">Equivalent Target: CA$111,550</span>
+                    <button class="copy-btn" onclick="copyResult('salOutput')">Copy</button>
                 </div>
             </div>
 
@@ -633,7 +727,9 @@
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('tBtn').textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
 
-            // Auto-detect visitor location to set currency base (CAD for Canadian visitors)
+            // Feature 3: Daily Financial Streak Tracker
+            initStreakTracker();
+
             await autoDetectVisitorRegion();
 
             calculateCrypto();
@@ -642,9 +738,35 @@
             calculateSavings();
             calculateTax();
             calculateCompound();
+            calculateDebtPayoff();
+            calculateRetirement();
+            calculateSalaryParity();
             fetchLiveFx();
             fetchBinanceCryptoPrices();
         });
+
+        // Feature 3: Daily Streak Tracker Logic
+        function initStreakTracker() {
+            let streak = parseInt(localStorage.getItem('raelinfo_streak') || '1');
+            let lastVisit = localStorage.getItem('raelinfo_last_visit');
+            let today = new Date().toDateString();
+
+            if (lastVisit !== today) {
+                if (lastVisit) {
+                    let lastDate = new Date(lastVisit);
+                    let currDate = new Date(today);
+                    let diffDays = Math.round((currDate - lastDate) / (1000 * 60 * 60 * 24));
+                    if (diffDays === 1) {
+                        streak += 1;
+                    } else if (diffDays > 1) {
+                        streak = 1;
+                    }
+                }
+                localStorage.setItem('raelinfo_streak', streak);
+                localStorage.setItem('raelinfo_last_visit', today);
+            }
+            document.getElementById('streakBadgeBtn').textContent = `🔥 Streak: ${streak} Day${streak > 1 ? 's' : ''}`;
+        }
 
         async function autoDetectVisitorRegion() {
             try {
@@ -682,7 +804,7 @@
 
             const conversionFactor = currentCurrency === 'CAD' ? liveFxRate : (1 / liveFxRate);
             
-            ['cryptoAmt', 'infCash', 'loanAmt', 'deposit', 'taxPrice', 'cmpPrinc'].forEach(id => {
+            ['cryptoAmt', 'infCash', 'loanAmt', 'deposit', 'taxPrice', 'cmpPrinc', 'debtBal', 'debtPmt', 'retIncome', 'salBase'].forEach(id => {
                 const input = document.getElementById(id);
                 if(input) {
                     let val = parseFloat(input.value) || 0;
@@ -696,6 +818,9 @@
             calculateSavings();
             calculateTax();
             calculateCompound();
+            calculateDebtPayoff();
+            calculateRetirement();
+            calculateSalaryParity();
             updateTickers();
             showToast(`Converted all site values to ${currentCurrency}`);
         }
@@ -744,6 +869,21 @@
             document.getElementById('heroDebt').textContent = `${sym}${lastMortgageVal.toFixed(2)} / mo`;
             document.getElementById('heroYield').textContent = `${sym}${lastSavingsVal.toFixed(2)}`;
             document.getElementById('heroCrypto').textContent = `${lastCryptoUnits.toFixed(5)} ${document.getElementById('cryptoAsset').value}`;
+
+            // Feature 1: Update Asset Allocation Bar proportions based on live inputs
+            let cashVal = parseFloat(document.getElementById('deposit').value) || 5000;
+            let realVal = (parseFloat(document.getElementById('loanAmt').value) || 400000) * 0.25; // estimated equity
+            let cryptoVal = (parseFloat(document.getElementById('cryptoAmt').value) || 500) * 10;
+            let totalAsset = cashVal + realVal + cryptoVal || 1;
+
+            let cashPct = Math.round((cashVal / totalAsset) * 100);
+            let realPct = Math.round((realVal / totalAsset) * 100);
+            let cryptoPct = 100 - (cashPct + realPct);
+
+            document.getElementById('allocSegCash').style.width = `${cashPct}%`;
+            document.getElementById('allocSegReal').style.width = `${realPct}%`;
+            document.getElementById('allocSegCrypto').style.width = `${cryptoPct}%`;
+            document.getElementById('allocationRatioText').textContent = `Cash: ${cashPct}% | Real Estate: ${realPct}% | Crypto: ${cryptoPct}%`;
         }
 
         function calculateCrypto() {
@@ -778,6 +918,7 @@
             document.getElementById('infOutput').textContent = `Future Power: ${sym}${futureVal.toFixed(2)}`;
         }
 
+        // Feature 2: Mortgage Calculator with Amortization Schedule Table
         function calculateMortgage() {
             const p = parseFloat(document.getElementById('loanAmt').value) || 0;
             const annualRate = parseFloat(document.getElementById('loanRate').value) || 0;
@@ -800,6 +941,37 @@
             const sym = currentCurrency === 'USD' ? '$' : 'CA$';
             document.getElementById('loanOutput').textContent = `${sym}${monthly.toFixed(2)} / mo`;
             document.getElementById('mortgageBreakdownText').textContent = `Total Payments: ${sym}${totalCost.toLocaleString(undefined, {maximumFractionDigits:2})} | Total Interest: ${sym}${totalInterest.toLocaleString(undefined, {maximumFractionDigits:2})}`;
+            
+            // Build Amortization Table HTML
+            let balance = p;
+            let tableHtml = `<table style="width:100%; border-collapse:collapse; font-size:0.75rem; margin-top:5px;">
+                <tr style="background:rgba(56,189,248,0.2); text-align:left;">
+                    <th style="padding:4px; border:1px solid var(--border);">Year</th>
+                    <th style="padding:4px; border:1px solid var(--border);">Principal Paid</th>
+                    <th style="padding:4px; border:1px solid var(--border);">Interest Paid</th>
+                    <th style="padding:4px; border:1px solid var(--border);">Ending Balance</th>
+                </tr>`;
+            
+            for (let yr = 1; yr <= Math.min(years, 5); yr++) {
+                let yrPrincipal = 0;
+                let yrInterest = 0;
+                for (let m = 1; m <= 12; m++) {
+                    let interestM = balance * r;
+                    let principalM = monthly - interestM;
+                    yrPrincipal += principalM;
+                    yrInterest += interestM;
+                    balance -= principalM;
+                }
+                tableHtml += `<tr>
+                    <td style="padding:4px; border:1px solid var(--border);">Yr ${yr}</td>
+                    <td style="padding:4px; border:1px solid var(--border);">${sym}${yrPrincipal.toFixed(0)}</td>
+                    <td style="padding:4px; border:1px solid var(--border);">${sym}${yrInterest.toFixed(0)}</td>
+                    <td style="padding:4px; border:1px solid var(--border);">${sym}${Math.max(0, balance).toFixed(0)}</td>
+                </tr>`;
+            }
+            tableHtml += `</table>`;
+            document.getElementById('amortizationTableContainer').innerHTML = tableHtml;
+
             updateUnifiedHero();
         }
 
@@ -858,6 +1030,51 @@
             document.getElementById('compoundSparkline').setAttribute('d', points);
         }
 
+        // Feature 4: Debt Payoff Calculator Logic
+        function calculateDebtPayoff() {
+            const bal = parseFloat(document.getElementById('debtBal').value) || 0;
+            const apr = parseFloat(document.getElementById('debtApr').value) || 0;
+            const pmt = parseFloat(document.getElementById('debtPmt').value) || 0;
+
+            if (bal <= 0 || pmt <= 0 || apr <= 0) {
+                document.getElementById('debtOutput').textContent = 'Payoff Time: --';
+                return;
+            }
+
+            const r = (apr / 100) / 12;
+            if (pmt <= bal * r) {
+                document.getElementById('debtOutput').textContent = 'Payment too low for interest!';
+                return;
+            }
+
+            const months = Math.log(pmt / (pmt - bal * r)) / Math.log(1 + r);
+            document.getElementById('debtOutput').textContent = `Payoff Time: ~${Math.ceil(months)} Months`;
+        }
+
+        // Feature 6: Retirement Nest Egg Calculator Logic
+        function calculateRetirement() {
+            const income = parseFloat(document.getElementById('retIncome').value) || 0;
+            const swr = parseFloat(document.getElementById('retSWR').value) || 4.0;
+
+            if (income <= 0 || swr <= 0) {
+                document.getElementById('retOutput').textContent = 'Required Nest Egg: $0';
+                return;
+            }
+
+            const corpus = income / (swr / 100);
+            const sym = currentCurrency === 'USD' ? '$' : 'CA$';
+            document.getElementById('retOutput').textContent = `Required Nest Egg: ${sym}${Math.round(corpus).toLocaleString()}`;
+        }
+
+        // Feature 7: Cross-Border Salary Parity Logic
+        function calculateSalaryParity() {
+            const base = parseFloat(document.getElementById('salBase').value) || 0;
+            const factor = parseFloat(document.getElementById('salCity').value) || 1.15;
+
+            const equivalent = base * factor * liveFxRate;
+            document.getElementById('salOutput').textContent = `Equivalent Target: CA$${Math.round(equivalent).toLocaleString()}`;
+        }
+
         function convertCurrency() {
             const amt = parseFloat(document.getElementById('convertAmt').value) || 0;
             const dir = document.getElementById('convertDir').value;
@@ -895,7 +1112,9 @@
                 deposit: document.getElementById('deposit').value,
                 apy: document.getElementById('apy').value,
                 cmpPrinc: document.getElementById('cmpPrinc').value,
-                cmpRate: document.getElementById('cmpRate').value
+                cmpRate: document.getElementById('cmpRate').value,
+                debtBal: document.getElementById('debtBal').value,
+                retIncome: document.getElementById('retIncome').value
             };
             const blob = new Blob([JSON.stringify(profileData, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -925,6 +1144,8 @@
                     if(data.apy) document.getElementById('apy').value = data.apy;
                     if(data.cmpPrinc) document.getElementById('cmpPrinc').value = data.cmpPrinc;
                     if(data.cmpRate) document.getElementById('cmpRate').value = data.cmpRate;
+                    if(data.debtBal) document.getElementById('debtBal').value = data.debtBal;
+                    if(data.retIncome) document.getElementById('retIncome').value = data.retIncome;
 
                     calculateCrypto();
                     calculateInflation();
@@ -932,6 +1153,9 @@
                     calculateSavings();
                     calculateTax();
                     calculateCompound();
+                    calculateDebtPayoff();
+                    calculateRetirement();
+                    calculateSalaryParity();
                     showToast("Profile restored successfully!");
                 } catch(err) {
                     alert("Invalid JSON profile file.");
