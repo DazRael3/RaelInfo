@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Embedded High-Res SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0f19'/><text x='50%' y='65%' font-size='60' font-weight='bold' fill='%2338bdf8' text-anchor='middle' font-family='sans-serif'>R</text></svg>">
+
     <!-- Primary Search Engine Meta Tags -->
-    <title>RaelInfo | North American Financial, Mobility & Digital Utilities</title>
-    <meta name="title" content="RaelInfo | North American Financial, Mobility & Digital Utilities">
-    <meta name="description" content="Free cross-border financial tools, live USD/CAD exchange rates, inflation calculators, regional sales tax estimators, and verified North American digital portals.">
-    <meta name="keywords" content="financial calculators, USD CAD exchange rate, mortgage estimator, inflation calculator, Canada sales tax, Wealthsimple, NordVPN, Carla car rental, Undercover Tourist tickets">
+    <title>RaelInfo | North American Financial, Crypto, Mobility & Digital Utilities</title>
+    <meta name="title" content="RaelInfo | North American Financial, Crypto, Mobility & Digital Utilities">
+    <meta name="description" content="Free cross-border financial tools, live USD/CAD exchange rates, crypto estimators, inflation calculators, regional sales tax estimators, and verified North American digital portals.">
+    <meta name="keywords" content="financial calculators, crypto calculator, bitcoin estimator, USD CAD exchange rate, mortgage estimator, inflation calculator, Canada sales tax, Wealthsimple, NordVPN, Carla car rental, Undercover Tourist tickets">
     <meta name="author" content="RaelInfo">
     <link rel="canonical" href="https://raelinfo.com">
 
-    <!-- Open Graph / Social Media Preview Meta Tags (Twitter, Facebook, LinkedIn, Reddit) -->
+    <!-- Open Graph / Social Media Preview Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://raelinfo.com">
     <meta property="og:title" content="RaelInfo | North American Financial & Digital Utilities">
-    <meta property="og:description" content="Free interactive calculators and verified referral portals for Canada and the USA. Live USD/CAD exchange rates, tax estimators, and savings engines.">
+    <meta property="og:description" content="Free interactive financial, crypto, and travel calculators with verified referral portals for Canada and the USA.">
     <meta property="og:image" content="https://raelinfo.com/og-image.png">
 
     <!-- Twitter Card Meta Tags -->
@@ -110,17 +113,18 @@
         <header>
             <div class="logo-group">
                 <h1 class="logo">RaelInfo</h1>
-                <p class="tagline">North American Financial, Mobility & Security Utilities</p>
+                <p class="tagline">North American Financial, Mobility & Digital Utilities</p>
             </div>
             <div class="header-controls">
                 <button class="theme-btn" onclick="toggleTheme()" id="tBtn">🌙 Dark Mode</button>
             </div>
         </header>
 
-        <!-- Live Status Ticker -->
+        <!-- Live Ticker Bar with Crypto & FX -->
         <div class="live-ticker">
-            <div><span class="status-dot"></span><strong>FX Live (USD/CAD):</strong> <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
-            <div>🇨🇦 BoC Rate: <strong>2.50%</strong> | 🇺🇸 Fed Rate: <strong>3.75-4.00%</strong></div>
+            <div><span class="status-dot"></span><strong>USD/CAD:</strong> <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
+            <div><strong>BTC:</strong> <span id="tickerBtc" style="color:var(--success);">$68,500</span></div>
+            <div>🇨🇦 BoC: <strong>2.50%</strong> | 🇺🇸 Fed: <strong>3.75-4.00%</strong></div>
         </div>
 
         <!-- Filter Controls -->
@@ -128,17 +132,50 @@
             <button class="filter-pill active" onclick="filterCategory('all', this)">All Utilities</button>
             <button class="filter-pill" onclick="filterCategory('can', this)">🇨🇦 Canada</button>
             <button class="filter-pill" onclick="filterCategory('usa', this)">🇺🇸 USA</button>
+            <button class="filter-pill" onclick="filterCategory('crypto', this)">🪙 Crypto & Markets</button>
             <button class="filter-pill" onclick="filterCategory('realestate', this)">🏠 Real Estate</button>
             <button class="filter-pill" onclick="filterCategory('security', this)">🛡️ Security</button>
             <button class="filter-pill" onclick="filterCategory('attractions', this)">🎟️ Attractions</button>
-            <button class="filter-pill" onclick="filterCategory('services', this)">💼 Digital Services</button>
+            <button class="filter-pill" onclick="filterCategory('services', this)">💼 Services</button>
         </div>
 
         <!-- Section 1: Financial & Tax Utilities -->
         <h2 class="section-title">⚙️ Interactive Calculations</h2>
         <div class="grid">
 
-            <!-- Tool 1: Purchasing Power & Inflation -->
+            <!-- Tool 1: Crypto Purchase & DCA Estimator (NEW) -->
+            <div class="card" data-region="can usa crypto">
+                <div>
+                    <h3>🪙 Crypto Asset Estimator</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Calculate recurring allocation or single asset purchase yields.</p>
+                    <div class="calc-group">
+                        <label>Investment Amount ($):</label>
+                        <input type="number" id="cryptoAmt" class="calc-input" value="500" step="50" oninput="calculateCrypto()">
+                    </div>
+                    <div class="calc-group" style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label>Asset:</label>
+                            <select id="cryptoAsset" class="calc-select" onchange="calculateCrypto()">
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Currency:</label>
+                            <select id="cryptoCurr" class="calc-select" onchange="calculateCrypto()">
+                                <option value="USD">USD</option>
+                                <option value="CAD">CAD</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="cryptoOutput">Est: ~0.00730 BTC</span>
+                    <button class="copy-btn" onclick="copyResult('cryptoOutput')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Tool 2: Purchasing Power & Inflation -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>📉 Purchasing Power & Inflation</h3>
@@ -169,7 +206,7 @@
                 </div>
             </div>
 
-            <!-- Tool 2: Mortgage & Loan Estimator -->
+            <!-- Tool 3: Mortgage & Loan Estimator -->
             <div class="card" data-region="can usa realestate">
                 <div>
                     <h3>🏡 Mortgage & Loan Estimator</h3>
@@ -199,7 +236,7 @@
                 </div>
             </div>
 
-            <!-- Tool 3: Savings Growth Yield -->
+            <!-- Tool 4: Savings Growth Yield -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>🧮 Savings Growth Yield</h3>
@@ -219,7 +256,7 @@
                 </div>
             </div>
 
-            <!-- Tool 4: Cross-Border FX Estimator -->
+            <!-- Tool 5: Cross-Border FX Estimator -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>💱 Cross-Border FX Estimator</h3>
@@ -242,7 +279,7 @@
                 </div>
             </div>
 
-            <!-- Tool 5: Regional Tax Estimator -->
+            <!-- Tool 6: Regional Tax Estimator -->
             <div class="card" data-region="can usa">
                 <div>
                     <h3>🏷️ Regional Tax Estimator</h3>
@@ -275,10 +312,10 @@
         <div class="grid">
             
             <!-- Wealthsimple (ACTIVE) -->
-            <div class="card" data-region="can">
+            <div class="card" data-region="can crypto">
                 <div>
                     <h3>Wealthsimple <span>🇨🇦</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">Commission-free stock & ETF trading, high-interest cash accounts, and automated tax filing.</p>
+                    <p style="color: var(--text-muted); font-size: 0.88rem;">Commission-free stock & ETF trading, crypto trading, high-interest cash, and tax filing.</p>
                 </div>
                 <div>
                     <span class="badge badge-live">VERIFIED PARTNER</span>
@@ -322,75 +359,23 @@
                 </div>
             </div>
 
-            <!-- ============================================================== -->
-            <!-- PRE-CODED PENDING CJ AFFILIATE CARDS (UNCOMMENT WHEN APPROVED) -->
-            <!-- ============================================================== -->
-
-            <!-- PENDING SLOT 1: Hostinger Web Hosting -->
-            <!--
-            <div class="card" data-region="can usa services">
+            <!-- PENDING SLOT: Crypto Exchange Partner -->
+            <div class="card" data-region="can usa crypto">
                 <div>
-                    <h3>Hostinger Web Hosting <span>🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">High-speed cloud & WordPress web hosting with free custom domain registration.</p>
+                    <h3>Crypto Exchange & Wallet <span>🇨🇦 🇺🇸</span></h3>
+                    <p style="color: var(--text-muted); font-size: 0.88rem;">Securely buy, trade, and store crypto assets with institutional grade security.</p>
                 </div>
                 <div>
-                    <span class="badge badge-live">VERIFIED PARTNER</span>
-                    <a href="PASTE_YOUR_HOSTINGER_CJ_LINK_HERE" target="_blank" rel="noopener" class="btn">Explore Hostinger Deals &rarr;</a>
+                    <span class="badge badge-pending">APPROVAL PENDING</span>
+                    <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
                 </div>
             </div>
-            -->
+
+            <!-- PENDING SLOT: Hostinger Web Hosting -->
             <div class="card" data-region="can usa services">
                 <div>
                     <h3>Hostinger Web Solutions <span>🇨🇦 🇺🇸</span></h3>
                     <p style="color: var(--text-muted); font-size: 0.88rem;">High-performance web hosting, domain management, and cloud infrastructure.</p>
-                </div>
-                <div>
-                    <span class="badge badge-pending">APPROVAL PENDING</span>
-                    <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
-                </div>
-            </div>
-
-            <!-- PENDING SLOT 2: Mortgage & Refinance Hub -->
-            <!--
-            <div class="card" data-region="can usa realestate">
-                <div>
-                    <h3>Mortgage & Refinance Hub <span>🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">Compare competitive fixed & variable mortgage rates across top direct lenders.</p>
-                </div>
-                <div>
-                    <span class="badge badge-live">VERIFIED PARTNER</span>
-                    <a href="PASTE_YOUR_MORTGAGE_CJ_LINK_HERE" target="_blank" rel="noopener" class="btn">Compare Mortgage Rates &rarr;</a>
-                </div>
-            </div>
-            -->
-            <div class="card" data-region="can usa realestate">
-                <div>
-                    <h3>Mortgage & Refinance Hub <span>🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">Compare competitive fixed & variable mortgage rates across top direct lenders.</p>
-                </div>
-                <div>
-                    <span class="badge badge-pending">APPROVAL PENDING</span>
-                    <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
-                </div>
-            </div>
-
-            <!-- PENDING SLOT 3: Fiverr Digital Freelance Marketplace -->
-            <!--
-            <div class="card" data-region="can usa services">
-                <div>
-                    <h3>Fiverr Freelance Marketplace <span>🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">Hire top-rated freelancers for logo design, SEO, web development, and digital marketing.</p>
-                </div>
-                <div>
-                    <span class="badge badge-live">VERIFIED PARTNER</span>
-                    <a href="PASTE_YOUR_FIVERR_CJ_LINK_HERE" target="_blank" rel="noopener" class="btn">Explore Fiverr Services &rarr;</a>
-                </div>
-            </div>
-            -->
-            <div class="card" data-region="can usa services">
-                <div>
-                    <h3>Fiverr Freelance Services <span>🇨🇦 🇺🇸</span></h3>
-                    <p style="color: var(--text-muted); font-size: 0.88rem;">Hire expert digital talent for design, coding, content, and branding projects.</p>
                 </div>
                 <div>
                     <span class="badge badge-pending">APPROVAL PENDING</span>
@@ -408,13 +393,16 @@
 
     <script>
         let liveFxRate = 1.38;
+        let btcUsdPrice = 68500;
 
         document.addEventListener("DOMContentLoaded", function() {
+            calculateCrypto();
             calculateInflation();
             calculateMortgage();
             calculateSavings();
             calculateTax();
             fetchLiveFx();
+            fetchCryptoPrice();
         });
 
         function toggleTheme() {
@@ -432,10 +420,33 @@
                     liveFxRate = data.rates.CAD;
                     document.getElementById('tickerFx').textContent = `${liveFxRate.toFixed(4)} CAD`;
                     convertCurrency();
+                    calculateCrypto();
                 }
-            } catch(e) {
-                convertCurrency();
-            }
+            } catch(e) { convertCurrency(); }
+        }
+
+        async function fetchCryptoPrice() {
+            try {
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                const data = await res.json();
+                if(data && data.bitcoin && data.bitcoin.usd) {
+                    btcUsdPrice = data.bitcoin.usd;
+                    document.getElementById('tickerBtc').textContent = `$${btcUsdPrice.toLocaleString()}`;
+                    calculateCrypto();
+                }
+            } catch(e) {}
+        }
+
+        function calculateCrypto() {
+            const amt = parseFloat(document.getElementById('cryptoAmt').value) || 0;
+            const asset = document.getElementById('cryptoAsset').value;
+            const curr = document.getElementById('cryptoCurr').value;
+
+            let price = asset === 'BTC' ? btcUsdPrice : (btcUsdPrice / 19); // Approximate ETH price ratio
+            if (curr === 'CAD') { price = price * liveFxRate; }
+
+            const units = amt / price;
+            document.getElementById('cryptoOutput').textContent = `Est: ~${units.toFixed(5)} ${asset}`;
         }
 
         function calculateInflation() {
