@@ -7,14 +7,17 @@
     <!-- Impact.com Site Verification -->
     <meta name='impact-site-verification' value='4c6753a9-629f-4a31-8692-9dfd8e5cf059'>
 
+    <!-- Bing / Microsoft Webmaster Verification -->
+    <meta name="msvalidate.01" content="B0116E98CB0D9B335C85C51ABFF08127" />
+
     <!-- Embedded High-Res SVG Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230b0f19'/><text x='50%' y='65%' font-size='60' font-weight='bold' fill='%2338bdf8' text-anchor='middle' font-family='sans-serif'>R</text></svg>">
 
     <!-- Primary Search Engine Meta Tags -->
     <title>RaelInfo | North American Financial, Crypto & Digital Utilities</title>
     <meta name="title" content="RaelInfo | North American Financial, Crypto & Digital Utilities">
-    <meta name="description" content="Free cross-border financial tools, live USD/CAD exchange rates, crypto DCA estimators, inflation calculators, regional sales tax estimators, and verified North American portals.">
-    <meta name="keywords" content="financial calculators, crypto calculator, bitcoin estimator, USD CAD exchange rate, mortgage estimator, inflation calculator, Canada sales tax, Wealthsimple, NordVPN, Carla car rental, Undercover Tourist">
+    <meta name="description" content="Free cross-border financial tools, compound interest calculators, live USD/CAD exchange rates, crypto DCA estimators, inflation calculators, regional sales tax estimators, and verified North American portals.">
+    <meta name="keywords" content="financial calculators, compound interest calculator, crypto calculator, bitcoin estimator, USD CAD exchange rate, mortgage estimator, inflation calculator, Canada sales tax, Wealthsimple, NordVPN, Carla car rental, Undercover Tourist">
     <meta name="author" content="RaelInfo">
     <link rel="canonical" href="https://raelinfo.com">
 
@@ -361,6 +364,38 @@
                 </div>
             </div>
 
+            <!-- Tool 7: Compounding Interest Calculator -->
+            <div class="card" data-region="can usa" data-title="compounding interest calculator growth wealth investment">
+                <div>
+                    <h3>📈 Compounding Interest Engine</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">Project long-term compound growth with annual interest.</p>
+                    <div class="calc-group">
+                        <label>Initial Principal ($):</label>
+                        <input type="number" id="cmpPrinc" class="calc-input" value="2000" step="250" oninput="calculateCompound()">
+                    </div>
+                    <div class="calc-group" style="display: flex; gap: 0.5rem;">
+                        <div style="flex: 1;">
+                            <label>Annual Return (%):</label>
+                            <input type="number" id="cmpRate" class="calc-input" value="7.0" step="0.5" oninput="calculateCompound()">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Time Horizon:</label>
+                            <select id="cmpYears" class="calc-select" onchange="calculateCompound()">
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                                <option value="15">15 Years</option>
+                                <option value="20">20 Years</option>
+                                <option value="30">30 Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="calc-result-box">
+                    <span class="calc-result-text" id="cmpOutput">Future Value: $2,805.10</span>
+                    <button class="copy-btn" onclick="copyResult('cmpOutput')">Copy</button>
+                </div>
+            </div>
+
         </div>
 
         <!-- Section 2: Verified Partner Recommendations -->
@@ -459,6 +494,7 @@
             calculateMortgage();
             calculateSavings();
             calculateTax();
+            calculateCompound();
             fetchLiveFx();
             fetchCryptoPrice();
         });
@@ -559,6 +595,20 @@
             const rate = parseFloat(document.getElementById('apy').value) || 0;
             const yieldAmt = dep * (rate / 100);
             document.getElementById('savingsOutput').textContent = `1-Year Yield: $${yieldAmt.toFixed(2)}`;
+        }
+
+        function calculateCompound() {
+            const p = parseFloat(document.getElementById('cmpPrinc').value) || 0;
+            const r = parseFloat(document.getElementById('cmpRate').value) || 0;
+            const t = parseInt(document.getElementById('cmpYears').value) || 5;
+
+            if (p <= 0 || r <= 0) {
+                document.getElementById('cmpOutput').textContent = 'Future Value: $0.00';
+                return;
+            }
+
+            const fv = p * Math.pow(1 + (r / 100), t);
+            document.getElementById('cmpOutput').textContent = `Future Value: $${fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
         }
 
         function convertCurrency() {
