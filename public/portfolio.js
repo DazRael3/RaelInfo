@@ -14,7 +14,7 @@ async function api(url, options = {}) {
   return body;
 }
 
-export function setPortfolioAuth(isAuthenticated, token) {
+export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled = false) {
   authenticated = Boolean(isAuthenticated);
   csrfToken = token || null;
   const form = $('portfolioForm');
@@ -24,7 +24,7 @@ export function setPortfolioAuth(isAuthenticated, token) {
   if (!form || !state) return;
   form.hidden = !authenticated;
   state.hidden = authenticated;
-  if (deleteAction) deleteAction.hidden = !authenticated;
+  if (deleteAction) deleteAction.hidden = !authenticated || !accountDeletionEnabled;
   if (!authenticated) {
     state.replaceChildren();
     const note = document.createElement('span'); note.className = 'muted'; note.textContent = 'Sign in to save and manage your portfolio positions.';

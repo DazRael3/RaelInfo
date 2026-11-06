@@ -1,6 +1,6 @@
 /* RaelInfo static-app service worker. Serve over HTTPS or localhost. */
 'use strict';
-const CACHE_NAME = 'raelinfo-node-shell-v6';
+const CACHE_NAME = 'raelinfo-cloudflare-shell-v7';
 const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/privacy.html', '/terms.html', '/icons/raelinfo.svg', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/style.css', '/app.js', '/charts.js', '/crypto.js', '/fx.js', '/news.js', '/filings.js', '/portfolio.js', '/login.html', '/404.html'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));

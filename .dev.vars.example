@@ -1,0 +1,12 @@
+# Copy to .dev.vars for local Wrangler Pages Functions development.
+# Never commit .dev.vars or put credentials in public/.
+SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SECRET_KEY=
+# Optional legacy compatibility only: SUPABASE_SERVICE_ROLE_KEY=
+APP_ORIGIN=http://localhost:8788/login.html
+STOCK_PROVIDER_ORDER=alpha,fmp,eod
+ALPHA_VANTAGE_KEY=
+FMP_KEY=
+EODHD_KEY=
+SEC_USER_AGENT=RaelInfo/3.0 contact=YOUR-MONITORED-EMAIL@example.com

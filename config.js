@@ -9,9 +9,7 @@ const asNumber = (value, fallback) => {
 export const KEYS = Object.freeze({
   alpha: process.env.ALPHA_VANTAGE_KEY || '',
   fmp: process.env.FMP_KEY || '',
-  eod: process.env.EODHD_KEY || '',
-  coingecko: process.env.COINGECKO_API_KEY || '',
-  news: process.env.NEWS_API_KEY || ''
+  eod: process.env.EODHD_KEY || ''
 });
 
 export const CONFIG = Object.freeze({

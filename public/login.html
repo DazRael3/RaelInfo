@@ -23,14 +23,14 @@
       <button id="registerTab" type="button" role="tab" aria-selected="false">Create account</button>
     </div>
     <form id="accountForm" class="login-form">
-      <label>Username<input id="username" name="username" required minlength="3" maxlength="24" pattern="[a-zA-Z0-9._-]{3,24}" autocomplete="username" placeholder="Choose a username"></label>
+      <label>Email address<input id="email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@example.com"></label>
       <label>Password<input id="password" name="password" type="password" required minlength="12" maxlength="200" autocomplete="current-password" placeholder="At least 12 characters"></label>
-      <p id="passwordHint" class="muted" style="font-size:.74rem;margin:0">Use a unique password with at least 12 characters.</p>
+      <p id="passwordHint" class="muted" style="font-size:.74rem;margin:0">Use a unique password with at least 12 characters. A confirmation email may be required before your first sign-in.</p>
       <button id="submitAccount" class="btn primary" type="submit">Sign in</button>
     </form>
     <p id="accountMessage" class="login-message" role="status" aria-live="polite"></p>
     <a class="login-back" href="/">← Back to RaelInfo calculators</a>
-    <p class="muted" style="font-size:.72rem;margin-top:18px">Accounts use the RaelInfo server's local JSON user store. Use a unique password; this is not a bank or brokerage account.</p>
+    <p class="muted" style="font-size:.72rem;margin-top:18px">Email/password sign-in is securely managed by Supabase Auth. RaelInfo portfolio positions are stored in Cloudflare D1. This is not a bank or brokerage account.</p>
   </main>
   <script type="module">
     const $ = id => document.getElementById(id);
@@ -58,10 +58,16 @@
         const response = await fetch(`/api/auth/${mode === 'login' ? 'login' : 'register'}`, {
           method: 'POST', credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ username: $('username').value.trim(), password: $('password').value })
+          body: JSON.stringify({ email: $('email').value.trim(), password: $('password').value })
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+        if (data.needsEmailConfirmation) {
+          $('accountMessage').textContent = data.message || 'Check your email for a confirmation link. Then return here and sign in.';
+          $('accountMessage').className = 'login-message success';
+          $('password').value = '';
+          return;
+        }
         $('accountMessage').textContent = 'Success. Opening your dashboard…';
         $('accountMessage').className = 'login-message success';
         location.assign('/');

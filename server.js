@@ -118,7 +118,7 @@ function requireAuth(req, res, next) {
     clearSessionCookie(res);
     return sendError(res, 401, 'Please sign in to continue.');
   }
-  const user = userStore.users[session.username];
+  const user = userStore.users[session.email];
   if (!user || user.id !== session.userId) return sendError(res, 401, 'Your session is no longer valid. Please sign in again.');
   req.user = user;
   req.session = session;
@@ -136,7 +136,7 @@ function createSession(res, user) {
   const csrfToken = crypto.randomBytes(24).toString('base64url');
   sessions.set(token, {
     userId: user.id,
-    username: user.username,
+    email: user.email,
     csrfToken,
     expiresAt: Date.now() + SESSION_TTL_MS
   });
@@ -145,7 +145,7 @@ function createSession(res, user) {
 }
 
 function publicUser(user) {
-  return { id: user.id, username: user.username, createdAt: user.createdAt };
+  return { id: user.id, email: user.email, createdAt: user.createdAt };
 }
 
 async function saveUserStore() {
@@ -422,29 +422,28 @@ app.get('/api/filings', async (req, res) => {
 
 // Authentication: password hashes use scrypt; only an opaque HttpOnly session cookie reaches the browser.
 app.post('/api/auth/register', authLimiter, checkSameOrigin, async (req, res) => {
-  const username = String(req.body?.username || '').trim().toLowerCase();
+  const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
-  if (!/^[a-z0-9._-]{3,24}$/.test(username)) return sendError(res, 400, 'Username must be 3–24 characters and use letters, numbers, dots, underscores or hyphens.');
-  if (['__proto__', 'constructor', 'prototype'].includes(username)) return sendError(res, 400, 'That username is reserved. Choose another username.');
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return sendError(res, 400, 'Enter a valid email address.');
   if (password.length < 12 || password.length > 200) return sendError(res, 400, 'Password must be at least 12 characters (maximum 200).');
-  if (userStore.users[username]) return sendError(res, 409, 'That username is already registered.');
+  if (userStore.users[email]) return sendError(res, 409, 'That email address is already registered.');
   const { salt, passwordHash } = await hashPassword(password);
   // Re-check after the async hash so simultaneous registrations cannot overwrite an account.
-  if (userStore.users[username]) return sendError(res, 409, 'That username is already registered.');
+  if (userStore.users[email]) return sendError(res, 409, 'That email address is already registered.');
   const user = {
-    id: crypto.randomUUID(), username, salt, passwordHash,
+    id: crypto.randomUUID(), email, salt, passwordHash,
     createdAt: new Date().toISOString(), portfolio: []
   };
-  userStore.users[username] = user;
+  userStore.users[email] = user;
   await saveUserStore();
   const csrfToken = createSession(res, user);
   res.status(201).json({ ok: true, user: publicUser(user), csrfToken });
 });
 
 app.post('/api/auth/login', authLimiter, checkSameOrigin, async (req, res) => {
-  const username = String(req.body?.username || '').trim().toLowerCase();
+  const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
-  const user = userStore.users[username];
+  const user = userStore.users[email];
   if (!user || !(await verifyPassword(password, user))) return sendError(res, 401, 'Username or password is incorrect.');
   const csrfToken = createSession(res, user);
   res.json({ ok: true, user: publicUser(user), csrfToken });
@@ -453,7 +452,7 @@ app.post('/api/auth/login', authLimiter, checkSameOrigin, async (req, res) => {
 app.get('/api/auth/me', (req, res) => {
   const token = getCookie(req, SESSION_COOKIE);
   const session = token ? sessions.get(token) : null;
-  const user = session && session.expiresAt > Date.now() ? userStore.users[session.username] : null;
+  const user = session && session.expiresAt > Date.now() ? userStore.users[session.email] : null;
   if (!user) {
     if (token) { sessions.delete(token); clearSessionCookie(res); }
     return res.json({ authenticated: false });
@@ -471,7 +470,7 @@ app.post('/api/auth/logout', checkSameOrigin, requireAuth, requireCsrf, (req, re
 app.post('/api/auth/delete', checkSameOrigin, requireAuth, requireCsrf, async (req, res) => {
   const password = String(req.body?.password || '');
   if (!(await verifyPassword(password, req.user))) return sendError(res, 401, 'Password confirmation did not match.');
-  delete userStore.users[req.user.username];
+  delete userStore.users[req.user.email];
   await saveUserStore();
   const token = getCookie(req, SESSION_COOKIE);
   if (token) sessions.delete(token);

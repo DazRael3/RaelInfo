@@ -54,12 +54,12 @@ async function initializeAuth() {
   if (session.authenticated) {
     authAction.hidden = true;
     logoutAction.hidden = false;
-    logoutAction.textContent = `Sign out (${session.user.username})`;
+    logoutAction.textContent = `Sign out (${session.user.email})`;
   } else {
     authAction.hidden = false;
     logoutAction.hidden = true;
   }
-  setPortfolioAuth(session.authenticated, session.csrfToken);
+  setPortfolioAuth(session.authenticated, session.csrfToken, session.accountDeletionEnabled);
   logoutAction.addEventListener('click', async () => {
     logoutAction.disabled = true;
     try {
