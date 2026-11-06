@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="description" content="Free financial calculators and cross-border money tools for the United States and Canada. Estimate mortgages, savings, debt payoff, compound growth, currency conversion and more.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://raelinfo.com/">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/raelinfo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css">
+  <meta name="color-scheme" content="dark light">
+  <title>RaelInfo | Free Financial Calculators & USD/CAD Tools</title>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebApplication",
+    "name":"RaelInfo",
+    "url":"https://raelinfo.com/",
+    "applicationCategory":"FinanceApplication",
+    "operatingSystem":"Any",
+    "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+    "description":"Free financial calculators and cross-border money tools for the United States and Canada."
+  }
+  </script>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--surface:#111c2e;--card:#152238;--card2:#1a2a43;--text:#f3f7fc;--muted:#a3b2c7;--line:rgba(210,225,245,.13);--accent:#38bdf8;--accent2:#818cf8;--good:#34d399;--bad:#fb7185;--warn:#fbbf24;--shadow:0 16px 42px rgba(0,0,0,.22);--radius:18px;--focus:0 0 0 3px rgba(56,189,248,.28)}
+    [data-theme="light"]{color-scheme:light;--bg:#f3f6fb;--surface:#fff;--card:#fff;--card2:#f6f9fd;--text:#122033;--muted:#52637a;--line:rgba(25,45,75,.14);--accent:#0369a1;--accent2:#4f46e5;--good:#047857;--bad:#be123c;--warn:#a16207;--shadow:0 12px 34px rgba(15,35,65,.08);--focus:0 0 0 3px rgba(3,105,161,.18)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button,a,input,select{ -webkit-tap-highlight-color:transparent}a{color:var(--accent)}button{cursor:pointer}.skip-link{position:absolute;left:-9999px;top:8px;background:var(--surface);padding:10px;z-index:1000}.skip-link:focus{left:8px}.wrap{width:min(1180px,calc(100% - 40px));margin:auto}
+    .construction{display:none;background:#422006;color:#ffedd5;border-bottom:1px solid #a16207;padding:10px 16px;text-align:center;font-weight:700;font-size:.9rem}.construction.show{display:block}
+    header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.nav{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text);min-width:0}.brand img{width:42px;height:42px}.brand strong{font-size:1.2rem;letter-spacing:-.03em}.brand small{display:block;color:var(--muted);font-size:.72rem;line-height:1.2}.nav-actions{display:flex;gap:8px;align-items:center}.btn,.icon-btn{border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);padding:9px 14px;font-weight:650;font-size:.86rem;min-height:42px}.btn:hover,.icon-btn:hover{border-color:var(--accent)}.btn.primary{background:var(--accent);color:#04131f;border-color:transparent}.btn.subtle{background:transparent}.icon-btn{width:42px;padding:0;display:grid;place-items:center;font-size:1.08rem}.menu-btn{display:none}
+    main{padding:34px 0 64px}.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:24px;align-items:center;margin:18px 0 28px}.eyebrow{color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.72rem}.hero h1{font-size:clamp(2rem,5vw,3.55rem);line-height:1.04;letter-spacing:-.055em;margin:10px 0 14px;max-width:760px}.hero p{max-width:680px;color:var(--muted);margin:0 0 20px;font-size:1.06rem}.hero-actions{display:flex;flex-wrap:wrap;gap:10px}.mobile-quick-actions{display:none}.trust-note{border:1px solid var(--line);background:linear-gradient(145deg,var(--surface),var(--card));padding:20px;border-radius:var(--radius);box-shadow:var(--shadow)}.trust-note strong{display:block;font-size:1.03rem;margin-bottom:6px}.trust-note p{font-size:.88rem;margin:0;color:var(--muted)}.trust-points{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;color:var(--muted);font-size:.76rem}
+    .market-panel{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:16px;margin:26px 0 32px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}.panel-head h2,.section-head h2{margin:0;font-size:1.18rem;letter-spacing:-.02em}.status{font-size:.78rem;color:var(--muted);display:flex;gap:7px;align-items:center}.dot{height:8px;width:8px;border-radius:50%;background:var(--warn);display:inline-block}.dot.ok{background:var(--good)}.dot.error{background:var(--bad)}.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.market-card{background:var(--card);border:1px solid var(--line);padding:14px;border-radius:13px;min-width:0}.market-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:.82rem}.coin-symbol{font-weight:800;color:var(--text)}.market-price{font-size:clamp(1.1rem,2.4vw,1.6rem);font-weight:800;letter-spacing:-.04em;margin:8px 0 2px;overflow-wrap:anywhere}.change{font-size:.78rem;font-weight:700}.positive{color:var(--good)}.negative{color:var(--bad)}.market-meta{margin-top:12px;color:var(--muted);font-size:.74rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.source-note{font-size:.74rem;color:var(--muted);margin:12px 0 0}.market-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:32px 0 18px}.searchbox{position:relative;flex:1;min-width:min(100%,260px);max-width:390px}.searchbox input{width:100%;padding:12px 14px 12px 42px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--text);min-height:46px}.searchbox span{position:absolute;left:15px;top:10px;color:var(--muted)}.filters{display:flex;gap:7px;overflow:auto;padding:2px 0;scrollbar-width:thin}.filter{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);padding:8px 13px;font-size:.8rem;font-weight:700;min-height:38px}.filter[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#04131f}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:30px 0 14px}.section-head p{margin:4px 0 0;color:var(--muted);font-size:.86rem}.tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.tool-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;min-width:0;box-shadow:var(--shadow);scroll-margin-top:100px}.tool-card[hidden]{display:none}.tool-card h3{margin:0;font-size:1.05rem;letter-spacing:-.02em}.card-desc{margin:5px 0 16px;color:var(--muted);font-size:.84rem;min-height:2.5em}.card-icon{font-size:1.3rem;margin-bottom:8px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{min-width:0}.field.full{grid-column:1/-1}.field label{display:block;font-size:.76rem;color:var(--muted);font-weight:700;margin:0 0 5px}.field input,.field select,.field textarea{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);padding:11px 12px;min-height:46px;font-size:16px}.field input:focus,.field select:focus,.field textarea:focus,.searchbox input:focus{outline:none;box-shadow:var(--focus);border-color:var(--accent)}.helper{font-size:.72rem;color:var(--muted);margin-top:5px}.result{margin-top:15px;padding:12px 13px;border:1px solid color-mix(in srgb,var(--good) 35%,var(--line));background:color-mix(in srgb,var(--good) 8%,var(--card));border-radius:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}.result small{display:block;font-size:.72rem;color:var(--muted)}.result strong{font-size:1.15rem;color:var(--good);letter-spacing:-.02em;overflow-wrap:anywhere}.result .copy{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.75rem;padding:8px}.inline-note{font-size:.75rem;color:var(--muted);margin-top:10px}.card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.text-btn{border:0;background:none;color:var(--accent);font-weight:700;padding:7px 0;font-size:.8rem}.details{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.details summary{cursor:pointer;color:var(--accent);font-size:.82rem;font-weight:700}.table-wrap{overflow:auto;max-width:100%;margin-top:8px}.mini-table{border-collapse:collapse;width:100%;font-size:.74rem;white-space:nowrap}.mini-table th,.mini-table td{padding:7px;border-bottom:1px solid var(--line);text-align:right}.mini-table th:first-child,.mini-table td:first-child{text-align:left}
+    .partner-slot{border:1px dashed var(--line);border-radius:var(--radius);padding:16px;color:var(--muted);font-size:.84rem;margin:24px 0}.partner-slot strong{color:var(--text)}.card-partner{margin-top:13px;padding:12px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:11px;background:color-mix(in srgb,var(--accent) 6%,var(--card));font-size:.8rem}.card-partner[hidden]{display:none}.card-partner strong{display:block;color:var(--text);margin-bottom:4px}.card-partner p{margin:3px 0 7px;color:var(--muted)}.card-partner a{font-weight:750}.card-partner small{display:block;color:var(--muted);margin-top:6px;font-size:.68rem}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:15px}.info-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px}.info-card h3{margin:0 0 8px}.info-card p,.info-card li{color:var(--muted);font-size:.86rem}.info-card ul{padding-left:20px;margin-bottom:0}.disclosure{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);font-size:.8rem;margin-top:35px}.footer{padding:18px 0 40px;color:var(--muted);font-size:.78rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}.footer a{color:var(--muted)}.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);padding:10px 15px;border-radius:999px;font-size:.84rem;font-weight:700;z-index:100;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.empty{display:none;border:1px dashed var(--line);padding:20px;text-align:center;color:var(--muted);border-radius:12px}.empty.show{display:block}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:920px){.tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{grid-template-columns:1fr .7fr}.wrap{width:min(100% - 32px,1180px)}}
+    @media(max-width:680px){.wrap{width:calc(100% - 28px)}.nav{min-height:64px}.brand img{width:38px;height:38px}.brand small{display:none}.nav-actions .desktop-action{display:none}.menu-btn{display:grid}.nav-actions{gap:6px}main{padding-top:22px}.hero{display:block;margin-top:12px}.mobile-quick-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.mobile-quick-actions .btn{font-size:.78rem;padding:7px 10px;min-height:38px}.hero h1{font-size:2.25rem}.hero p{font-size:.96rem}.trust-note{margin-top:18px}.market-panel{padding:12px;margin:20px 0 26px}.market-grid{grid-template-columns:1fr;gap:8px}.market-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;padding:11px 12px}.market-top{grid-column:1;grid-row:1}.market-price{grid-column:1;grid-row:2;margin:3px 0 0;font-size:1.25rem}.change{grid-column:2;grid-row:1/3;text-align:right}.market-meta{grid-column:1/-1;margin-top:5px}.market-foot{align-items:flex-start}.toolbar{align-items:stretch;margin:23px 0 14px}.searchbox{max-width:none}.filters{width:100%;padding-bottom:6px}.tool-grid{grid-template-columns:minmax(0,1fr);gap:12px}.tool-card{padding:16px}.card-desc{min-height:0}.section-head{margin-top:25px}.two-col{grid-template-columns:1fr}.footer{display:block}.footer>*{margin:8px 0}}
+    @media(max-width:360px){.wrap{width:calc(100% - 22px)}.brand strong{font-size:1.05rem}.hero h1{font-size:1.95rem}.btn{padding:8px 11px}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.panel-head{align-items:flex-start;flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    @media print{body{background:#fff!important;color:#111!important}.wrap{width:100%}header,.hero-actions,.toolbar,.filters,.searchbox,.card-actions,.copy,.partner-slot,.footer,.market-panel .panel-head button,.toast,.construction{display:none!important}main{padding:0}.tool-grid{display:block}.tool-card,.info-card,.market-panel{break-inside:avoid;box-shadow:none;border:1px solid #ccc;background:#fff;color:#111;margin:10px 0}.tool-card[hidden]{display:none!important}.field input,.field select{border:1px solid #aaa;background:#fff;color:#111}.result{background:#f1f5f9!important}.result strong{color:#065f46}.section-head{color:#111}.card-desc,.field label,.inline-note,.source-note,.info-card p,.info-card li{color:#444}.disclosure{color:#333}a{color:#111}}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="constructionBanner" class="construction" role="status">RaelInfo is under construction. Some features may change while improvements are being made.</div>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="RaelInfo home"><img src="/icons/raelinfo.svg" alt=""><span><strong>RaelInfo</strong><small>Practical money tools for North America</small></span></a>
+      <div class="nav-actions">
+        <a class="btn subtle desktop-action" id="authAction" href="/login.html">Sign in</a>
+        <button class="btn subtle desktop-action" id="logoutAction" type="button" hidden>Sign out</button>
+        <button class="btn subtle desktop-action" id="saveBtn" type="button">Save scenario</button>
+        <button class="btn subtle desktop-action" id="exportBtn" type="button">Export backup</button>
+        <button class="btn subtle desktop-action" id="printBtn" type="button">Print / PDF</button>
+        <button class="btn" id="currencyBtn" type="button" aria-label="Change display currency">USD ▾</button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch color theme" title="Switch theme">☀</button>
+        <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Go to calculators" title="Calculators">☰</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+    </div>
+  </header>
+  <main id="main" class="wrap">
+    <section class="hero" id="top">
+      <div>
+        <div class="eyebrow">Free tools · Clear assumptions · No account required</div>
+        <h1>Make your next money decision with more clarity.</h1>
+        <p>Explore practical calculators for borrowing, saving, investing and managing money across the United States and Canada. Your calculations stay in this browser unless you choose to export them.</p>
+        <div class="hero-actions"><a class="btn primary" href="#calculators">Explore calculators ↓</a><button class="btn" id="importBtn" type="button">Import saved scenario</button></div>
+        <div class="mobile-quick-actions" aria-label="Scenario actions"><button class="btn" id="saveBtnMobile" type="button">Save</button><button class="btn" id="exportBtnMobile" type="button">Export</button><button class="btn" id="printBtnMobile" type="button">Print / PDF</button></div>
+        <div class="trust-points"><span class="chip">✓ No account needed for calculators</span><span class="chip">✓ Browser-based calculations</span><span class="chip">✓ Free to use</span></div>
+      </div>
+      <aside class="trust-note"><strong>Built for practical planning</strong><p>Use estimates to compare scenarios—not as a quote, tax determination, investment recommendation or guarantee. Each tool explains the assumptions behind its result.</p></aside>
+    </section>
+
+    <section class="market-panel" aria-labelledby="marketHeading">
+      <div class="panel-head"><div><h2 id="marketHeading">Crypto market snapshot</h2><div class="status" id="cryptoStatus" aria-live="polite"><span class="dot"></span> Connecting to CoinLore…</div></div><button class="btn" id="refreshCrypto" type="button">Refresh prices</button></div>
+      <div class="market-grid">
+        <article class="market-card" aria-label="Bitcoin price"><div class="market-top"><span class="coin-symbol">₿ Bitcoin</span><span>BTC</span></div><div class="market-price" id="btcPrice">—</div><div class="change" id="btcChange">Waiting for market data</div><div class="market-meta"><span id="btcRank">Rank —</span><span id="btcMarketCap">Market cap —</span></div></article>
+        <article class="market-card" aria-label="Ethereum price"><div class="market-top"><span class="coin-symbol">◆ Ethereum</span><span>ETH</span></div><div class="market-price" id="ethPrice">—</div><div class="change" id="ethChange">Waiting for market data</div><div class="market-meta"><span id="ethRank">Rank —</span><span id="ethMarketCap">Market cap —</span></div></article>
+        <article class="market-card" aria-label="Solana price"><div class="market-top"><span class="coin-symbol">◎ Solana</span><span>SOL</span></div><div class="market-price" id="solPrice">—</div><div class="change" id="solChange">Waiting for market data</div><div class="market-meta"><span id="solRank">Rank —</span><span id="solMarketCap">Market cap —</span></div></article>
+      </div>
+      <div class="market-foot"><span class="source-note">Source: CoinLore aggregated market data. Prices are indicative, not executable quotes.</span><span class="source-note" id="cryptoUpdated">Not yet updated</span></div>
+    </section>
+
+    <section class="backend-section" id="market-intelligence" aria-labelledby="backendHeading">
+      <div class="section-head"><div><h2 id="backendHeading">Market intelligence & your portfolio</h2><p>Optional account tools, server-side market lookups, recent business news and public SEC filings.</p></div><span class="backend-indicator" id="backendIndicator">Connecting to RaelInfo services…</span></div>
+      <div class="backend-grid">
+        <article class="backend-card" aria-labelledby="stockHeading">
+          <div class="backend-card-head"><span class="backend-icon" aria-hidden="true">↗</span><div><h3 id="stockHeading">Stock quote lookup</h3><p>Uses a configured stock provider. Quote availability and freshness depend on its plan.</p></div></div>
+          <form id="stockForm" class="backend-form">
+            <label for="stockSymbol">Ticker symbol</label>
+            <div class="backend-inline"><input id="stockSymbol" name="symbol" maxlength="15" value="AAPL" placeholder="AAPL, MSFT, TSLA" autocomplete="off"><button class="btn primary" type="submit">Get quote</button></div>
+          </form>
+          <div class="backend-output" id="stockOutput" aria-live="polite">Enter a symbol to request a quote.</div>
+        </article>
+
+        <article class="backend-card" aria-labelledby="newsHeading">
+          <div class="backend-card-head"><span class="backend-icon" aria-hidden="true">▤</span><div><h3 id="newsHeading">Business & market news</h3><p>Recent public articles indexed by GDELT. Links open at their original publishers.</p></div></div>
+          <form id="newsForm" class="backend-form">
+            <label for="newsQuery">Search topic</label>
+            <div class="backend-inline"><input id="newsQuery" maxlength="120" value="stock market OR economy" placeholder="Markets, inflation, company name"><button class="btn primary" type="submit">Search</button></div>
+          </form>
+          <div class="backend-list" id="newsOutput" aria-live="polite"><p class="muted">Loading headlines…</p></div>
+          <p class="backend-footnote">News results are third-party reporting, not investment research or an endorsement.</p>
+        </article>
+
+        <article class="backend-card" aria-labelledby="filingsHeading">
+          <div class="backend-card-head"><span class="backend-icon" aria-hidden="true">▣</span><div><h3 id="filingsHeading">SEC company filings</h3><p>Find recent EDGAR submissions with a company CIK.</p></div></div>
+          <form id="filingsForm" class="backend-form">
+            <label for="filingCik">SEC CIK number</label>
+            <div class="backend-inline"><input id="filingCik" inputmode="numeric" maxlength="10" value="320193" placeholder="320193 (Apple)"><button class="btn primary" type="submit">Load filings</button></div>
+          </form>
+          <div class="backend-list" id="filingsOutput" aria-live="polite"><p class="muted">SEC data requires a real contact email in the server's SEC_USER_AGENT setting.</p></div>
+          <p class="backend-footnote">Source: SEC EDGAR. Access is rate-limited and subject to SEC fair-access guidance.</p>
+        </article>
+
+        <article class="backend-card portfolio-card" aria-labelledby="portfolioHeading">
+          <div class="backend-card-head"><span class="backend-icon" aria-hidden="true">◫</span><div><h3 id="portfolioHeading">Private portfolio tracker</h3><p>Save positions to your RaelInfo account. Passwords are hashed on the server.</p></div></div>
+          <div class="account-state" id="accountState"><span class="muted">Sign in to save and manage portfolio positions across sessions.</span><a class="text-btn" href="/login.html">Sign in or create an account →</a></div>
+          <form id="portfolioForm" class="backend-form" hidden>
+            <div class="fields">
+              <div class="field"><label for="portfolioSymbol">Ticker</label><input id="portfolioSymbol" maxlength="15" required placeholder="AAPL"></div>
+              <div class="field"><label for="portfolioShares">Shares / units</label><input id="portfolioShares" type="number" min="0.00000001" step="any" required placeholder="10"></div>
+              <div class="field"><label for="portfolioCost">Average cost per share</label><input id="portfolioCost" type="number" min="0" step="any" required placeholder="185.00"></div>
+              <div class="field"><label for="portfolioCurrency">Cost currency</label><select id="portfolioCurrency"><option>USD</option><option>CAD</option></select></div>
+            </div>
+            <button class="btn primary" type="submit">Add position</button>
+          </form>
+          <div class="portfolio-account-actions"><button class="text-btn" id="deleteAccountAction" type="button" hidden>Delete account and portfolio</button></div>
+          <div class="portfolio-visual" id="portfolioVisual" hidden><canvas id="portfolioChart" width="600" height="240" aria-label="Portfolio allocation by cost basis"></canvas></div>
+          <div class="backend-list" id="portfolioOutput" aria-live="polite"></div>
+          <p class="backend-footnote">Portfolio data is stored in the server's local JSON user database. It is not a brokerage account, quote service or encrypted financial vault.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="calculators">
+      <div class="section-head"><div><h2>Financial calculators</h2><p>Start with a popular tool or search the full library.</p></div></div>
+      <div class="toolbar">
+        <label class="searchbox"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search calculators…" autocomplete="off" aria-label="Search calculators"></label>
+        <div class="filters" role="group" aria-label="Filter calculators">
+          <button class="filter" data-filter="all" aria-pressed="true">All tools</button><button class="filter" data-filter="housing" aria-pressed="false">Housing</button><button class="filter" data-filter="saving" aria-pressed="false">Saving & investing</button><button class="filter" data-filter="debt" aria-pressed="false">Debt</button><button class="filter" data-filter="crossborder" aria-pressed="false">Cross-border</button><button class="filter" data-filter="planning" aria-pressed="false">Planning</button>
+        </div>
+      </div>
+      <div class="tool-grid" id="toolGrid">
+        <article class="tool-card" data-category="housing" data-keywords="mortgage home loan monthly payment amortization property tax insurance">
+          <div class="card-icon" aria-hidden="true">⌂</div><h3>Mortgage payment estimator</h3><p class="card-desc">Estimate principal and interest, plus optional property tax, insurance and HOA costs.</p>
+          <div class="fields">
+            <div class="field"><label for="mortgageAmount">Loan amount (<span class="currency-label">USD</span>)</label><input class="money-input" id="mortgageAmount" type="number" min="0" step="1000" value="350000"></div>
+            <div class="field"><label for="mortgageRate">Annual interest rate (%)</label><input id="mortgageRate" type="number" min="0" max="100" step="0.01" value="6.5"></div>
+            <div class="field"><label for="mortgageYears">Loan term (years)</label><select id="mortgageYears"><option>15</option><option selected>30</option><option>25</option><option>20</option><option>10</option></select></div>
+            <div class="field"><label for="mortgageTax">Annual property tax (<span class="currency-label">USD</span>)</label><input class="money-input" id="mortgageTax" type="number" min="0" step="100" value="3600"></div>
+            <div class="field"><label for="mortgageInsurance">Annual home insurance (<span class="currency-label">USD</span>)</label><input class="money-input" id="mortgageInsurance" type="number" min="0" step="50" value="1500"></div>
+            <div class="field"><label for="mortgageHoa">Monthly HOA / fees (<span class="currency-label">USD</span>)</label><input class="money-input" id="mortgageHoa" type="number" min="0" step="25" value="0"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Estimated total monthly housing cost</small><strong id="mortgageResult">—</strong></div><button class="copy" data-copy="mortgageResult">Copy</button></div>
+          <p class="inline-note" id="mortgageBreakdown">Principal and interest: —</p>
+          <details class="details"><summary>View first five years of amortization</summary><div class="table-wrap" id="mortgageSchedule"></div></details>
+        </article>
+
+        <article class="tool-card" data-category="saving" data-keywords="compound interest investment growth monthly contributions future value">
+          <div class="card-icon" aria-hidden="true">↗</div><h3>Compound growth calculator</h3><p class="card-desc">Model an initial balance, recurring contributions and an assumed annual return.</p>
+          <div class="fields">
+            <div class="field"><label for="compoundStart">Starting balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="compoundStart" type="number" min="0" step="100" value="5000"></div>
+            <div class="field"><label for="compoundMonthly">Monthly contribution (<span class="currency-label">USD</span>)</label><input class="money-input" id="compoundMonthly" type="number" min="0" step="25" value="200"></div>
+            <div class="field"><label for="compoundRate">Annual return (%)</label><input id="compoundRate" type="number" min="-99" max="100" step="0.1" value="6"></div>
+            <div class="field"><label for="compoundYears">Years</label><select id="compoundYears"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>40</option></select></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Projected ending balance</small><strong id="compoundResult">—</strong></div><button class="copy" data-copy="compoundResult">Copy</button></div>
+          <p class="inline-note" id="compoundBreakdown">Contributions and estimated growth: —</p>
+        </article>
+
+        <article class="tool-card" data-category="debt" data-keywords="debt credit card payoff payment interest months calculator">
+          <div class="card-icon" aria-hidden="true">▤</div><h3>Debt payoff planner</h3><p class="card-desc">Estimate payoff time for up to three debts using snowball or avalanche prioritization.</p>
+          <div class="fields">
+            <div class="field"><label for="debt1">Debt 1 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt1" type="number" min="0" step="100" value="6000"></div>
+            <div class="field"><label for="apr1">Debt 1 APR (%)</label><input id="apr1" type="number" min="0" max="1000" step="0.1" value="24"></div>
+            <div class="field"><label for="debt2">Debt 2 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt2" type="number" min="0" step="100" value="4000"></div>
+            <div class="field"><label for="apr2">Debt 2 APR (%)</label><input id="apr2" type="number" min="0" max="1000" step="0.1" value="18"></div>
+            <div class="field"><label for="debt3">Debt 3 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt3" type="number" min="0" step="100" value="2000"></div>
+            <div class="field"><label for="apr3">Debt 3 APR (%)</label><input id="apr3" type="number" min="0" max="1000" step="0.1" value="12"></div>
+            <div class="field"><label for="debtBudget">Total monthly budget (<span class="currency-label">USD</span>)</label><input class="money-input" id="debtBudget" type="number" min="0" step="25" value="500"></div>
+            <div class="field"><label for="debtMethod">Payoff priority</label><select id="debtMethod"><option value="avalanche">Avalanche (highest APR)</option><option value="snowball">Snowball (smallest balance)</option></select></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Estimated payoff time</small><strong id="debtResult">—</strong></div><button class="copy" data-copy="debtResult">Copy</button></div>
+          <p class="inline-note" id="debtBreakdown">Estimated interest and payoff order: —</p>
+        </article>
+
+        <article class="tool-card" data-category="saving" data-keywords="savings APY interest deposit yield savings account">
+          <div class="card-icon" aria-hidden="true">$</div><h3>Savings yield estimator</h3><p class="card-desc">Estimate interest earned with monthly compounding and optional recurring deposits.</p>
+          <div class="fields">
+            <div class="field"><label for="savingsStart">Starting deposit (<span class="currency-label">USD</span>)</label><input class="money-input" id="savingsStart" type="number" min="0" step="100" value="5000"></div>
+            <div class="field"><label for="savingsMonthly">Monthly deposit (<span class="currency-label">USD</span>)</label><input class="money-input" id="savingsMonthly" type="number" min="0" step="25" value="100"></div>
+            <div class="field"><label for="savingsApy">APY (%)</label><input id="savingsApy" type="number" min="0" max="100" step="0.01" value="4"></div>
+            <div class="field"><label for="savingsYears">Years</label><select id="savingsYears"><option>1</option><option selected>3</option><option>5</option><option>10</option><option>15</option></select></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Estimated ending balance</small><strong id="savingsResult">—</strong></div><button class="copy" data-copy="savingsResult">Copy</button></div>
+          <p class="inline-note" id="savingsBreakdown">Estimated interest earned: —</p>
+        </article>
+
+        <article class="tool-card" data-category="crossborder" data-keywords="currency exchange usd cad converter conversion rate">
+          <div class="card-icon" aria-hidden="true">⇄</div><h3>USD / CAD converter</h3><p class="card-desc">Convert using the latest available daily reference rate. This is not a bank or cash-transfer quote.</p>
+          <div class="fields">
+            <div class="field"><label for="fxAmount">Amount</label><input id="fxAmount" type="number" min="0" step="0.01" value="100"></div>
+            <div class="field"><label for="fxDirection">Convert</label><select id="fxDirection"><option value="USD-CAD">USD → CAD</option><option value="CAD-USD">CAD → USD</option></select></div>
+            <div class="field full"><label for="manualFxRate">Manual USD/CAD rate override (optional)</label><input id="manualFxRate" type="number" min="0.00001" step="0.00001" placeholder="Leave blank to use daily reference rate"><div class="helper">Use this when you have a rate from your bank or provider. It overrides the public reference rate in the converter and currency toggle.</div></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Converted amount</small><strong id="fxResult">Loading rate…</strong></div><button class="copy" data-copy="fxResult">Copy</button></div>
+          <p class="inline-note" id="fxRateNote">Rate source: Frankfurter daily reference rates.</p>
+        </article>
+
+        <article class="tool-card" data-category="crossborder" data-keywords="crypto bitcoin ethereum solana calculator estimator price holdings">
+          <div class="card-icon" aria-hidden="true">₿</div><h3>Crypto quantity estimator</h3><p class="card-desc">Estimate the quantity represented by a purchase amount using the latest displayed CoinLore price.</p>
+          <div class="fields">
+            <div class="field"><label for="cryptoAmount">Purchase amount (<span class="currency-label">USD</span>)</label><input class="money-input" id="cryptoAmount" type="number" min="0" step="25" value="500"></div>
+            <div class="field"><label for="cryptoAsset">Asset</label><select id="cryptoAsset"><option value="BTC">Bitcoin (BTC)</option><option value="ETH">Ethereum (ETH)</option><option value="SOL">Solana (SOL)</option></select></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Estimated quantity</small><strong id="cryptoEstimate">Waiting for price…</strong></div><button class="copy" data-copy="cryptoEstimate">Copy</button></div>
+          <p class="inline-note" id="cryptoEstimateNote">Excludes exchange fees, spreads and network costs.</p>
+        </article>
+
+        <article class="tool-card" data-category="planning" data-keywords="inflation purchasing power future money cost">
+          <div class="card-icon" aria-hidden="true">◌</div><h3>Inflation impact calculator</h3><p class="card-desc">Estimate what today's money could buy after inflation over time.</p>
+          <div class="fields">
+            <div class="field"><label for="inflationAmount">Current amount (<span class="currency-label">USD</span>)</label><input class="money-input" id="inflationAmount" type="number" min="0" step="100" value="10000"></div>
+            <div class="field"><label for="inflationRate">Assumed annual inflation (%)</label><input id="inflationRate" type="number" min="0" max="100" step="0.1" value="3"></div>
+            <div class="field full"><label for="inflationYears">Years</label><select id="inflationYears"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>30</option></select></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Future purchasing power (today's money)</small><strong id="inflationResult">—</strong></div><button class="copy" data-copy="inflationResult">Copy</button></div>
+        </article>
+
+        <article class="tool-card" data-category="planning" data-keywords="retirement nest egg withdrawal income 4 percent rule">
+          <div class="card-icon" aria-hidden="true">◎</div><h3>Retirement target estimator</h3><p class="card-desc">Estimate a portfolio target from desired annual withdrawals and an assumed withdrawal rate.</p>
+          <div class="fields">
+            <div class="field"><label for="retirementIncome">Annual income goal (<span class="currency-label">USD</span>)</label><input class="money-input" id="retirementIncome" type="number" min="0" step="1000" value="60000"></div>
+            <div class="field"><label for="withdrawalRate">Withdrawal rate (%)</label><input id="withdrawalRate" type="number" min="0.1" max="20" step="0.1" value="4"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Illustrative portfolio target</small><strong id="retirementResult">—</strong></div><button class="copy" data-copy="retirementResult">Copy</button></div>
+          <p class="inline-note">A withdrawal-rate rule of thumb is not a guarantee of sustainable income; taxes, fees, inflation and sequence risk matter.</p>
+        </article>
+
+        <article class="tool-card" data-category="planning" data-keywords="net worth assets liabilities personal balance sheet">
+          <div class="card-icon" aria-hidden="true">▣</div><h3>Net worth snapshot</h3><p class="card-desc">Calculate assets minus liabilities using amounts you enter. Values are not inferred from other calculators.</p>
+          <div class="fields">
+            <div class="field"><label for="nwCash">Cash and savings (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwCash" type="number" min="0" step="100" value="0"></div>
+            <div class="field"><label for="nwInvestments">Investments (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwInvestments" type="number" min="0" step="100" value="0"></div>
+            <div class="field"><label for="nwProperty">Property value (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwProperty" type="number" min="0" step="1000" value="0"></div>
+            <div class="field"><label for="nwOtherAssets">Other assets (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwOtherAssets" type="number" min="0" step="100" value="0"></div>
+            <div class="field"><label for="nwMortgage">Mortgage balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwMortgage" type="number" min="0" step="1000" value="0"></div>
+            <div class="field"><label for="nwOtherDebt">Other debts (<span class="currency-label">USD</span>)</label><input class="money-input" id="nwOtherDebt" type="number" min="0" step="100" value="0"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Estimated net worth</small><strong id="netWorthResult">—</strong></div><button class="copy" data-copy="netWorthResult">Copy</button></div>
+          <p class="inline-note" id="netWorthBreakdown">Assets: — · Liabilities: —</p>
+        </article>
+
+        <article class="tool-card" data-category="housing" data-keywords="rent versus buy housing home rent ownership costs">
+          <div class="card-icon" aria-hidden="true">⌂</div><h3>Rent versus buy snapshot</h3><p class="card-desc">Compare a monthly rent with estimated monthly ownership costs. This is a cash-flow comparison, not a full investment model.</p>
+          <div class="fields">
+            <div class="field"><label for="rentMonthly">Monthly rent (<span class="currency-label">USD</span>)</label><input class="money-input" id="rentMonthly" type="number" min="0" step="50" value="2200"></div>
+            <div class="field"><label for="buyMortgage">Mortgage payment (<span class="currency-label">USD</span>)</label><input class="money-input" id="buyMortgage" type="number" min="0" step="50" value="2400"></div>
+            <div class="field"><label for="buyTax">Monthly property tax (<span class="currency-label">USD</span>)</label><input class="money-input" id="buyTax" type="number" min="0" step="25" value="300"></div>
+            <div class="field"><label for="buyInsurance">Monthly insurance (<span class="currency-label">USD</span>)</label><input class="money-input" id="buyInsurance" type="number" min="0" step="10" value="125"></div>
+            <div class="field"><label for="buyMaintenance">Monthly maintenance (<span class="currency-label">USD</span>)</label><input class="money-input" id="buyMaintenance" type="number" min="0" step="25" value="150"></div>
+            <div class="field"><label for="buyFees">Monthly HOA / fees (<span class="currency-label">USD</span>)</label><input class="money-input" id="buyFees" type="number" min="0" step="25" value="0"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Monthly ownership cash cost</small><strong id="rentBuyResult">—</strong></div><button class="copy" data-copy="rentBuyResult">Copy</button></div>
+          <p class="inline-note" id="rentBuyBreakdown">Difference versus rent: —</p>
+        </article>
+
+        <article class="tool-card" data-category="crossborder" data-keywords="sales tax gst hst regional purchase price tax calculator">
+          <div class="card-icon" aria-hidden="true">％</div><h3>Sales tax estimator</h3><p class="card-desc">Enter the applicable combined tax rate for your location. Tax rules and local rates vary and may change.</p>
+          <div class="fields">
+            <div class="field"><label for="taxSubtotal">Pre-tax amount (<span class="currency-label">USD</span>)</label><input class="money-input" id="taxSubtotal" type="number" min="0" step="0.01" value="100"></div>
+            <div class="field"><label for="taxRate">Combined tax rate (%)</label><input id="taxRate" type="number" min="0" max="100" step="0.001" value="8.875"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Total including estimated tax</small><strong id="taxResult">—</strong></div><button class="copy" data-copy="taxResult">Copy</button></div>
+        </article>
+
+        <article class="tool-card" data-category="crossborder" data-keywords="tfsa rrsp canada contribution limit room cra canada 2026">
+          <div class="card-icon" aria-hidden="true">🇨🇦</div><h3>Canadian TFSA / RRSP annual-limit reference</h3><p class="card-desc">A reference estimator for annual additions—not your personal available contribution room.</p>
+          <div class="fields">
+            <div class="field"><label for="canAccount">Account</label><select id="canAccount"><option value="tfsa">TFSA annual dollar limit (2026)</option><option value="rrsp">RRSP new room estimate (2026 limit)</option></select></div>
+            <div class="field"><label for="canIncome">Prior-year earned income (CAD)</label><input id="canIncome" type="number" min="0" step="1000" value="95000"></div>
+            <div class="field"><label for="rrspAnnualMax">2026 RRSP dollar maximum (CAD)</label><input id="rrspAnnualMax" type="number" min="0" step="100" value="33810"></div>
+          </div>
+          <div class="result" aria-live="polite"><div><small>Annual limit / new-room estimate</small><strong id="canResult">—</strong></div><button class="copy" data-copy="canResult">Copy</button></div>
+          <p class="inline-note">TFSA 2026 annual limit: CAD $7,000. RRSP estimate is the lesser of 18% of prior-year earned income and the entered annual maximum. Carry-forward room, pension adjustments and other CRA rules are not included. <a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/contributing/calculate-room.html" target="_blank" rel="noopener noreferrer">Check TFSA room</a> · <a href="https://www.canada.ca/en/revenue-agency/services/tax/registered-plans-administrators/pspa/mp-rrsp-dpsp-tfsa-limits-ympe.html" target="_blank" rel="noopener noreferrer">CRA annual limits</a>. Verify with CRA before contributing.</p>
+        </article>
+      </div>
+      <div class="empty" id="emptySearch">No calculators match that search. Try another term or select “All tools.”</div>
+    </section>
+
+    <section class="partner-slot" id="partnerSlot"><strong>Partner recommendations</strong><br>Commercial recommendations will appear here only when RaelInfo has an active, approved partner offer relevant to the tool being used. Affiliate links should be clearly identified and disclosed beside the offer. No partner offer is currently configured in this free build.</section>
+
+    <section class="two-col" aria-label="About and privacy">
+      <article class="info-card"><h3>How estimates work</h3><p>Calculator outputs are generated in your browser from the assumptions you enter. Market and reference-rate panels use external public data services and may be delayed, unavailable or revised. Confirm important decisions with a qualified professional and the relevant provider.</p></article>
+      <article class="info-card"><h3>Your data and privacy</h3><p>Calculator inputs are processed in this browser and are not sent to the portfolio API. Optional scenarios use this browser's local storage; account-based portfolio positions are stored on the RaelInfo server when you sign in. Stock symbols, news searches and SEC CIK lookups are sent through the backend to the relevant data provider. Avoid using a shared device for sensitive financial scenarios.</p><p><button class="text-btn" id="clearDataBtn" type="button">Clear saved scenario from this browser</button></p></article>
+    </section>
+    <section class="disclosure"><strong>Important information:</strong> RaelInfo provides general educational estimates, not financial, investment, legal, mortgage, tax or accounting advice. Results are simplified and may omit fees, taxes, insurance requirements, changing rates, lender rules, transaction costs and individual circumstances. Crypto prices are indicative market data and can be volatile. Check assumptions and source data before acting. Nothing on this site is an offer to buy or sell a financial product.</section>
+  </main>
+  <footer class="wrap footer"><span>© <span id="year"></span> RaelInfo. All rights reserved.</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms & disclosures</a> · <a href="https://www.coinlore.com/cryptocurrency-data-api" target="_blank" rel="noopener noreferrer">Crypto data source</a> · <a href="https://frankfurter.dev/" target="_blank" rel="noopener noreferrer">FX data source</a></span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module">
+  import { fetchCryptoSnapshot } from './crypto.js';
+  import { fetchFxRate } from './fx.js';
+  'use strict';
+  /* ================================================================
+     RAELINFO SITE CONFIGURATION
+     Set UNDER_CONSTRUCTION to true to show a site-wide construction
+     banner and request no indexing. Set it to false for normal launch.
+     This is a front-end switch, not an access-control/security feature.
+     ================================================================ */
+  const UNDER_CONSTRUCTION = false;
+
+  const CONFIG = {
+    cryptoRefreshMs: 120000,
+    cryptoCacheKey: 'raelinfo_crypto_cache_v2',
+    fxCacheKey: 'raelinfo_fx_cache_v2',
+    fxRefreshMs: 6 * 60 * 60 * 1000,
+    scenarioKey: 'raelinfo_scenario_v3',
+    themeKey: 'raelinfo_theme_v2',
+    currencyKey: 'raelinfo_currency_v2',
+  };
+
+  /* Add only approved partner offers. Never label a partner 'verified' without
+     current evidence. Each item: { id, title, description, url, categories,
+     currencies, disclosure }. URLs must be HTTPS; categories match calculator
+     data-category values. Empty by default until the operator verifies terms. */
+  const PARTNER_OFFERS = [];
+
+  const state = {
+    currency: 'USD',
+    theme: 'dark',
+    fxRate: null,
+    fxDate: null,
+    crypto: {},
+    cryptoUpdatedAt: null,
+    cryptoStale: true,
+    lastCryptoError: false,
+    activeFilter: 'all',
+    toastTimer: null
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const number = (id) => {
+    const el = $(id); if (!el) return 0;
+    const value = Number(el.value);
+    return Number.isFinite(value) ? value : 0;
+  };
+  const clampNonNegative = (value) => Math.max(0, Number.isFinite(value) ? value : 0);
+  const currencyCode = () => state.currency;
+  const currencySymbol = () => state.currency === 'CAD' ? 'CA$' : '$';
+  const money = (value, currency = state.currency, maximumFractionDigits = 2) => {
+    if (!Number.isFinite(value)) return '—';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits, minimumFractionDigits: Math.min(2, maximumFractionDigits) }).format(value);
+  };
+  const compactMoney = (value) => money(value, state.currency, 0);
+  const safeStore = {
+    get(key) { try { return localStorage.getItem(key); } catch (_) { return null; } },
+    set(key, value) { try { localStorage.setItem(key, value); return true; } catch (_) { return false; } },
+    remove(key) { try { localStorage.removeItem(key); } catch (_) {} }
+  };
+
+  function showToast(message) {
+    const toast = $('toast'); toast.textContent = message; toast.classList.add('show');
+    clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+  }
+  function displayConstructionMode() {
+    if (!UNDER_CONSTRUCTION) return;
+    $('constructionBanner').classList.add('show');
+    let robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute('content', 'noindex,nofollow');
+    $('partnerSlot').hidden = true;
+  }
+  function setTheme(theme) {
+    state.theme = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = state.theme;
+    $('themeBtn').textContent = state.theme === 'dark' ? '☀' : '☾';
+    $('themeBtn').setAttribute('aria-label', state.theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    safeStore.set(CONFIG.themeKey, state.theme);
+  }
+  function setCurrencyLabel() {
+    document.querySelectorAll('.currency-label').forEach((el) => el.textContent = state.currency);
+    $('currencyBtn').textContent = `${state.currency} ▾`;
+  }
+  function getEffectiveFxRate() {
+    const manual = $('manualFxRate') ? Number($('manualFxRate').value) : NaN;
+    return Number.isFinite(manual) && manual > 0 ? manual : state.fxRate;
+  }
+  function toggleCurrency() {
+    const effectiveRate = getEffectiveFxRate();
+    if (!effectiveRate || !Number.isFinite(effectiveRate)) {
+      showToast('Exchange rate unavailable. Enter a manual rate or retry the feed.'); return;
+    }
+    const factor = state.currency === 'USD' ? effectiveRate : 1 / effectiveRate;
+    document.querySelectorAll('.money-input').forEach((input) => {
+      const value = Number(input.value);
+      if (Number.isFinite(value)) input.value = (value * factor).toFixed(2).replace(/\.00$/, '');
+    });
+    state.currency = state.currency === 'USD' ? 'CAD' : 'USD';
+    safeStore.set(CONFIG.currencyKey, state.currency);
+    setCurrencyLabel(); calculateAll(); showToast(`Calculator amounts converted to ${state.currency}.`);
+  }
+  function setStatus(message, mode = 'idle') {
+    const dot = $('cryptoStatus').querySelector('.dot');
+    dot.className = `dot${mode === 'ok' ? ' ok' : mode === 'error' ? ' error' : ''}`;
+    $('cryptoStatus').lastChild.textContent = ` ${message}`;
+  }
+
+  function readCryptoCache() {
+    try {
+      const cached = JSON.parse(safeStore.get(CONFIG.cryptoCacheKey) || 'null');
+      if (cached && typeof cached === 'object' && cached.prices) {
+        state.crypto = cached.prices;
+        state.cryptoUpdatedAt = cached.updatedAt || null;
+        renderCrypto();
+      }
+    } catch (_) { /* Ignore corrupt cache and request fresh data. */ }
+  }
+  function formatCryptoPrice(value) {
+    if (!Number.isFinite(value) || value <= 0) return '—';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: value < 1 ? 6 : value < 100 ? 4 : 2 }).format(value);
+  }
+  function renderCrypto() {
+    const map = { BTC: 'btc', ETH: 'eth', SOL: 'sol' };
+    Object.entries(map).forEach(([symbol, prefix]) => {
+      const coin = state.crypto[symbol];
+      $(`${prefix}Price`).textContent = coin ? formatCryptoPrice(coin.price) : '—';
+      const change = coin && Number.isFinite(coin.change24h) ? coin.change24h : null;
+      const changeEl = $(`${prefix}Change`);
+      changeEl.textContent = change === null ? '24h change unavailable' : `${change > 0 ? '+' : ''}${change.toFixed(2)}% · 24h`;
+      changeEl.className = `change ${change === null ? '' : change >= 0 ? 'positive' : 'negative'}`;
+      $(`${prefix}Rank`).textContent = coin && coin.rank ? `Rank #${coin.rank}` : 'Rank —';
+      $(`${prefix}MarketCap`).textContent = coin && coin.marketCap ? `Mkt cap ${formatCompactUSD(coin.marketCap)}` : 'Market cap —';
+    });
+    const when = state.cryptoUpdatedAt ? new Date(state.cryptoUpdatedAt) : null;
+    $('cryptoUpdated').textContent = when ? `${state.cryptoStale ? 'Last successful fetch' : 'Retrieved'}: ${when.toLocaleString()}` : 'No successful market-data fetch yet';
+    calculateCryptoEstimate();
+  }
+  function formatCompactUSD(value) {
+    if (!Number.isFinite(value)) return '—';
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(value);
+  }
+  async function refreshCrypto(force = false) {
+    if (document.visibilityState === 'hidden' && !force) return;
+    setStatus('Updating CoinLore prices…');
+    try {
+      const data = await fetchCryptoSnapshot();
+      if (!Array.isArray(data)) throw new Error('Unexpected CoinLore response format');
+      const next = {};
+      for (const item of data) {
+        const symbol = String(item.symbol || '').toUpperCase();
+        const price = Number(item.price_usd);
+        if (['BTC','ETH','SOL'].includes(symbol) && Number.isFinite(price) && price > 0) {
+          next[symbol] = { price, change24h: Number.isFinite(Number(item.percent_change_24h)) ? Number(item.percent_change_24h) : null, rank: Number(item.rank) || null, marketCap: Number(item.market_cap_usd) || null };
+        }
+      }
+      if (!next.BTC || !next.ETH || !next.SOL) throw new Error('CoinLore response did not include all configured assets');
+      state.crypto = next; state.cryptoUpdatedAt = new Date().toISOString(); state.cryptoStale = false; state.lastCryptoError = false;
+      safeStore.set(CONFIG.cryptoCacheKey, JSON.stringify({ prices: next, updatedAt: state.cryptoUpdatedAt }));
+      renderCrypto(); setStatus('Market data retrieved', 'ok');
+    } catch (error) {
+      state.lastCryptoError = true; state.cryptoStale = true;
+      renderCrypto();
+      setStatus(state.cryptoUpdatedAt ? 'Feed unavailable · showing last saved prices' : 'Market data unavailable', 'error');
+      console.warn('CoinLore market-data request failed:', error);
+    }
+  }
+  async function refreshFx(force = false) {
+    const cached = (() => { try { return JSON.parse(safeStore.get(CONFIG.fxCacheKey) || 'null'); } catch (_) { return null; } })();
+    if (!force && cached && cached.rate > 0 && Date.now() - cached.fetchedAt < CONFIG.fxRefreshMs) {
+      state.fxRate = cached.rate; state.fxDate = cached.date; calculateFx(); return;
+    }
+    try {
+      const data = await fetchFxRate('USD', 'CAD');
+      const rate = Number(data.rate);
+      if (!(rate > 0) || data.base !== 'USD' || data.quote !== 'CAD') throw new Error('Unexpected Frankfurter rate response');
+      state.fxRate = rate; state.fxDate = data.date;
+      safeStore.set(CONFIG.fxCacheKey, JSON.stringify({ rate, date: data.date, fetchedAt: Date.now() }));
+      calculateFx();
+      showToast(`USD/CAD reference rate updated (${data.date}).`);
+    } catch (error) {
+      if (cached && cached.rate > 0) { state.fxRate = cached.rate; state.fxDate = cached.date; calculateFx(); $('fxRateNote').textContent = `Showing saved Frankfurter rate dated ${cached.date}; live refresh failed.`; }
+      else { $('fxResult').textContent = 'Rate unavailable'; $('fxRateNote').textContent = 'Could not retrieve a USD/CAD reference rate. Retry while online.'; }
+      console.warn('Frankfurter FX request failed:', error);
+    }
+  }
+  function calculateFx() {
+    const rate = getEffectiveFxRate();
+    if (!rate || !Number.isFinite(rate)) { $('fxResult').textContent = 'Rate unavailable'; return; }
+    const amount = clampNonNegative(number('fxAmount'));
+    const direction = $('fxDirection').value;
+    const converted = direction === 'USD-CAD' ? amount * rate : amount / rate;
+    const from = direction === 'USD-CAD' ? 'USD' : 'CAD'; const to = direction === 'USD-CAD' ? 'CAD' : 'USD';
+    $('fxResult').textContent = `${money(amount, from)} = ${money(converted, to)}`;
+    const manual = Number($('manualFxRate').value);
+    $('fxRateNote').textContent = Number.isFinite(manual) && manual > 0 ? `Manual rate in use: 1 USD = ${rate.toFixed(5)} CAD · excludes provider fees and spreads.` : `Reference rate: 1 USD = ${rate.toFixed(5)} CAD · rate date ${state.fxDate || 'unknown'} · excludes provider fees and spreads.`;
+  }
+
+  function renderPartnerForCard(card) {
+    if (!card) return;
+    let slot = card.querySelector('.card-partner');
+    if (!slot) { slot = document.createElement('div'); slot.className = 'card-partner'; slot.hidden = true; card.appendChild(slot); }
+    slot.replaceChildren();
+    const currency = state.currency;
+    const offers = PARTNER_OFFERS.filter(offer => {
+      if (!offer || !Array.isArray(offer.categories) || !offer.categories.includes(card.dataset.category)) return false;
+      if (Array.isArray(offer.currencies) && !offer.currencies.includes(currency)) return false;
+      try { return new URL(offer.url).protocol === 'https:'; } catch (_) { return false; }
+    }).slice(0, 2);
+    if (!offers.length || UNDER_CONSTRUCTION) { slot.hidden = true; return; }
+    offers.forEach(offer => {
+      const item = document.createElement('div');
+      const title = document.createElement('strong'); title.textContent = offer.title || 'Partner resource';
+      const description = document.createElement('p'); description.textContent = offer.description || 'Review this third-party option and its terms.';
+      const link = document.createElement('a'); link.href = offer.url; link.target = '_blank'; link.rel = 'sponsored noopener noreferrer'; link.textContent = 'View partner information →';
+      const disclosure = document.createElement('small'); disclosure.textContent = offer.disclosure || 'Advertisement: RaelInfo may earn a commission if you use this link.';
+      item.append(title, description, link, disclosure); slot.appendChild(item);
+    });
+    slot.hidden = false;
+  }
+
+  function calculateMortgage() {
+    const principal = clampNonNegative(number('mortgageAmount')); const annualRate = clampNonNegative(number('mortgageRate')) / 100; const years = Math.max(1, number('mortgageYears'));
+    const payments = Math.round(years * 12); const monthlyRate = annualRate / 12;
+    let pi = 0;
+    if (principal > 0) pi = monthlyRate === 0 ? principal / payments : principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -payments));
+    const extras = clampNonNegative(number('mortgageTax')) / 12 + clampNonNegative(number('mortgageInsurance')) / 12 + clampNonNegative(number('mortgageHoa'));
+    $('mortgageResult').textContent = money(pi + extras);
+    $('mortgageBreakdown').textContent = `Principal & interest: ${money(pi)} · Taxes, insurance & HOA: ${money(extras)} · Excludes PMI, utilities and closing costs.`;
+    let balance = principal; let rows = '<table class="mini-table"><thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead><tbody>';
+    for (let year = 1; year <= Math.min(5, years); year++) {
+      let principalPaid = 0, interestPaid = 0;
+      for (let month = 0; month < 12 && balance > 0; month++) {
+        const interest = balance * monthlyRate; const paymentPrincipal = Math.min(balance, Math.max(0, pi - interest));
+        principalPaid += paymentPrincipal; interestPaid += interest; balance = Math.max(0, balance - paymentPrincipal);
+      }
+      rows += `<tr><td>${year}</td><td>${money(principalPaid)}</td><td>${money(interestPaid)}</td><td>${money(balance)}</td></tr>`;
+    }
+    $('mortgageSchedule').innerHTML = rows + '</tbody></table>';
+  }
+  function calculateCompound() {
+    const start = clampNonNegative(number('compoundStart')); const monthly = clampNonNegative(number('compoundMonthly')); const annual = number('compoundRate') / 100; const years = Math.max(0, number('compoundYears'));
+    if (annual <= -1) { $('compoundResult').textContent = 'Invalid return'; $('compoundBreakdown').textContent = 'Annual return must be greater than -100%.'; return; }
+    const r = Math.pow(1 + annual, 1 / 12) - 1; let balance = start;
+    for (let m = 0; m < years * 12; m++) balance = balance * (1 + r) + monthly;
+    const invested = start + monthly * years * 12;
+    $('compoundResult').textContent = money(balance); $('compoundBreakdown').textContent = `Total contributions: ${money(invested)} · Estimated growth: ${money(balance - invested)} · Assumes a steady return and month-end contributions.`;
+  }
+  function runDebtSimulation() {
+    const debts = [1,2,3].map(i => ({ name: `Debt ${i}`, balance: clampNonNegative(number(`debt${i}`)), apr: clampNonNegative(number(`apr${i}`)) / 100 } )).filter(d => d.balance > 0);
+    const budget = clampNonNegative(number('debtBudget')); const method = $('debtMethod').value;
+    if (!debts.length) { $('debtResult').textContent = money(0); $('debtBreakdown').textContent = 'No balances entered.'; return; }
+    if (budget <= 0) { $('debtResult').textContent = 'Enter a payment'; $('debtBreakdown').textContent = 'Monthly budget must be greater than zero.'; return; }
+    const minPayments = debts.reduce((sum,d) => sum + Math.min(d.balance, Math.max(25, d.balance * 0.02)), 0);
+    if (budget < minPayments) { $('debtResult').textContent = 'Budget too low'; $('debtBreakdown').textContent = `The illustrative minimum-payment assumption totals ${money(minPayments)}. Increase the budget.`; return; }
+    let balances = debts.map(d => ({...d, interest:0})); let totalInterest=0; let months=0; const payoffOrder=[];
+    while (balances.some(d => d.balance > 0.005) && months < 1200) {
+      months++;
+      balances.forEach(d => { const interest = d.balance * d.apr / 12; d.balance += interest; d.interest += interest; totalInterest += interest; });
+      const mins = balances.map(d => d.balance > .005 ? Math.min(d.balance, Math.max(25, debts.find(x=>x.name===d.name).balance * .02)) : 0);
+      const minTotal = mins.reduce((a,b)=>a+b,0);
+      if (budget <= minTotal && balances.some(d=>d.balance > .005)) {
+        // At exactly minimums, debts can still amortize if the payment exceeds accrued interest.
+      }
+      let available = budget;
+      balances.forEach((d,i)=>{ const pay=Math.min(d.balance,mins[i]); d.balance-=pay; available-=pay; });
+      const priority = [...balances].filter(d=>d.balance>.005).sort((a,b)=> method==='snowball' ? a.balance-b.balance : b.apr-a.apr);
+      for (const target of priority) { if (available<=0) break; const pay=Math.min(target.balance,available); target.balance-=pay; available-=pay; if(target.balance<=.005&&!payoffOrder.includes(target.name)) payoffOrder.push(target.name); }
+      if (months===1200) break;
+    }
+    if (months>=1200) { $('debtResult').textContent='Not paid off'; $('debtBreakdown').textContent='At this budget and rate, the simulation did not reach payoff within 100 years.'; return; }
+    $('debtResult').textContent = `${Math.floor(months/12)}y ${months%12}m`;
+    $('debtBreakdown').textContent = `Estimated interest: ${money(totalInterest)} · Strategy: ${method} · Assumes 2% of each original balance or $25 as each minimum payment; actual lender minimums differ.`;
+  }
+  function calculateSavings() {
+    const start=clampNonNegative(number('savingsStart')); const monthly=clampNonNegative(number('savingsMonthly')); const apy=clampNonNegative(number('savingsApy'))/100; const years=Math.max(0,number('savingsYears'));
+    const monthlyRate=Math.pow(1+apy,1/12)-1; let balance=start;
+    for(let i=0;i<years*12;i++) balance=balance*(1+monthlyRate)+monthly;
+    const total=start+monthly*years*12;
+    $('savingsResult').textContent=money(balance); $('savingsBreakdown').textContent=`Total deposits: ${money(total)} · Estimated interest: ${money(balance-total)} · Assumes constant APY and month-end deposits.`;
+  }
+  function calculateCryptoEstimate() {
+    const symbol=$('cryptoAsset').value; const coin=state.crypto[symbol]; const amount=clampNonNegative(number('cryptoAmount'));
+    if(!coin || !(coin.price>0)) { $('cryptoEstimate').textContent='Price unavailable'; return; }
+    const effectiveRate=getEffectiveFxRate();
+    const price=state.currency==='CAD' ? coin.price*(effectiveRate||0) : coin.price;
+    $('cryptoEstimate').textContent=price>0 ? `${(amount/price).toLocaleString('en-US',{maximumFractionDigits:8})} ${symbol}` : 'FX rate unavailable';
+    $('cryptoEstimateNote').textContent=`Indicative price: ${formatCryptoPrice(coin.price)} USD${state.currency==='CAD'&&state.fxRate?` / ${money(price,'CAD')}`:''}. Fees, spreads and network costs excluded.`;
+  }
+  function calculateInflation() {
+    const amount=clampNonNegative(number('inflationAmount')); const rate=clampNonNegative(number('inflationRate'))/100; const years=Math.max(0,number('inflationYears'));
+    const value=amount/Math.pow(1+rate,years); $('inflationResult').textContent=money(value);
+  }
+  function calculateRetirement() {
+    const income=clampNonNegative(number('retirementIncome')); const rate=number('withdrawalRate')/100;
+    $('retirementResult').textContent=rate>0 ? money(income/rate) : 'Enter a rate above zero';
+  }
+  function calculateNetWorth() {
+    const assets=['nwCash','nwInvestments','nwProperty','nwOtherAssets'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
+    const liabilities=clampNonNegative(number('nwMortgage'))+clampNonNegative(number('nwOtherDebt'));
+    $('netWorthResult').textContent=money(assets-liabilities); $('netWorthBreakdown').textContent=`Assets: ${money(assets)} · Liabilities: ${money(liabilities)}`;
+  }
+  function calculateRentBuy() {
+    const rent=clampNonNegative(number('rentMonthly'));
+    const owner=['buyMortgage','buyTax','buyInsurance','buyMaintenance','buyFees'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
+    $('rentBuyResult').textContent=money(owner); const diff=owner-rent;
+    $('rentBuyBreakdown').textContent=`Ownership cash cost is ${money(Math.abs(diff))} ${diff>0?'higher':diff<0?'lower':'the same'} than rent per month. Excludes opportunity cost, tax effects, appreciation and transaction costs.`;
+  }
+  function calculateTax() {
+    const subtotal=clampNonNegative(number('taxSubtotal')); const rate=clampNonNegative(number('taxRate'))/100;
+    $('taxResult').textContent=money(subtotal*(1+rate));
+  }
+  function calculateCanadianAccounts() {
+    const account=$('canAccount').value; const income=clampNonNegative(number('canIncome')); const max=clampNonNegative(number('rrspAnnualMax'));
+    $('canResult').textContent=account==='tfsa' ? 'CA$7,000' : money(Math.min(income*.18,max),'CAD');
+  }
+  function calculateAll() {
+    calculateMortgage(); calculateCompound(); runDebtSimulation(); calculateSavings(); calculateFx(); calculateCryptoEstimate(); calculateInflation(); calculateRetirement(); calculateNetWorth(); calculateRentBuy(); calculateTax(); calculateCanadianAccounts();
+  }
+
+  function serializeScenario() {
+    const values={};
+    document.querySelectorAll('input[id],select[id]').forEach(el=>{ if(el.type!=='file' && el.id!=='searchInput') values[el.id]=el.value; });
+    return {version:3,savedAt:new Date().toISOString(),currency:state.currency,theme:state.theme,values};
+  }
+  function restoreScenario(data) {
+    if (!data || data.version!==3 || !data.values || typeof data.values!=='object') throw new Error('Unsupported or invalid scenario file.');
+    Object.entries(data.values).forEach(([id,value])=>{ const el=$(id); if(el && (el.tagName==='INPUT'||el.tagName==='SELECT') && el.type!=='file') el.value=String(value); });
+    if(data.currency==='USD'||data.currency==='CAD'){state.currency=data.currency;safeStore.set(CONFIG.currencyKey,state.currency);setCurrencyLabel();}
+    if(data.theme==='light'||data.theme==='dark') setTheme(data.theme);
+    calculateAll(); saveLocalScenario();
+  }
+  function saveLocalScenario() {
+    safeStore.set(CONFIG.scenarioKey,JSON.stringify(serializeScenario()));
+  }
+  function exportScenario() {
+    const blob=new Blob([JSON.stringify(serializeScenario(),null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`raelinfo-scenario-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('Scenario backup downloaded.');
+  }
+  function importScenarioFile(file) {
+    if(!file) return; if(file.size>1024*1024){showToast('File is too large. Choose a JSON file under 1 MB.');return;}
+    const reader=new FileReader(); reader.onload=()=>{try{restoreScenario(JSON.parse(reader.result));showToast('Scenario restored in this browser.');}catch(error){showToast(error.message||'Could not read scenario file.');}}; reader.onerror=()=>showToast('Could not read that file.'); reader.readAsText(file);
+  }
+  async function copyElementText(id) {
+    const text=$(id).textContent.trim();
+    try { await navigator.clipboard.writeText(text); showToast('Copied.'); }
+    catch (_) { const area=document.createElement('textarea'); area.value=text; document.body.appendChild(area); area.select(); const ok=document.execCommand('copy'); area.remove(); showToast(ok?'Copied.':'Copy not available in this browser.'); }
+  }
+  function filterTools() {
+    const query=$('searchInput').value.trim().toLowerCase(); let shown=0;
+    document.querySelectorAll('.tool-card').forEach(card=>{
+      const haystack=`${card.textContent} ${card.dataset.keywords||''}`.toLowerCase();
+      const categoryMatch=state.activeFilter==='all'||card.dataset.category===state.activeFilter;
+      const visible=categoryMatch&&(!query||haystack.includes(query)); card.hidden=!visible; if(visible)shown++;
+    });
+    $('emptySearch').classList.toggle('show',shown===0);
+  }
+  function setupEvents() {
+    document.querySelectorAll('#toolGrid input,#toolGrid select').forEach(el=>{
+      el.addEventListener('input',()=>{calculateAll();saveLocalScenario();renderPartnerForCard(el.closest('.tool-card'));});
+      el.addEventListener('change',()=>{calculateAll();saveLocalScenario();renderPartnerForCard(el.closest('.tool-card'));});
+    });
+    document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+      state.activeFilter=btn.dataset.filter; document.querySelectorAll('.filter').forEach(b=>b.setAttribute('aria-pressed',String(b===btn))); filterTools();
+    }));
+    $('searchInput').addEventListener('input',filterTools);
+    $('themeBtn').addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
+    $('currencyBtn').addEventListener('click',toggleCurrency);
+    $('refreshCrypto').addEventListener('click',()=>refreshCrypto(true));
+    $('fxAmount').addEventListener('input',calculateFx); $('fxDirection').addEventListener('change',calculateFx); $('manualFxRate').addEventListener('input',()=>{calculateFx();calculateCryptoEstimate();});
+    const saveScenarioAction=()=>{saveLocalScenario();showToast('Scenario saved in this browser.');};
+    $('saveBtn').addEventListener('click',saveScenarioAction); $('saveBtnMobile').addEventListener('click',saveScenarioAction);
+    $('exportBtn').addEventListener('click',exportScenario); $('exportBtnMobile').addEventListener('click',exportScenario);
+    $('importBtn').addEventListener('click',()=>$('importFile').click()); $('importFile').addEventListener('change',e=>{importScenarioFile(e.target.files[0]);e.target.value='';});
+    $('printBtn').addEventListener('click',()=>window.print()); $('printBtnMobile').addEventListener('click',()=>window.print());
+    $('clearDataBtn').addEventListener('click',()=>{if(confirm('Clear the saved RaelInfo scenario and market-data cache from this browser?')){safeStore.remove(CONFIG.scenarioKey);safeStore.remove(CONFIG.cryptoCacheKey);safeStore.remove(CONFIG.fxCacheKey);showToast('Saved scenario and cached market data cleared.');}});
+    $('cryptoAsset').addEventListener('change',calculateCryptoEstimate);
+    document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',()=>copyElementText(btn.dataset.copy)));
+    $('menuBtn').addEventListener('click',()=>document.querySelector('#calculators').scrollIntoView({behavior:'smooth'}));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){refreshCrypto();}});
+    window.addEventListener('online',()=>{refreshCrypto(true);refreshFx(true);});
+  }
+  function init() {
+    displayConstructionMode(); $('year').textContent=new Date().getFullYear();
+    const savedTheme=safeStore.get(CONFIG.themeKey); const preferred=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'; setTheme(savedTheme||preferred);
+    const savedCurrency=safeStore.get(CONFIG.currencyKey); if(savedCurrency==='CAD'||savedCurrency==='USD')state.currency=savedCurrency; setCurrencyLabel();
+    setupEvents();
+    try {const saved=JSON.parse(safeStore.get(CONFIG.scenarioKey)||'null');if(saved)restoreScenario(saved);}catch(error){console.warn('Saved scenario could not be restored:',error);}
+    readCryptoCache(); calculateAll(); filterTools();
+    refreshFx(); refreshCrypto(true);
+    setInterval(()=>refreshCrypto(),CONFIG.cryptoRefreshMs);
+    setInterval(()=>refreshFx(true),CONFIG.fxRefreshMs);
+    if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('/sw.js').catch(error=>console.warn('Service worker registration failed:',error));
+  }
+  document.addEventListener('DOMContentLoaded',init);
+  </script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

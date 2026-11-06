@@ -1,0 +1,15 @@
+node_modules/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+.env.*
+!.env.example
+/data/users.json
+/data/*.db
+/data/*.sqlite
+/data/*.sqlite3
+*.pem
+*.key
+*.p12
+*.pfx

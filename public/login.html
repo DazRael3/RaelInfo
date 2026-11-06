@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Sign in | RaelInfo</title>
+  <link rel="icon" href="/icons/raelinfo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    :root{color-scheme:dark;--bg:#0b1220;--surface:#111c2e;--card:#152238;--text:#f3f7fc;--muted:#a3b2c7;--line:rgba(210,225,245,.13);--accent:#38bdf8;--good:#34d399;--bad:#fb7185;--shadow:0 16px 42px rgba(0,0,0,.22);--radius:18px}
+    [data-theme="light"]{color-scheme:light;--bg:#f3f6fb;--surface:#fff;--card:#fff;--text:#122033;--muted:#52637a;--line:rgba(25,45,75,.14);--accent:#0369a1;--good:#047857;--bad:#be123c;--shadow:0 12px 34px rgba(15,35,65,.08)}
+  </style>
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <a class="login-brand" href="/"><img src="/icons/raelinfo.svg" alt="">RaelInfo</a>
+    <h1 id="loginHeading">Welcome back</h1>
+    <p>Sign in to save and manage your RaelInfo portfolio. The public calculators remain available without an account.</p>
+    <div class="login-tabs" role="tablist" aria-label="Account action">
+      <button id="signInTab" type="button" role="tab" aria-selected="true">Sign in</button>
+      <button id="registerTab" type="button" role="tab" aria-selected="false">Create account</button>
+    </div>
+    <form id="accountForm" class="login-form">
+      <label>Username<input id="username" name="username" required minlength="3" maxlength="24" pattern="[a-zA-Z0-9._-]{3,24}" autocomplete="username" placeholder="Choose a username"></label>
+      <label>Password<input id="password" name="password" type="password" required minlength="12" maxlength="200" autocomplete="current-password" placeholder="At least 12 characters"></label>
+      <p id="passwordHint" class="muted" style="font-size:.74rem;margin:0">Use a unique password with at least 12 characters.</p>
+      <button id="submitAccount" class="btn primary" type="submit">Sign in</button>
+    </form>
+    <p id="accountMessage" class="login-message" role="status" aria-live="polite"></p>
+    <a class="login-back" href="/">← Back to RaelInfo calculators</a>
+    <p class="muted" style="font-size:.72rem;margin-top:18px">Accounts use the RaelInfo server's local JSON user store. Use a unique password; this is not a bank or brokerage account.</p>
+  </main>
+  <script type="module">
+    const $ = id => document.getElementById(id);
+    let mode = 'login';
+    function setMode(next) {
+      mode = next;
+      $('signInTab').setAttribute('aria-selected', String(mode === 'login'));
+      $('registerTab').setAttribute('aria-selected', String(mode === 'register'));
+      $('loginHeading').textContent = mode === 'login' ? 'Welcome back' : 'Create your account';
+      $('submitAccount').textContent = mode === 'login' ? 'Sign in' : 'Create account';
+      $('password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+      $('passwordHint').hidden = mode === 'login';
+      $('accountMessage').textContent = '';
+      $('accountMessage').className = 'login-message';
+    }
+    $('signInTab').addEventListener('click', () => setMode('login'));
+    $('registerTab').addEventListener('click', () => setMode('register'));
+    $('accountForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = $('submitAccount');
+      button.disabled = true;
+      $('accountMessage').textContent = mode === 'login' ? 'Signing in…' : 'Creating account…';
+      $('accountMessage').className = 'login-message';
+      try {
+        const response = await fetch(`/api/auth/${mode === 'login' ? 'login' : 'register'}`, {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ username: $('username').value.trim(), password: $('password').value })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+        $('accountMessage').textContent = 'Success. Opening your dashboard…';
+        $('accountMessage').className = 'login-message success';
+        location.assign('/');
+      } catch (error) {
+        $('accountMessage').textContent = error.message;
+        $('accountMessage').className = 'login-message error';
+      } finally { button.disabled = false; }
+    });
+  </script>
+</body>
+</html>
