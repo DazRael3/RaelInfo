@@ -180,6 +180,7 @@
             </div>
             <div class="header-controls">
                 <button class="ctrl-btn" id="streakBadgeBtn" style="background:rgba(245,158,11,0.15); color:var(--pending); border-color:rgba(245,158,11,0.3);">🔥 Streak: 1 Day</button>
+                <button class="ctrl-btn" onclick="shareSocialCard()" style="background:linear-gradient(135deg, #0284c7, #38bdf8); color:#fff; border:none;">🔗 Share Stats</button>
                 <button class="ctrl-btn" onclick="exportExecutivePDF()" style="background:linear-gradient(135deg, #10b981, #059669); color:#fff; border:none;">📥 Export PDF</button>
                 <button class="ctrl-btn" onclick="saveProfileJson()">💾 Save</button>
                 <button class="ctrl-btn" onclick="triggerLoadJson()">📂 Load</button>
@@ -570,7 +571,7 @@
                 </div>
             </div>
 
-            <!-- Tool 11: Canadian TFSA & RRSP Contribution Planner (New Addition) -->
+            <!-- Tool 11: Canadian TFSA & RRSP Contribution Planner -->
             <div class="card" data-region="can" data-title="canadian tfsa rrsp contribution room planner">
                 <div>
                     <h3>🇨🇦 TFSA & RRSP Contribution Planner</h3>
@@ -760,9 +761,18 @@
         let lastCryptoUnits = 0.00667;
 
         document.addEventListener("DOMContentLoaded", async function() {
-            const savedTheme = localStorage.getItem('raelinfo_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('tBtn').textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+            // Auto-detect Operating System Color Scheme on First Visit
+            const savedTheme = localStorage.getItem('raelinfo_theme');
+            if (!savedTheme) {
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                document.documentElement.setAttribute('data-theme', prefersLight ? 'light' : 'dark');
+                localStorage.setItem('raelinfo_theme', prefersLight ? 'light' : 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            document.getElementById('tBtn').textContent = currentTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
 
             initStreakTracker();
             registerServiceWorker();
@@ -783,7 +793,14 @@
             fetchBinanceCryptoPrices();
         });
 
-        // Register PWA Service Worker for Offline Caching
+        // Automated Social Sharing Card Function
+        function shareSocialCard() {
+            const sym = currentCurrency === 'USD' ? '$' : 'CA$';
+            const shareText = `🚀 My RaelInfo Wealth Forecast:\n• Projected 10-Yr Wealth: ${sym}${Math.round(lastCompoundVal).toLocaleString()} ${currentCurrency}\n• Monthly Debt: ${sym}${lastMortgageVal.toFixed(2)} / mo\n• Crypto Asset: ${lastCryptoUnits.toFixed(4)} ${document.getElementById('cryptoAsset').value}\n\nCalculate yours free at https://raelinfo.com`;
+            navigator.clipboard.writeText(shareText);
+            showToast("Social share card copied to clipboard!");
+        }
+
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 const swCode = `self.addEventListener('fetch', function(e) { /* caching handler */ });`;
@@ -851,7 +868,7 @@
 
             const conversionFactor = currentCurrency === 'CAD' ? liveFxRate : (1 / liveFxRate);
             
-            ['cryptoAmt', 'infCash', 'loanAmt', 'deposit', 'taxPrice', 'cmpPrinc', 'debtBal', 'debtPmt', 'retIncome', 'salBase'].forEach(id => {
+            ['cryptoAmt', 'infCash', 'loanAmt', 'deposit', 'taxPrice', 'cmpPrinc', 'debtBal', 'debtPmt', 'retIncome', 'salBase', 'canIncome'].forEach(id => {
                 const input = document.getElementById(id);
                 if(input) {
                     let val = parseFloat(input.value) || 0;
@@ -1117,7 +1134,6 @@
             document.getElementById('salOutput').textContent = `Equivalent Target: CA$${Math.round(equivalent).toLocaleString()}`;
         }
 
-        // Canadian Account Calculator Logic
         function calculateCanadianAccounts() {
             const income = parseFloat(document.getElementById('canIncome').value) || 0;
             const type = document.getElementById('canAccountType').value;
@@ -1147,8 +1163,7 @@
             const price = parseFloat(document.getElementById('taxPrice').value) || 0;
             const rate = parseFloat(document.getElementById('taxRegion').value) || 0;
             const total = price * (1 + rate);
-            const sym = currentCurrency === 'USD' ? '$' : 'CA$';
-            document.getElementById('taxOutput').textContent = `Total with Tax: ${sym}${total.toFixed(2)}`;
+            document.getElementById('taxOutput').textContent = `Total with Tax: $${total.toFixed(2)}`;
         }
 
         function copyResult(elementId) {
