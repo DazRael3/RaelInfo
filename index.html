@@ -20,13 +20,14 @@
     <meta property="og:url" content="https://raelinfo.com">
     <meta property="og:title" content="RaelInfo | North American Financial & Digital Utilities">
     <meta property="og:description" content="Free interactive financial, crypto, and travel calculators with verified referral portals for Canada and the USA.">
-    <meta property="og:image" content="https://raelinfo.com/og-image.png">
+    <meta property="og:image" content="https://raelinfo.com/og-card.png">
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://raelinfo.com">
     <meta name="twitter:title" content="RaelInfo | North American Financial & Digital Utilities">
     <meta name="twitter:description" content="Free interactive calculators and verified referral portals for Canada and the USA.">
+    <meta name="twitter:image" content="https://raelinfo.com/og-card.png">
 
     <style>
         :root {
@@ -70,9 +71,9 @@
         h1.logo { font-size: 2.4rem; margin: 0; background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -0.5px; }
         p.tagline { color: var(--text-muted); font-size: 0.95rem; margin: 0.2rem 0 0 0; }
 
-        .header-controls { display: flex; gap: 0.75rem; align-items: center; }
-        .theme-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.6rem 1.1rem; border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: var(--transition); }
-        .theme-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .header-controls { display: flex; gap: 0.5rem; align-items: center; }
+        .ctrl-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-main); padding: 0.55rem 1rem; border-radius: 30px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: var(--transition); }
+        .ctrl-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
 
         /* Ticker Bar */
         .live-ticker { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.88rem; gap: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
@@ -89,7 +90,7 @@
         .native-banner-btn { display: inline-block; width: 100%; background: linear-gradient(135deg, #38bdf8, #0284c7); color: #fff; text-align: center; font-weight: 700; padding: 0.8rem; border-radius: 8px; text-decoration: none; font-size: 0.92rem; transition: var(--transition); }
         .native-banner-btn:hover { filter: brightness(1.1); box-shadow: 0 0 20px var(--accent-glow); }
 
-        /* Filter Pills & Search */
+        /* Controls Bar */
         .controls-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
         .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .filter-pill { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
@@ -100,7 +101,7 @@
 
         .section-title { font-size: 1.3rem; margin: 2rem 0 1rem 0; text-align: left; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Grids & Cards with Micro-Interactions */
+        /* Grids & Cards */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; }
         .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.4rem; text-align: left; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); transition: var(--transition); }
         .card:hover { transform: translateY(-4px); border-color: rgba(56, 189, 248, 0.4); box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
@@ -116,6 +117,9 @@
         .copy-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.78rem; font-weight: 600; text-decoration: underline; transition: var(--transition); }
         .copy-btn:hover { color: var(--accent); }
 
+        .details-drawer { display: none; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border); }
+        .toggle-details { background: none; border: none; color: var(--accent); font-size: 0.78rem; cursor: pointer; padding: 0; margin-top: 0.5rem; text-decoration: underline; }
+
         .badge { font-size: 0.68rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-live { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
         .badge-pending { background: rgba(245, 158, 11, 0.15); color: var(--pending); border: 1px solid rgba(245, 158, 11, 0.3); }
@@ -125,6 +129,8 @@
         .btn-disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; opacity: 0.6; transform: none !important; box-shadow: none !important; }
 
         footer { margin-top: 4rem; color: var(--text-muted); font-size: 0.82rem; border-top: 1px solid var(--border); padding-top: 1.5rem; text-align: center; }
+        footer a { color: var(--accent); text-decoration: none; margin: 0 0.5rem; }
+        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -136,11 +142,12 @@
                 <p class="tagline">North American Financial, Mobility & Security Utilities</p>
             </div>
             <div class="header-controls">
-                <button class="theme-btn" onclick="toggleTheme()" id="tBtn">🌙 Dark Mode</button>
+                <button class="ctrl-btn" onclick="toggleCurrency()" id="cBtn">💵 Currency: USD</button>
+                <button class="ctrl-btn" onclick="toggleTheme()" id="tBtn">🌙 Dark Mode</button>
             </div>
         </header>
 
-        <!-- Live Ticker Bar with Crypto & FX -->
+        <!-- Live Ticker Bar -->
         <div class="live-ticker">
             <div><span class="status-dot"></span><strong>USD/CAD:</strong> <span id="tickerFx" style="color:var(--accent);">1.3800 CAD</span></div>
             <div><strong>BTC:</strong> <span id="tickerBtc" style="color:var(--success);">$68,500</span></div>
@@ -166,7 +173,7 @@
             </div>
         </div>
 
-        <!-- Filter & Search Bar Controls -->
+        <!-- Filter & Search Controls -->
         <div class="controls-bar">
             <div class="filter-bar">
                 <button class="filter-pill active" onclick="filterCategory('all', this)">All Utilities</button>
@@ -181,11 +188,11 @@
             <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search utilities..." oninput="searchTools()">
         </div>
 
-        <!-- Section 1: Financial & Tax Utilities -->
+        <!-- Section 1: Financial Utilities -->
         <h2 class="section-title">⚙️ Interactive Calculations</h2>
         <div class="grid" id="toolGrid">
 
-            <!-- Tool 1: Crypto Purchase & DCA Estimator -->
+            <!-- Tool 1: Crypto Asset Estimator -->
             <div class="card" data-region="can usa crypto" data-title="crypto asset estimator bitcoin ethereum">
                 <div>
                     <h3>🪙 Crypto Asset Estimator</h3>
@@ -276,6 +283,10 @@
                     <span class="calc-result-text" id="loanOutput">$2,440.43 / mo</span>
                     <button class="copy-btn" onclick="copyResult('loanOutput')">Copy</button>
                 </div>
+                <button class="toggle-details" onclick="toggleMortgageDrawer()">Toggle Breakdown &darr;</button>
+                <div id="mortgageDrawer" class="details-drawer">
+                    <div id="mortgageBreakdownText">Total Payments: $732,129.00 | Total Interest: $332,129.00</div>
+                </div>
             </div>
 
             <!-- Tool 4: Savings Growth Yield -->
@@ -349,11 +360,9 @@
 
         </div>
 
-        <!-- Section 2: Verified & Pending Partner Recommendations -->
+        <!-- Section 2: Verified Partner Recommendations -->
         <h2 class="section-title">🚀 Verified Services & Portals</h2>
         <div class="grid">
-            
-            <!-- Wealthsimple (ACTIVE) -->
             <div class="card" data-region="can crypto" data-title="wealthsimple trading crypto cash tax">
                 <div>
                     <h3>Wealthsimple <span>🇨🇦</span></h3>
@@ -365,7 +374,6 @@
                 </div>
             </div>
 
-            <!-- Carla Car Rental (ACTIVE) -->
             <div class="card" data-region="can usa" data-title="carla car rental vehicle travel">
                 <div>
                     <h3>Carla Car Rental <span>🇨🇦 🇺🇸</span></h3>
@@ -377,7 +385,6 @@
                 </div>
             </div>
 
-            <!-- NordVPN (ACTIVE) -->
             <div class="card" data-region="can usa security" data-title="nordvpn security privacy vpn">
                 <div>
                     <h3>NordVPN Security <span>🇨🇦 🇺🇸</span></h3>
@@ -389,7 +396,6 @@
                 </div>
             </div>
 
-            <!-- Undercover Tourist (ACTIVE) -->
             <div class="card" data-region="can usa attractions" data-title="undercover tourist theme park tickets attractions">
                 <div>
                     <h3>Undercover Tourist <span>🇨🇦 🇺🇸</span></h3>
@@ -401,7 +407,6 @@
                 </div>
             </div>
 
-            <!-- PENDING SLOT: Crypto Exchange Partner -->
             <div class="card" data-region="can usa crypto" data-title="crypto exchange wallet pending">
                 <div>
                     <h3>Crypto Exchange & Wallet <span>🇨🇦 🇺🇸</span></h3>
@@ -413,7 +418,6 @@
                 </div>
             </div>
 
-            <!-- PENDING SLOT: Hostinger Web Hosting -->
             <div class="card" data-region="can usa services" data-title="hostinger web hosting pending">
                 <div>
                     <h3>Hostinger Web Solutions <span>🇨🇦 🇺🇸</span></h3>
@@ -424,11 +428,14 @@
                     <a href="#" class="btn btn-disabled" onclick="return false;">Opening Soon</a>
                 </div>
             </div>
-
         </div>
 
         <footer>
             <p><strong>Affiliate Disclosure:</strong> RaelInfo curates financial and digital utilities across North America. Referral links may yield a commission at zero extra cost to you.</p>
+            <p>
+                <a href="privacy.html">Privacy Policy</a> | 
+                <a href="terms.html">Terms & Disclosure</a>
+            </p>
             <p>&copy; 2026 RaelInfo. All rights reserved.</p>
         </footer>
     </div>
@@ -437,9 +444,9 @@
         let liveFxRate = 1.38;
         let btcUsdPrice = 68500;
         let activeCategory = 'all';
+        let currentCurrency = 'USD';
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Restore saved theme preference
             const savedTheme = localStorage.getItem('raelinfo_theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('tBtn').textContent = savedTheme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
@@ -459,6 +466,13 @@
             document.documentElement.setAttribute('data-theme', target);
             localStorage.setItem('raelinfo_theme', target);
             document.getElementById('tBtn').textContent = target === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+        }
+
+        function toggleCurrency() {
+            currentCurrency = currentCurrency === 'USD' ? 'CAD' : 'USD';
+            document.getElementById('cBtn').textContent = `💵 Currency: ${currentCurrency}`;
+            document.getElementById('cryptoCurr').value = currentCurrency;
+            calculateCrypto();
         }
 
         async function fetchLiveFx() {
@@ -525,8 +539,16 @@
             const r = (annualRate / 100) / 12;
             const n = years * 12;
             const monthly = p * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            const totalCost = monthly * n;
+            const totalInterest = totalCost - p;
             
             document.getElementById('loanOutput').textContent = `$${monthly.toFixed(2)} / mo`;
+            document.getElementById('mortgageBreakdownText').textContent = `Total Payments: $${totalCost.toLocaleString(undefined, {maximumFractionDigits:2})} | Total Interest: $${totalInterest.toLocaleString(undefined, {maximumFractionDigits:2})}`;
+        }
+
+        function toggleMortgageDrawer() {
+            const drawer = document.getElementById('mortgageDrawer');
+            drawer.style.display = drawer.style.display === 'block' ? 'none' : 'block';
         }
 
         function calculateSavings() {
@@ -560,7 +582,6 @@
             const text = document.getElementById(elementId).textContent;
             navigator.clipboard.writeText(text);
             
-            // Subtle visual feedback
             const btn = event.target;
             const originalText = btn.textContent;
             btn.textContent = "Copied!";
