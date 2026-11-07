@@ -55,6 +55,7 @@
         <button class="btn subtle desktop-action" id="exportBtn" type="button">Export backup</button>
         <button class="btn subtle desktop-action" id="printBtn" type="button">Print / PDF</button>
         <button class="btn" id="currencyBtn" type="button" aria-label="Change display currency">USD ▾</button>
+        <button class="btn subtle" id="marketBtn" type="button" aria-label="Change selected market">Market: US</button>
         <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch color theme" title="Switch theme">☀</button>
         <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Go to calculators" title="Calculators">☰</button>
         <input type="file" id="importFile" accept="application/json,.json" hidden>
@@ -292,7 +293,17 @@
       <div class="empty" id="emptySearch">No calculators match that search. Try another term or select “All tools.”</div>
     </section>
 
-    <section class="partner-slot" id="partnerSlot"><strong>Partner recommendations</strong><br>Commercial recommendations will appear here only when RaelInfo has an active, approved partner offer relevant to the tool being used. Affiliate links should be clearly identified and disclosed beside the offer. No partner offer is currently configured in this free build.</section>
+    <section class="pro-interest" id="proInterestCard" aria-labelledby="proInterestHeading">
+      <div><div class="eyebrow">Help shape the next release</div><h2 id="proInterestHeading">RaelInfo Pro — planning features in development</h2><p>We're researching saved cloud scenarios, side-by-side comparisons, history and expanded household planning. Registering interest is free, optional and does not start a subscription or authorize a charge.</p><p class="helper">Your interest is linked to your RaelInfo account so you can withdraw it later. We do not currently send marketing emails from this feature.</p></div>
+      <div class="pro-interest-action"><div id="proInterestStatus" class="inline-note" aria-live="polite">Sign in to register interest or manage your preference.</div><div id="proInterestAction"><a class="btn primary" href="/login.html">Sign in to register interest</a></div></div>
+    </section>
+
+    <section class="seo-guides" aria-labelledby="guidesHeading"><div class="section-head"><div><h2 id="guidesHeading">Popular money guides and calculators</h2><p>Dedicated explanations, examples and assumptions for common decisions.</p></div></div><div class="guide-grid">
+      <a class="guide-card" href="/mortgage-calculator.html"><strong>Mortgage calculator</strong><span>Estimate principal and interest, then review assumptions.</span></a>
+      <a class="guide-card" href="/compound-interest.html"><strong>Compound interest calculator</strong><span>Model a starting balance and recurring contributions.</span></a>
+      <a class="guide-card" href="/debt-payoff.html"><strong>Debt payoff calculator</strong><span>Estimate payoff time and interest from a monthly budget.</span></a>
+      <a class="guide-card" href="/usd-cad-calculator.html"><strong>USD/CAD converter</strong><span>Use a daily reference rate and understand its limits.</span></a>
+    </div></section>
 
     <section class="two-col" aria-label="About and privacy">
       <article class="info-card"><h3>How estimates work</h3><p>Calculator outputs are generated in your browser from the assumptions you enter. Market and reference-rate panels use external public data services and may be delayed, unavailable or revised. Confirm important decisions with a qualified professional and the relevant provider.</p></article>
@@ -300,12 +311,13 @@
     </section>
     <section class="disclosure"><strong>Important information:</strong> RaelInfo provides general educational estimates, not financial, investment, legal, mortgage, tax or accounting advice. Results are simplified and may omit fees, taxes, insurance requirements, changing rates, lender rules, transaction costs and individual circumstances. Crypto prices are indicative market data and can be volatile. Check assumptions and source data before acting. Nothing on this site is an offer to buy or sell a financial product.</section>
   </main>
-  <footer class="wrap footer"><span>© <span id="year"></span> RaelInfo. All rights reserved.</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms & disclosures</a> · <a href="https://www.coinlore.com/cryptocurrency-data-api" target="_blank" rel="noopener noreferrer">Crypto data source</a> · <a href="https://frankfurter.dev/" target="_blank" rel="noopener noreferrer">FX data source</a></span></footer>
+  <footer class="wrap footer"><span>© <span id="year"></span> RaelInfo. All rights reserved.</span><span><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms & disclosures</a> · <a href="/partners.html">Partner with RaelInfo</a> · <a href="https://www.coinlore.com/cryptocurrency-data-api" target="_blank" rel="noopener noreferrer">Crypto data source</a> · <a href="https://frankfurter.dev/" target="_blank" rel="noopener noreferrer">FX data source</a></span></footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script type="module">
   import { fetchCryptoSnapshot } from './crypto.js';
   import { fetchFxRate } from './fx.js';
+  import { trackSiteEvent } from './revenue.js';
   'use strict';
   /* ================================================================
      RAELINFO SITE CONFIGURATION
@@ -323,16 +335,17 @@
     scenarioKey: 'raelinfo_scenario_v3',
     themeKey: 'raelinfo_theme_v2',
     currencyKey: 'raelinfo_currency_v2',
+    marketKey: 'raelinfo_market_v1',
   };
 
-  /* Add only approved partner offers. Never label a partner 'verified' without
-     current evidence. Each item: { id, title, description, url, categories,
-     currencies, disclosure }. URLs must be HTTPS; categories match calculator
-     data-category values. Empty by default until the operator verifies terms. */
-  const PARTNER_OFFERS = [];
+  // Approved partner offers are loaded from the same-origin API. The server only
+  // returns offers marked active=true and approved=true in PARTNER_OFFERS_JSON.
+  let PARTNER_OFFERS = [];
+  const trackedTools = new WeakSet();
 
   const state = {
     currency: 'USD',
+    market: 'US',
     theme: 'dark',
     fxRate: null,
     fxDate: null,
@@ -373,7 +386,7 @@
     $('constructionBanner').classList.add('show');
     let robots = document.querySelector('meta[name="robots"]');
     if (robots) robots.setAttribute('content', 'noindex,nofollow');
-    $('partnerSlot').hidden = true;
+    $('partnerSlot')?.setAttribute('hidden', '');
   }
   function setTheme(theme) {
     state.theme = theme === 'light' ? 'light' : 'dark';
@@ -385,6 +398,22 @@
   function setCurrencyLabel() {
     document.querySelectorAll('.currency-label').forEach((el) => el.textContent = state.currency);
     $('currencyBtn').textContent = `${state.currency} ▾`;
+  }
+  function setMarketLabel() { $('marketBtn').textContent = `Market: ${state.market}`; }
+  async function loadPartnerOffers() {
+    try {
+      const response = await fetch(`/api/partners?market=${encodeURIComponent(state.market)}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+      const data = await response.json();
+      PARTNER_OFFERS = response.ok && Array.isArray(data.offers) ? data.offers : [];
+    } catch (_) { PARTNER_OFFERS = []; }
+    document.querySelectorAll('.tool-card').forEach(renderPartnerForCard);
+  }
+  function toggleMarket() {
+    state.market = state.market === 'US' ? 'CA' : 'US';
+    safeStore.set(CONFIG.marketKey, state.market);
+    setMarketLabel();
+    loadPartnerOffers();
+    showToast(`Partner market set to ${state.market}. Currency is a separate preference.`);
   }
   function getEffectiveFxRate() {
     const manual = $('manualFxRate') ? Number($('manualFxRate').value) : NaN;
@@ -501,24 +530,29 @@
   }
 
   function renderPartnerForCard(card) {
-    if (!card) return;
+    if (!card || UNDER_CONSTRUCTION) return;
     let slot = card.querySelector('.card-partner');
     if (!slot) { slot = document.createElement('div'); slot.className = 'card-partner'; slot.hidden = true; card.appendChild(slot); }
     slot.replaceChildren();
-    const currency = state.currency;
     const offers = PARTNER_OFFERS.filter(offer => {
       if (!offer || !Array.isArray(offer.categories) || !offer.categories.includes(card.dataset.category)) return false;
-      if (Array.isArray(offer.currencies) && !offer.currencies.includes(currency)) return false;
-      try { return new URL(offer.url).protocol === 'https:'; } catch (_) { return false; }
+      if (!Array.isArray(offer.markets) || !offer.markets.includes(state.market)) return false;
+      if (Array.isArray(offer.currencies) && !offer.currencies.includes(state.currency)) return false;
+      return true;
     }).slice(0, 2);
-    if (!offers.length || UNDER_CONSTRUCTION) { slot.hidden = true; return; }
+    if (!offers.length) { slot.hidden = true; return; }
     offers.forEach(offer => {
       const item = document.createElement('div');
+      const label = document.createElement('span'); label.className = 'partner-label'; label.textContent = 'Sponsored resource';
       const title = document.createElement('strong'); title.textContent = offer.title || 'Partner resource';
       const description = document.createElement('p'); description.textContent = offer.description || 'Review this third-party option and its terms.';
-      const link = document.createElement('a'); link.href = offer.url; link.target = '_blank'; link.rel = 'sponsored noopener noreferrer'; link.textContent = 'View partner information →';
+      const link = document.createElement('a');
+      const query = new URLSearchParams({ offer: offer.id, market: state.market, category: card.dataset.category, placement: 'calculator' });
+      link.href = `/api/affiliate/click?${query.toString()}`;
+      link.target = '_blank'; link.rel = 'sponsored nofollow noopener noreferrer';
+      link.textContent = `${offer.cta || 'Visit provider'} →`;
       const disclosure = document.createElement('small'); disclosure.textContent = offer.disclosure || 'Advertisement: RaelInfo may earn a commission if you use this link.';
-      item.append(title, description, link, disclosure); slot.appendChild(item);
+      item.append(label, title, description, link, disclosure); slot.appendChild(item);
     });
     slot.hidden = false;
   }
@@ -638,12 +672,13 @@
     safeStore.set(CONFIG.scenarioKey,JSON.stringify(serializeScenario()));
   }
   function exportScenario() {
+    trackSiteEvent('scenario_export','general',state.market);
     const blob=new Blob([JSON.stringify(serializeScenario(),null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`raelinfo-scenario-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('Scenario backup downloaded.');
   }
   function importScenarioFile(file) {
     if(!file) return; if(file.size>1024*1024){showToast('File is too large. Choose a JSON file under 1 MB.');return;}
-    const reader=new FileReader(); reader.onload=()=>{try{restoreScenario(JSON.parse(reader.result));showToast('Scenario restored in this browser.');}catch(error){showToast(error.message||'Could not read scenario file.');}}; reader.onerror=()=>showToast('Could not read that file.'); reader.readAsText(file);
+    const reader=new FileReader(); reader.onload=()=>{try{restoreScenario(JSON.parse(reader.result));trackSiteEvent('scenario_import','general',state.market);showToast('Scenario restored in this browser.');}catch(error){showToast(error.message||'Could not read scenario file.');}}; reader.onerror=()=>showToast('Could not read that file.'); reader.readAsText(file);
   }
   async function copyElementText(id) {
     const text=$(id).textContent.trim();
@@ -661,8 +696,8 @@
   }
   function setupEvents() {
     document.querySelectorAll('#toolGrid input,#toolGrid select').forEach(el=>{
-      el.addEventListener('input',()=>{calculateAll();saveLocalScenario();renderPartnerForCard(el.closest('.tool-card'));});
-      el.addEventListener('change',()=>{calculateAll();saveLocalScenario();renderPartnerForCard(el.closest('.tool-card'));});
+      el.addEventListener('input',()=>{const card=el.closest('.tool-card');calculateAll();saveLocalScenario();renderPartnerForCard(card);if(card&&!trackedTools.has(card)){trackedTools.add(card);trackSiteEvent('calculator_use',card.dataset.category||'general',state.market);}});
+      el.addEventListener('change',()=>{const card=el.closest('.tool-card');calculateAll();saveLocalScenario();renderPartnerForCard(card);if(card&&!trackedTools.has(card)){trackedTools.add(card);trackSiteEvent('calculator_use',card.dataset.category||'general',state.market);}});
     });
     document.querySelectorAll('.filter').forEach(btn=>btn.addEventListener('click',()=>{
       state.activeFilter=btn.dataset.filter; document.querySelectorAll('.filter').forEach(b=>b.setAttribute('aria-pressed',String(b===btn))); filterTools();
@@ -670,13 +705,14 @@
     $('searchInput').addEventListener('input',filterTools);
     $('themeBtn').addEventListener('click',()=>setTheme(state.theme==='dark'?'light':'dark'));
     $('currencyBtn').addEventListener('click',toggleCurrency);
+    $('marketBtn').addEventListener('click',toggleMarket);
     $('refreshCrypto').addEventListener('click',()=>refreshCrypto(true));
     $('fxAmount').addEventListener('input',calculateFx); $('fxDirection').addEventListener('change',calculateFx); $('manualFxRate').addEventListener('input',()=>{calculateFx();calculateCryptoEstimate();});
     const saveScenarioAction=()=>{saveLocalScenario();showToast('Scenario saved in this browser.');};
     $('saveBtn').addEventListener('click',saveScenarioAction); $('saveBtnMobile').addEventListener('click',saveScenarioAction);
     $('exportBtn').addEventListener('click',exportScenario); $('exportBtnMobile').addEventListener('click',exportScenario);
     $('importBtn').addEventListener('click',()=>$('importFile').click()); $('importFile').addEventListener('change',e=>{importScenarioFile(e.target.files[0]);e.target.value='';});
-    $('printBtn').addEventListener('click',()=>window.print()); $('printBtnMobile').addEventListener('click',()=>window.print());
+    $('printBtn').addEventListener('click',()=>{trackSiteEvent('report_print','general',state.market);window.print();}); $('printBtnMobile').addEventListener('click',()=>{trackSiteEvent('report_print','general',state.market);window.print();});
     $('clearDataBtn').addEventListener('click',()=>{if(confirm('Clear the saved RaelInfo scenario and market-data cache from this browser?')){safeStore.remove(CONFIG.scenarioKey);safeStore.remove(CONFIG.cryptoCacheKey);safeStore.remove(CONFIG.fxCacheKey);showToast('Saved scenario and cached market data cleared.');}});
     $('cryptoAsset').addEventListener('change',calculateCryptoEstimate);
     document.querySelectorAll('[data-copy]').forEach(btn=>btn.addEventListener('click',()=>copyElementText(btn.dataset.copy)));
@@ -688,7 +724,9 @@
     displayConstructionMode(); $('year').textContent=new Date().getFullYear();
     const savedTheme=safeStore.get(CONFIG.themeKey); const preferred=window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'; setTheme(savedTheme||preferred);
     const savedCurrency=safeStore.get(CONFIG.currencyKey); if(savedCurrency==='CAD'||savedCurrency==='USD')state.currency=savedCurrency; setCurrencyLabel();
+    const savedMarket=safeStore.get(CONFIG.marketKey); if(savedMarket==='US'||savedMarket==='CA')state.market=savedMarket; setMarketLabel();
     setupEvents();
+    loadPartnerOffers();
     try {const saved=JSON.parse(safeStore.get(CONFIG.scenarioKey)||'null');if(saved)restoreScenario(saved);}catch(error){console.warn('Saved scenario could not be restored:',error);}
     readCryptoCache(); calculateAll(); filterTools();
     refreshFx(); refreshCrypto(true);

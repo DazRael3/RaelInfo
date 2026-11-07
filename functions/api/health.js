@@ -1,3 +1,4 @@
+import { getApprovedPartnerOffers } from '../../functions-shared/partners.js';
 import { json, requireDatabase } from '../../functions-shared/http.js';
 
 export async function onRequestGet({ env }) {
@@ -13,7 +14,7 @@ export async function onRequestGet({ env }) {
   return json({
     ok: database,
     service: 'RaelInfo API',
-    version: '3.0.0',
+    version: '3.2.0',
     time: new Date().toISOString(),
     database,
     providers: {
@@ -26,7 +27,10 @@ export async function onRequestGet({ env }) {
         fmp: Boolean(env.FMP_KEY),
         eod: Boolean(env.EODHD_KEY)
       },
-      sec
+      sec,
+      approvedPartnerOffers: getApprovedPartnerOffers(env).length,
+      businessInquiriesEnabled: String(env.PARTNER_INQUIRIES_ENABLED || '').toLowerCase() === 'true',
+      revenueAdminConfigured: String(env.RAELINFO_ADMIN_TOKEN || '').length >= 32
     }
   }, database ? 200 : 503);
 }

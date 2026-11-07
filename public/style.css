@@ -56,3 +56,22 @@
 @media(max-width:520px){.backend-card{padding:14px}.backend-inline{flex-direction:column}.backend-inline .btn{width:100%}.backend-position{align-items:flex-start}.backend-indicator{white-space:normal}.portfolio-visual canvas{height:180px}}
 
 .portfolio-account-actions{display:flex;justify-content:flex-end;margin:8px 0}.portfolio-account-actions .text-btn{color:var(--bad);font-size:.74rem}
+
+/* Revenue and partner experience */
+.pro-interest{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:20px;align-items:center;margin:26px 0;padding:22px;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));border-radius:var(--radius);background:linear-gradient(135deg,var(--surface),var(--card));box-shadow:var(--shadow)}
+.pro-interest h2{margin:5px 0 8px;font-size:1.35rem;letter-spacing:-.03em}.pro-interest p{margin:0 0 8px;color:var(--muted);font-size:.88rem}.pro-interest-action{display:grid;gap:10px;justify-items:start}.pro-interest-action .btn{min-width:190px}.seo-guides{margin:34px 0}.guide-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.guide-card{display:grid;gap:7px;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--text);text-decoration:none;min-height:110px}.guide-card strong{font-size:.9rem}.guide-card span{font-size:.78rem;color:var(--muted)}.guide-card:hover{border-color:var(--accent);transform:translateY(-1px)}.card-partner{display:grid;gap:5px}.card-partner .partner-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;font-weight:850;color:var(--accent)}.card-partner a{width:max-content;max-width:100%}
+@media(max-width:920px){.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.pro-interest{grid-template-columns:1fr;padding:17px}.guide-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.guide-grid{grid-template-columns:1fr}}
+.field-check{display:flex!important;align-items:flex-start;gap:9px;color:var(--muted);font-size:.78rem;font-weight:500!important;line-height:1.45}.field-check input{width:18px!important;min-width:18px;margin:2px 0 0;min-height:18px}.honeypot{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
+
+/* Public partnership page shared components */
+.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.info-card{padding:16px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+.info-card h3{margin:0 0 7px;color:var(--text);font-size:1rem}
+.info-card p{margin:0;color:var(--muted);font-size:.84rem}
+.login-form input,.login-form select,.login-form textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);min-height:46px;padding:11px 12px;font:inherit;font-size:16px}
+.login-form textarea{min-height:120px;resize:vertical}
+.login-form input:focus,.login-form select:focus,.login-form textarea:focus{outline:none;box-shadow:var(--focus);border-color:var(--accent)}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}

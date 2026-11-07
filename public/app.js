@@ -1,6 +1,7 @@
 import { loadNews } from './news.js';
 import { loadFilings } from './filings.js';
 import { initPortfolio, setPortfolioAuth } from './portfolio.js';
+import { initRevenueFeatures } from './revenue.js';
 
 const $ = id => document.getElementById(id);
 
@@ -70,6 +71,7 @@ async function initializeAuth() {
       logoutAction.disabled = false;
     }
   });
+  return session;
 }
 
 async function initializeServiceStatus() {
@@ -105,7 +107,8 @@ function initializeForms() {
 async function init() {
   initializeForms();
   initPortfolio();
-  await Promise.all([initializeAuth(), initializeServiceStatus()]);
+  const [session] = await Promise.all([initializeAuth(), initializeServiceStatus()]);
+  initRevenueFeatures(session);
   loadNews().catch(() => {});
 }
 

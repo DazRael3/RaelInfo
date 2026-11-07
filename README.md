@@ -142,3 +142,22 @@ Wrangler uses local persisted D1 state by default; this command does not point l
 - Stock provider free plans may prohibit public redistribution or commercial display. Do not expose stock quotes until the provider's terms grant the necessary rights.
 - This application is an educational planning tool, not a bank, brokerage, financial adviser, or encrypted financial vault. Do not ask users to enter bank passwords, brokerage credentials, or highly sensitive personal identifiers.
 - The application has not been penetration-tested. Complete the smoke tests, verify authentication behavior and review privacy/terms language before accepting real users or promoting it as production financial software.
+
+
+## Revenue features (v3.2)
+
+This release adds a progressive, approval-first revenue foundation:
+
+- Contextual partner recommendations by selected market (`US` / `CA`), calculator category and currency.
+- `PARTNER_OFFERS_JSON` configuration with allowlisted markets/categories, HTTPS destinations and two explicit approval switches (`active` and `approved`). It defaults to `[]`; no partner links are enabled by default.
+- First-party affiliate click redirects and aggregate daily calculator/scenario/print event counts in D1. No calculator amounts, account IDs or portfolio holdings are sent in these event records.
+- An owner-only dashboard at `/admin/revenue.html`, protected by a server-side `RAELINFO_ADMIN_TOKEN` secret, to review aggregate clicks, manually reconcile affiliate-network conversions, Pro interest and partnership inquiries.
+- A public B2B partnership inquiry page at `/partners.html`; form submission is disabled by default until the operator publishes contact/retention details and sets `PARTNER_INQUIRIES_ENABLED=true`.
+- A voluntary RaelInfo Pro interest list. This is not a paid subscription and no billing or marketing-email system is implemented.
+- Four standalone SEO calculator pages for mortgage, compound interest, debt payoff and USD/CAD.
+
+Before using revenue features, apply `migrations/0002_revenue.sql` to the existing D1 database and follow the **Revenue phase** instructions in `CLOUDFLARE-BACKEND-SETUP.md`. Keep `PARTNER_OFFERS_JSON=[]` until a partner has approved RaelInfo and provided an authorized tracking URL. Generate `RAELINFO_ADMIN_TOKEN` locally and add it as a Cloudflare Production Secret; never commit the value.
+
+Potential partner applications (approval is not guaranteed): Wise Website Partnerships: https://wise.com/gb/affiliate-program/ ; Wealthsimple Affiliate Guidelines: https://www.wealthsimple.com/en-ca/legal/affiliate-guidelines . Confirm market eligibility and the exact permitted placement with each program before enabling an offer. Wealthsimple's referral terms cited in its current program are for eligible Canadian residents; do not offer it in the US without explicit written authorization.
+
+Enable free Cloudflare Web Analytics in Workers & Pages → `raelinfo` → Metrics → Web Analytics. Google AdSense, paid subscriptions, payment processing and automatic affiliate conversion imports are not included; apply to ad/affiliate programs first and add billing only after demand and legal/tax review. The owner dashboard is a manual ledger, not a bank balance or guaranteed income report.

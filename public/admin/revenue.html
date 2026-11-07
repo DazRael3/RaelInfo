@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0b1220">
+  <title>RaelInfo Owner Revenue Dashboard</title><link rel="icon" href="/icons/raelinfo.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
+  <style>
+    .owner-wrap{width:min(1180px,calc(100% - 32px));margin:28px auto 60px}.owner-head{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}.owner-head a{color:var(--accent)}.owner-panel{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--card);margin:16px 0}.owner-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.owner-stat{padding:15px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.owner-stat small{display:block;color:var(--muted)}.owner-stat strong{font-size:1.4rem;display:block;margin-top:5px}.owner-table-wrap{overflow:auto}.owner-table{border-collapse:collapse;width:100%;font-size:.82rem}.owner-table th,.owner-table td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.owner-table th{color:var(--muted)}.owner-table td{overflow-wrap:anywhere}.owner-table button{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);padding:5px 8px}.owner-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.owner-form label{display:grid;gap:4px;font-size:.76rem;color:var(--muted);font-weight:700}.owner-form input,.owner-form select{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}.owner-form .wide{grid-column:1/-1}.owner-note{font-size:.78rem;color:var(--muted)}.owner-error{color:var(--bad)}.owner-success{color:var(--good)}.hidden-token-note{font-size:.75rem;color:var(--muted)}
+    @media(max-width:850px){.owner-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.owner-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:520px){.owner-grid,.owner-form{grid-template-columns:1fr}.owner-wrap{width:calc(100% - 24px)}}
+  </style>
+</head>
+<body><main class="owner-wrap">
+  <header class="owner-head"><div><a href="/" style="text-decoration:none;font-weight:800">RI · RaelInfo</a><h1 style="margin:8px 0 0">Owner revenue dashboard</h1><p class="owner-note">Private reporting endpoint. Metrics are not public and this page is not linked in the main navigation. Keep the owner token private and clear it when finished.</p></div><a href="/partners.html">View partner inquiry page →</a></header>
+  <section class="owner-panel">
+    <h2>Administrator access</h2>
+    <form id="connectForm" class="owner-form"><label class="wide">RAELINFO_ADMIN_TOKEN secret<input id="adminToken" type="password" autocomplete="off" required minlength="32" placeholder="Paste the Cloudflare secret"></label><div class="wide"><button class="btn primary" type="submit">Load private report</button> <button class="btn" id="clearToken" type="button">Clear token</button></div></form>
+    <p class="hidden-token-note">The token stays in this page's memory only. It is not saved to local storage. Never share it or enter it on any other website.</p><p id="ownerStatus" class="owner-note" role="status" aria-live="polite">Enter your owner token to load reports.</p>
+  </section>
+  <div id="report" hidden>
+    <section class="owner-grid" aria-label="Revenue overview">
+      <div class="owner-stat"><small>Tracked partner clicks</small><strong id="totalClicks">—</strong></div>
+      <div class="owner-stat"><small>Approved conversions</small><strong id="totalConversions">—</strong></div>
+      <div class="owner-stat"><small>Pro interest</small><strong id="proCount">—</strong></div>
+      <div class="owner-stat"><small>Business inquiries</small><strong id="inquiryCount">—</strong></div>
+    </section>
+    <section class="owner-panel"><h2>Recorded approved commissions</h2><p class="owner-note">Amounts are separated by currency. This is based only on conversion records you enter from partner network reports; it is not a live bank balance or automatic network reconciliation.</p><div id="commissionSummary" class="owner-grid"></div></section>
+    <section class="owner-panel"><h2>Affiliate clicks by offer</h2><div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Partner</th><th>Market</th><th>Calculator</th><th>Placement</th><th>Clicks</th><th>Last click</th></tr></thead><tbody id="clickRows"></tbody></table></div></section>
+    <section class="owner-panel"><h2>Recent conversion records</h2><div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Partner</th><th>Ref ID</th><th>Market</th><th>Commission</th><th>Status</th><th>Date</th></tr></thead><tbody id="conversionRows"></tbody></table></div></section>
+    <section class="owner-panel"><h2>Calculator and product activity (last 30 days)</h2><div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Event</th><th>Category</th><th>Market</th><th>Count</th></tr></thead><tbody id="eventRows"></tbody></table></div></section>
+    <section class="owner-panel"><h2>Record a conversion from a partner report</h2><p class="owner-note">Use the actual commission amount shown by the affiliate network, not the customer's purchase amount. Enter a network transaction/reference ID only; do not enter customer names, email addresses or financial details. Re-entering the same offer ID and reference updates the existing record.</p>
+      <form id="conversionForm" class="owner-form">
+        <label>Offer ID<input name="offerId" required maxlength="48" placeholder="wise-ca"></label>
+        <label>Partner name<input name="partnerName" required maxlength="80" placeholder="Wise"></label>
+        <label>Network reference ID<input name="externalRef" required maxlength="120"></label>
+        <label>Market<select name="market"><option>US</option><option>CA</option></select></label>
+        <label>Commission amount<input name="commissionAmount" type="number" min="0" step="0.01" required></label>
+        <label>Currency<select name="currency"><option>USD</option><option>CAD</option></select></label>
+        <label>Status<select name="status"><option value="pending">Pending</option><option value="approved">Approved / payable</option><option value="reversed">Reversed</option></select></label>
+        <label>Conversion date<input name="conversionDate" type="date" required></label>
+        <div class="wide"><button class="btn primary" type="submit">Save conversion record</button><span id="conversionStatus" class="owner-note" aria-live="polite"></span></div>
+      </form>
+    </section>
+    <section class="owner-panel"><h2>Business partnership inquiries</h2><p class="owner-note">These are contact details submitted through the public partner form. Use them only to respond to the inquiry. Mark a lead as contacted or closed when handled.</p><div class="owner-table-wrap"><table class="owner-table"><thead><tr><th>Received</th><th>Contact</th><th>Organization</th><th>Type / message</th><th>Status</th><th>Actions</th></tr></thead><tbody id="inquiryRows"></tbody></table></div></section>
+  </div>
+  <p class="owner-note" style="margin-top:24px">This dashboard does not automatically import affiliate-network conversions, process payments, calculate taxes or represent a bank balance. Use each partner network as the source of truth and enter confirmed commission amounts manually. <br>Measurement notes: affiliate clicks are outbound redirect requests, not unique visitors or guaranteed conversions; automated traffic may be included. Cloudflare Web Analytics provides aggregate visits and page views. RaelInfo does not transmit calculator input values into these event metrics. Use partner-network dashboards as the source of truth for commissions.</p>
+</main>
+<script type="module" src="/admin/revenue.js"></script></body></html>

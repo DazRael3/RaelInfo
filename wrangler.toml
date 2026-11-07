@@ -1,0 +1,11 @@
+# RaelInfo Pages configuration and production D1 migration binding.
+# This ID identifies the existing database; it is not an API secret.
+name = "raelinfo"
+pages_build_output_dir = "public"
+compatibility_date = "2026-11-06"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "raelinfo-production"
+database_id = "6f1e1f06-50e1-4862-8ca2-fcf442399804"
+migrations_dir = "migrations"

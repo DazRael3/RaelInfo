@@ -10,3 +10,11 @@ ALPHA_VANTAGE_KEY=
 FMP_KEY=
 EODHD_KEY=
 SEC_USER_AGENT=RaelInfo/3.0 contact=YOUR-MONITORED-EMAIL@example.com
+
+# Owner-only dashboard token. Generate a random value of at least 32 characters.
+RAELINFO_ADMIN_TOKEN=REPLACE_WITH_RANDOM_SECRET_AT_LEAST_32_CHARS
+# Approved offers only. Keep [] until a partner program accepts RaelInfo.
+PARTNER_OFFERS_JSON=[]
+
+# Public B2B inquiry form remains disabled until operator contact/retention policies are completed.
+PARTNER_INQUIRIES_ENABLED=false
