@@ -155,3 +155,10 @@ export function authUnavailableResponse(request) {
 export function userForClient(user) {
   return user ? { id: user.id, email: user.email, createdAt: user.created_at || null } : null;
 }
+
+export async function verifySupabaseRecoveryOtp(env, email, token) {
+  return authFetch(env, '/auth/v1/verify', {
+    method: 'POST',
+    body: { email, token, type: 'recovery' }
+  });
+}
