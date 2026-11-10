@@ -15,7 +15,7 @@ export async function onRequestPost({ request, env }) {
     if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return error('Enter a valid email address.', 400);
     if (password.length < 12 || password.length > 200) return error('Password must be at least 12 characters and no more than 200.', 400);
 
-    const redirectTo = String(env.APP_ORIGIN || `${new URL(request.url).origin}/login.html`);
+    const redirectTo = `${new URL(request.url).origin}/login.html`;
     const result = await registerWithSupabase(env, email, password, redirectTo);
     // Supabase returns either { user, access_token, ... } or a User object
     // directly when email confirmation is enabled. Handle both documented shapes.

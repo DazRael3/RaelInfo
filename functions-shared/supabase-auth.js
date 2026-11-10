@@ -72,6 +72,17 @@ export async function signInWithSupabase(env, email, password) {
   });
 }
 
+
+export async function recoverSupabasePassword(env, email, redirectTo) {
+  const url = new URL('/auth/v1/recover', supabaseConfig(env).base);
+  if (redirectTo) url.searchParams.set('redirect_to', redirectTo);
+  return authFetch(env, `${url.pathname}${url.search}`, { method: 'POST', body: { email } });
+}
+
+export async function updateSupabasePassword(env, accessToken, password) {
+  return authFetch(env, '/auth/v1/user', { method: 'PUT', body: { password }, accessToken });
+}
+
 export async function refreshSupabaseSession(env, refreshToken) {
   return authFetch(env, '/auth/v1/token?grant_type=refresh_token', {
     method: 'POST', body: { refresh_token: refreshToken }
