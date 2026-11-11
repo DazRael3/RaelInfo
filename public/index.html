@@ -178,10 +178,13 @@
           <div class="fields">
             <div class="field"><label for="debt1">Debt 1 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt1" type="number" min="0" step="100" value="6000"></div>
             <div class="field"><label for="apr1">Debt 1 APR (%)</label><input id="apr1" type="number" min="0" max="1000" step="0.1" value="24"></div>
+            <div class="field"><label for="debtMin1">Debt 1 minimum monthly payment (<span class="currency-label">USD</span>)</label><input class="money-input" id="debtMin1" type="number" min="0" step="0.01" placeholder="Enter actual minimum"></div>
             <div class="field"><label for="debt2">Debt 2 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt2" type="number" min="0" step="100" value="4000"></div>
             <div class="field"><label for="apr2">Debt 2 APR (%)</label><input id="apr2" type="number" min="0" max="1000" step="0.1" value="18"></div>
+            <div class="field"><label for="debtMin2">Debt 2 minimum monthly payment (<span class="currency-label">USD</span>)</label><input class="money-input" id="debtMin2" type="number" min="0" step="0.01" placeholder="Enter actual minimum"></div>
             <div class="field"><label for="debt3">Debt 3 balance (<span class="currency-label">USD</span>)</label><input class="money-input" id="debt3" type="number" min="0" step="100" value="2000"></div>
             <div class="field"><label for="apr3">Debt 3 APR (%)</label><input id="apr3" type="number" min="0" max="1000" step="0.1" value="12"></div>
+            <div class="field"><label for="debtMin3">Debt 3 minimum monthly payment (<span class="currency-label">USD</span>)</label><input class="money-input" id="debtMin3" type="number" min="0" step="0.01" placeholder="Enter actual minimum"></div>
             <div class="field"><label for="debtBudget">Total monthly budget (<span class="currency-label">USD</span>)</label><input class="money-input" id="debtBudget" type="number" min="0" step="25" value="500"></div>
             <div class="field"><label for="debtMethod">Payoff priority</label><select id="debtMethod"><option value="avalanche">Avalanche (highest APR)</option><option value="snowball">Snowball (smallest balance)</option></select></div>
           </div>
@@ -585,30 +588,205 @@
     $('compoundResult').textContent = money(balance); $('compoundBreakdown').textContent = `Total contributions: ${money(invested)} · Estimated growth: ${money(balance - invested)} · Assumes a steady return and month-end contributions.`;
   }
   function runDebtSimulation() {
-    const debts = [1,2,3].map(i => ({ name: `Debt ${i}`, balance: clampNonNegative(number(`debt${i}`)), apr: clampNonNegative(number(`apr${i}`)) / 100 } )).filter(d => d.balance > 0);
-    const budget = clampNonNegative(number('debtBudget')); const method = $('debtMethod').value;
-    if (!debts.length) { $('debtResult').textContent = money(0); $('debtBreakdown').textContent = 'No balances entered.'; return; }
-    if (budget <= 0) { $('debtResult').textContent = 'Enter a payment'; $('debtBreakdown').textContent = 'Monthly budget must be greater than zero.'; return; }
-    const minPayments = debts.reduce((sum,d) => sum + Math.min(d.balance, Math.max(25, d.balance * 0.02)), 0);
-    if (budget < minPayments) { $('debtResult').textContent = 'Budget too low'; $('debtBreakdown').textContent = `The illustrative minimum-payment assumption totals ${money(minPayments)}. Increase the budget.`; return; }
-    let balances = debts.map(d => ({...d, interest:0})); let totalInterest=0; let months=0; const payoffOrder=[];
-    while (balances.some(d => d.balance > 0.005) && months < 1200) {
-      months++;
-      balances.forEach(d => { const interest = d.balance * d.apr / 12; d.balance += interest; d.interest += interest; totalInterest += interest; });
-      const mins = balances.map(d => d.balance > .005 ? Math.min(d.balance, Math.max(25, debts.find(x=>x.name===d.name).balance * .02)) : 0);
-      const minTotal = mins.reduce((a,b)=>a+b,0);
-      if (budget <= minTotal && balances.some(d=>d.balance > .005)) {
-        // At exactly minimums, debts can still amortize if the payment exceeds accrued interest.
-      }
-      let available = budget;
-      balances.forEach((d,i)=>{ const pay=Math.min(d.balance,mins[i]); d.balance-=pay; available-=pay; });
-      const priority = [...balances].filter(d=>d.balance>.005).sort((a,b)=> method==='snowball' ? a.balance-b.balance : b.apr-a.apr);
-      for (const target of priority) { if (available<=0) break; const pay=Math.min(target.balance,available); target.balance-=pay; available-=pay; if(target.balance<=.005&&!payoffOrder.includes(target.name)) payoffOrder.push(target.name); }
-      if (months===1200) break;
+    const method = $('debtMethod')?.value;
+    const result = $('debtResult');
+    const breakdown = $('debtBreakdown');
+
+    if (!['avalanche', 'snowball'].includes(method)) {
+      result.textContent = 'Invalid strategy';
+      breakdown.textContent = 'Select avalanche or snowball.';
+      return;
     }
-    if (months>=1200) { $('debtResult').textContent='Not paid off'; $('debtBreakdown').textContent='At this budget and rate, the simulation did not reach payoff within 100 years.'; return; }
-    $('debtResult').textContent = `${Math.floor(months/12)}y ${months%12}m`;
-    $('debtBreakdown').textContent = `Estimated interest: ${money(totalInterest)} · Strategy: ${method} · Assumes 2% of each original balance or $25 as each minimum payment; actual lender minimums differ.`;
+
+    const debts = [];
+
+    for (let i = 1; i <= 3; i++) {
+      const balanceInput = $(`debt${i}`);
+      const aprInput = $(`apr${i}`);
+      const minimumInput = $(`debtMin${i}`);
+
+      if (!balanceInput) {
+        result.textContent = 'Calculator unavailable';
+        breakdown.textContent = `The balance input for Debt ${i} is missing.`;
+        return;
+      }
+
+      const rawBalance = balanceInput.value.trim();
+
+      if (rawBalance !== '' &&
+          (!Number.isFinite(Number(rawBalance)) || Number(rawBalance) < 0)) {
+        result.textContent = 'Check debt balance';
+        breakdown.textContent = `Enter a valid non-negative balance for Debt ${i}.`;
+        return;
+      }
+
+      const balance = rawBalance === '' ? 0 : Number(rawBalance);
+
+      if (balance <= 0) continue;
+
+      if (!aprInput || aprInput.value.trim() === '' ||
+          !Number.isFinite(Number(aprInput.value)) ||
+          Number(aprInput.value) < 0 || Number(aprInput.value) > 1000) {
+        result.textContent = 'Check debt APR';
+        breakdown.textContent = `Enter a valid APR from 0% to 1,000% for Debt ${i}.`;
+        return;
+      }
+
+      if (!minimumInput || minimumInput.value.trim() === '' ||
+          !Number.isFinite(Number(minimumInput.value)) ||
+          Number(minimumInput.value) <= 0) {
+        result.textContent = 'Minimum payment required';
+        breakdown.textContent = `Enter the actual monthly minimum payment for Debt ${i}.`;
+        return;
+      }
+
+      debts.push({
+        name: `Debt ${i}`,
+        balance,
+        apr: Number(aprInput.value) / 100,
+        minimum: Number(minimumInput.value),
+        interest: 0
+      });
+    }
+
+    if (!debts.length) {
+      result.textContent = money(0);
+      breakdown.textContent = 'No debt balances entered.';
+      return;
+    }
+
+    const budgetInput = $('debtBudget');
+    const budget = clampNonNegative(number('debtBudget'));
+
+    if (!budgetInput || budgetInput.value.trim() === '' ||
+        !Number.isFinite(Number(budgetInput.value)) || budget <= 0) {
+      result.textContent = 'Enter a payment';
+      breakdown.textContent = 'Enter a valid monthly debt payment budget greater than zero.';
+      return;
+    }
+
+    const originalPrincipal = debts.reduce((sum, debt) => sum + debt.balance, 0);
+
+    const requiredMinimums = debts.reduce(
+      (sum, debt) =>
+        sum + Math.min(
+          debt.minimum,
+          debt.balance * (1 + debt.apr / 12)
+        ),
+      0
+    );
+
+    if (requiredMinimums > budget + 0.005) {
+      result.textContent = 'Budget too low';
+      breakdown.textContent =
+        `Your entered minimum payments total ${money(requiredMinimums)}, ` +
+        `which exceeds the monthly budget of ${money(budget)}.`;
+      return;
+    }
+
+    let totalInterest = 0;
+    let months = 0;
+    const payoffOrder = [];
+    const epsilon = 0.005;
+
+    const recordPayoffs = () => {
+      for (const debt of debts) {
+        if (debt.balance <= epsilon && !payoffOrder.includes(debt.name)) {
+          debt.balance = 0;
+          payoffOrder.push(debt.name);
+        }
+      }
+    };
+
+    while (debts.some(debt => debt.balance > epsilon) && months < 1200) {
+      months++;
+
+      const startingBalance = debts.reduce(
+        (sum, debt) => sum + debt.balance,
+        0
+      );
+
+      for (const debt of debts) {
+        if (debt.balance <= epsilon) continue;
+
+        const interest = debt.balance * debt.apr / 12;
+        debt.balance += interest;
+        debt.interest += interest;
+        totalInterest += interest;
+      }
+
+      let available = budget;
+
+      for (const debt of debts) {
+        if (debt.balance <= epsilon) continue;
+
+        const payment = Math.min(debt.balance, debt.minimum);
+        debt.balance = Math.max(0, debt.balance - payment);
+        available -= payment;
+      }
+
+      recordPayoffs();
+
+      const priority = debts
+        .filter(debt => debt.balance > epsilon)
+        .sort((a, b) => {
+          if (method === 'snowball') {
+            return a.balance - b.balance || b.apr - a.apr;
+          }
+          return b.apr - a.apr || a.balance - b.balance;
+        });
+
+      for (const debt of priority) {
+        if (available <= epsilon) break;
+
+        const payment = Math.min(debt.balance, available);
+        debt.balance = Math.max(0, debt.balance - payment);
+        available -= payment;
+
+        recordPayoffs();
+      }
+
+      const remainingBalance = debts.reduce(
+        (sum, debt) => sum + debt.balance,
+        0
+      );
+
+      if (remainingBalance <= epsilon) break;
+
+      if (remainingBalance >= startingBalance - 1e-9) {
+        result.textContent = 'Budget cannot reduce debt';
+        breakdown.textContent =
+          `The monthly budget of ${money(budget)} does not exceed the ` +
+          `interest accumulating on these balances. Increase the budget ` +
+          `or review the APR and minimum-payment inputs.`;
+        return;
+      }
+    }
+
+    if (debts.some(debt => debt.balance > epsilon)) {
+      result.textContent = 'Not paid off';
+      breakdown.textContent =
+        'The estimated payoff exceeds the 100-year calculation limit.';
+      return;
+    }
+
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    const duration = [
+      years > 0 ? `${years}y` : '',
+      remainingMonths > 0 ? `${remainingMonths}m` : ''
+    ].filter(Boolean).join(' ') || 'Less than one month';
+
+    const strategy = method === 'avalanche'
+      ? 'Avalanche (highest APR first)'
+      : 'Snowball (smallest balance first)';
+
+    result.textContent = duration;
+    breakdown.textContent =
+      `Estimated interest: ${money(totalInterest)} · ` +
+      `Total paid: ${money(originalPrincipal + totalInterest)} · ` +
+      `Payoff order: ${payoffOrder.join(' → ')} · ${strategy}. ` +
+      `Uses your entered minimum payments as fixed monthly amounts; actual lender requirements may change.`;
   }
   function calculateSavings() {
     const start=clampNonNegative(number('savingsStart')); const monthly=clampNonNegative(number('savingsMonthly')); const apy=clampNonNegative(number('savingsApy'))/100; const years=Math.max(0,number('savingsYears'));
