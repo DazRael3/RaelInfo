@@ -4,3 +4,6 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), geolocation=(), microphone=()
   Strict-Transport-Security: max-age=31536000
+
+/admin/*
+  Cache-Control: no-store, private, max-age=0
