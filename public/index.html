@@ -1080,9 +1080,49 @@
     $('cryptoEstimateNote').textContent=`Indicative price: ${formatCryptoPrice(coin.price, 'USD')} USD${state.currency==='CAD'&&effectiveRate>0?` / ${money(price,'CAD')}`:''}. Fees, spreads and network costs excluded.`;
   }
   function calculateInflation() {
-    const amount=clampNonNegative(number('inflationAmount')); const rate=clampNonNegative(number('inflationRate'))/100; const years=Math.max(0,number('inflationYears'));
-    const value=amount/Math.pow(1+rate,years); $('inflationResult').textContent=money(value);
+    const amountInput = $('inflationAmount');
+    const rateInput = $('inflationRate');
+    const yearsInput = $('inflationYears');
+    const result = $('inflationResult');
+
+    if (!amountInput || !rateInput || !yearsInput || !result) return;
+
+    const amountRaw = String(amountInput.value ?? '').trim();
+    const rateRaw = String(rateInput.value ?? '').trim();
+    const yearsRaw = String(yearsInput.value ?? '').trim();
+
+    const amount = Number(amountRaw);
+    const rate = Number(rateRaw);
+    const years = Number(yearsRaw);
+
+    const allowedYears = [5, 10, 15, 20, 30];
+    const invalid = {
+      inflationAmount: !amountRaw || !Number.isFinite(amount) || amount < 0,
+      inflationRate: !rateRaw || !Number.isFinite(rate) || rate < 0 || rate > 100,
+      inflationYears: !yearsRaw || !Number.isInteger(years) || !allowedYears.includes(years)
+    };
+
+    for (const [id, isInvalid] of Object.entries(invalid)) {
+      const input = $(id);
+      if (isInvalid) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+
+    if (Object.values(invalid).some(Boolean)) {
+      result.textContent = 'Invalid inputs';
+      return;
+    }
+
+    const value = amount / Math.pow(1 + rate / 100, years);
+
+    if (!Number.isFinite(value) || value < 0) {
+      result.textContent = 'Calculation unavailable';
+      return;
+    }
+
+    result.textContent = money(value);
   }
+
   function calculateRetirement() {
     const income=clampNonNegative(number('retirementIncome')); const rate=number('withdrawalRate')/100;
     $('retirementResult').textContent=rate>0 ? money(income/rate) : 'Enter a rate above zero';
