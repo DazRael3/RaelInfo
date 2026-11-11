@@ -979,11 +979,97 @@
       `Uses your entered minimum payments as fixed monthly amounts; actual lender requirements may change.`;
   }
   function calculateSavings() {
-    const start=clampNonNegative(number('savingsStart')); const monthly=clampNonNegative(number('savingsMonthly')); const apy=clampNonNegative(number('savingsApy'))/100; const years=Math.max(0,number('savingsYears'));
-    const monthlyRate=Math.pow(1+apy,1/12)-1; let balance=start;
-    for(let i=0;i<years*12;i++) balance=balance*(1+monthlyRate)+monthly;
-    const total=start+monthly*years*12;
-    $('savingsResult').textContent=money(balance); $('savingsBreakdown').textContent=`Total deposits: ${money(total)} · Estimated interest: ${money(balance-total)} · Assumes constant APY and month-end deposits.`;
+    const fields = [
+      ['savingsStart', 'Starting deposit'],
+      ['savingsMonthly', 'Monthly deposit']
+    ];
+
+    const values = {};
+    let invalidMessage = '';
+
+    for (const [id, label] of fields) {
+      const el = $(id);
+      const raw = el?.value?.trim() ?? '';
+      const value = Number(raw);
+      const valid = raw !== '' && Number.isFinite(value) && value >= 0;
+
+      if (el) {
+        if (valid) el.removeAttribute('aria-invalid');
+        else el.setAttribute('aria-invalid', 'true');
+      }
+
+      if (!valid && !invalidMessage) {
+        invalidMessage = `${label} must be a valid non-negative number.`;
+      }
+
+      values[id] = value;
+    }
+
+    const apyEl = $('savingsApy');
+    const apyRaw = apyEl?.value?.trim() ?? '';
+    const annualPercent = Number(apyRaw);
+    const validApy = apyRaw !== '' &&
+      Number.isFinite(annualPercent) &&
+      annualPercent >= 0 &&
+      annualPercent <= 100;
+
+    if (apyEl) {
+      if (validApy) apyEl.removeAttribute('aria-invalid');
+      else apyEl.setAttribute('aria-invalid', 'true');
+    }
+
+    if (!validApy && !invalidMessage) {
+      invalidMessage = 'APY must be between 0% and 100%.';
+    }
+
+    const yearsEl = $('savingsYears');
+    const yearsRaw = yearsEl?.value?.trim() ?? '';
+    const years = Number(yearsRaw);
+    const allowedTerms = [1, 3, 5, 10, 15];
+    const validYears = yearsRaw !== '' &&
+      Number.isInteger(years) &&
+      allowedTerms.includes(years);
+
+    if (yearsEl) {
+      if (validYears) yearsEl.removeAttribute('aria-invalid');
+      else yearsEl.setAttribute('aria-invalid', 'true');
+    }
+
+    if (!validYears && !invalidMessage) {
+      invalidMessage = 'Select a valid savings period.';
+    }
+
+    if (invalidMessage) {
+      $('savingsResult').textContent = 'Invalid inputs';
+      $('savingsBreakdown').textContent = invalidMessage;
+      return;
+    }
+
+    const start = values.savingsStart;
+    const monthly = values.savingsMonthly;
+    const apy = annualPercent / 100;
+    const months = years * 12;
+    const monthlyRate = Math.pow(1 + apy, 1 / 12) - 1;
+
+    let balance = start;
+
+    for (let i = 0; i < months; i++) {
+      balance = balance * (1 + monthlyRate) + monthly;
+    }
+
+    const total = start + monthly * months;
+    const interest = balance - total;
+
+    if (![monthlyRate, balance, total, interest].every(Number.isFinite)) {
+      $('savingsResult').textContent = 'Calculation unavailable';
+      $('savingsBreakdown').textContent =
+        'The entered values exceed the supported calculation range.';
+      return;
+    }
+
+    $('savingsResult').textContent = money(balance);
+    $('savingsBreakdown').textContent =
+      `Total deposits: ${money(total)} · Estimated interest: ${money(interest)} · Assumes constant APY and month-end deposits.`;
   }
   function calculateCryptoEstimate() {
     const symbol=$('cryptoAsset').value; const coin=state.crypto[symbol]; const amount=clampNonNegative(number('cryptoAmount'));
