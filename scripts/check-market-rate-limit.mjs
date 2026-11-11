@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import { cachedJson } from '../functions-shared/cache.js';
-import { enforceRateLimitOrThrow } from '../functions-shared/rate-limit.js';
+import {
+  enforceRateLimitOrThrow,
+  enforceProviderThrottleOrThrow
+} from '../functions-shared/rate-limit.js';
 
 const rateRows = new Map();
 const cacheRows = new Map();
+const throttleRows = new Map();
 
 const db = {
   prepare(sql) {
@@ -36,6 +40,24 @@ const db = {
       },
 
       async first() {
+        if (sql.includes('INSERT INTO provider_throttles')) {
+          const [key, nextAllowedAt, now] = values;
+          const current = throttleRows.get(key);
+
+          if (current === undefined || current <= now) {
+            throttleRows.set(key, nextAllowedAt);
+            return { next_allowed_at: nextAllowedAt };
+          }
+
+          return null;
+        }
+
+        if (sql.includes('SELECT next_allowed_at')) {
+          return {
+            next_allowed_at: throttleRows.get(values[0]) ?? null
+          };
+        }
+
         if (sql.includes('SELECT hits')) {
           const [bucket, window] = values;
           return { hits: rateRows.get(`${bucket}:${window}`) || 0 };
@@ -59,13 +81,13 @@ function request(ip = '192.0.2.50') {
   });
 }
 
-// A request within the limit is allowed.
+// A request within the per-IP limit is allowed.
 const allowed = await enforceRateLimitOrThrow(
   env, request(), 'market-test', 1, 60
 );
 assert.equal(allowed.allowed, true);
 
-// The next request receives a typed 429 error with a retry interval.
+// The next request receives a typed 429 error with retry metadata.
 await assert.rejects(
   enforceRateLimitOrThrow(env, request(), 'market-test', 1, 60),
   err => err.status === 429 &&
@@ -159,4 +181,29 @@ await assert.rejects(
   err => err.status === 429 && err.retryAfter === 25
 );
 console.log('PASS: A blocked cache miss propagates HTTP 429 metadata.');
+
+// The first request reserves the shared GDELT provider slot.
+const providerFirst = await enforceProviderThrottleOrThrow(
+  env, 'gdelt-test', 5000
+);
+assert.equal(providerFirst.allowed, true);
+
+// A different visitor cannot reserve the same provider slot.
+await assert.rejects(
+  enforceProviderThrottleOrThrow(env, 'gdelt-test', 5000),
+  err => err.status === 503 &&
+    err.code === 'PROVIDER_THROTTLED' &&
+    Number.isInteger(err.retryAfter) &&
+    err.retryAfter >= 1 &&
+    err.retryAfter <= 5
+);
+
+// A separate provider has an independent throttle.
+const otherProvider = await enforceProviderThrottleOrThrow(
+  env, 'other-provider-test', 5000
+);
+assert.equal(otherProvider.allowed, true);
+
+console.log('PASS: Shared provider throttle blocks rapid requests across visitors.');
+console.log('PASS: Provider throttles use independent provider keys.');
 console.log('All market-data rate-limit tests passed.');

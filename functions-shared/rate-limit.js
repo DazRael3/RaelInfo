@@ -48,7 +48,6 @@ export async function enforceRateLimit(
   return { allowed: true, retryAfter };
 }
 
-
 export async function enforceRateLimitOrThrow(
   env,
   request,
@@ -69,4 +68,52 @@ export async function enforceRateLimitOrThrow(
   }
 
   return result;
+}
+
+export async function enforceProviderThrottleOrThrow(
+  env,
+  providerKey,
+  intervalMs = 5000
+) {
+  const key = String(providerKey || '').trim().toLowerCase();
+
+  if (!/^[a-z0-9_-]{1,64}$/.test(key)) {
+    throw new Error('Invalid provider throttle key.');
+  }
+
+  if (!Number.isSafeInteger(intervalMs) || intervalMs < 1000 || intervalMs > 300000) {
+    throw new Error('Invalid provider throttle interval.');
+  }
+
+  const db = requireDatabase(env);
+  const now = Date.now();
+  const nextAllowedAt = now + intervalMs;
+
+  const acquired = await db.prepare(`
+    INSERT INTO provider_throttles (provider_key, next_allowed_at)
+    VALUES (?, ?)
+    ON CONFLICT(provider_key) DO UPDATE SET
+      next_allowed_at = excluded.next_allowed_at
+    WHERE provider_throttles.next_allowed_at <= ?
+    RETURNING next_allowed_at
+  `).bind(key, nextAllowedAt, now).first();
+
+  if (acquired) {
+    return { allowed: true, retryAfter: 0 };
+  }
+
+  const current = await db.prepare(
+    'SELECT next_allowed_at FROM provider_throttles WHERE provider_key = ?'
+  ).bind(key).first();
+
+  const retryAfter = Math.max(
+    1,
+    Math.ceil((Number(current?.next_allowed_at || now + intervalMs) - Date.now()) / 1000)
+  );
+
+  const err = new Error('Shared provider throttle is active.');
+  err.status = 503;
+  err.code = 'PROVIDER_THROTTLED';
+  err.retryAfter = retryAfter;
+  throw err;
 }
