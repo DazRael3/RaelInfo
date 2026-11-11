@@ -73,5 +73,5 @@
 .info-card p{margin:0;color:var(--muted);font-size:.84rem}
 .login-form input,.login-form select,.login-form textarea{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);min-height:46px;padding:11px 12px;font:inherit;font-size:16px}
 .login-form textarea{min-height:120px;resize:vertical}
-.login-form input:focus,.login-form select:focus,.login-form textarea:focus{outline:none;box-shadow:var(--focus);border-color:var(--accent)}
+.login-form input:focus,.login-form select:focus,.login-form textarea:focus{outline:none;box-shadow:var(--focus,0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent));border-color:var(--accent)}
 @media(max-width:640px){.two-col{grid-template-columns:1fr}}
