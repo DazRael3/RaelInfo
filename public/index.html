@@ -662,12 +662,91 @@
     $('mortgageSchedule').innerHTML = rows + '</tbody></table>';
   }
   function calculateCompound() {
-    const start = clampNonNegative(number('compoundStart')); const monthly = clampNonNegative(number('compoundMonthly')); const annual = number('compoundRate') / 100; const years = Math.max(0, number('compoundYears'));
-    if (annual <= -1) { $('compoundResult').textContent = 'Invalid return'; $('compoundBreakdown').textContent = 'Annual return must be greater than -100%.'; return; }
-    const r = Math.pow(1 + annual, 1 / 12) - 1; let balance = start;
-    for (let m = 0; m < years * 12; m++) balance = balance * (1 + r) + monthly;
-    const invested = start + monthly * years * 12;
-    $('compoundResult').textContent = money(balance); $('compoundBreakdown').textContent = `Total contributions: ${money(invested)} · Estimated growth: ${money(balance - invested)} · Assumes a steady return and month-end contributions.`;
+    const fields = [
+      ['compoundStart', 'Starting balance'],
+      ['compoundMonthly', 'Monthly contribution']
+    ];
+
+    const values = {};
+    let invalidMessage = '';
+
+    for (const [id, label] of fields) {
+      const el = $(id);
+      const raw = el?.value?.trim() ?? '';
+      const value = Number(raw);
+      const valid = raw !== '' && Number.isFinite(value) && value >= 0;
+
+      if (el) {
+        if (valid) el.removeAttribute('aria-invalid');
+        else el.setAttribute('aria-invalid', 'true');
+      }
+
+      if (!valid && !invalidMessage) {
+        invalidMessage = `${label} must be a valid non-negative number.`;
+      }
+
+      values[id] = value;
+    }
+
+    const rateEl = $('compoundRate');
+    const rateRaw = rateEl?.value?.trim() ?? '';
+    const annualPercent = Number(rateRaw);
+    const validRate = rateRaw !== '' &&
+      Number.isFinite(annualPercent) &&
+      annualPercent >= -99 &&
+      annualPercent <= 100;
+
+    if (rateEl) {
+      if (validRate) rateEl.removeAttribute('aria-invalid');
+      else rateEl.setAttribute('aria-invalid', 'true');
+    }
+
+    if (!validRate && !invalidMessage) {
+      invalidMessage = 'Annual return must be between -99% and 100%.';
+    }
+
+    const years = Number($('compoundYears')?.value);
+    const allowedTerms = [5, 10, 15, 20, 25, 30, 40];
+    const validYears = Number.isInteger(years) && allowedTerms.includes(years);
+
+    if (!validYears) {
+      invalidMessage ||= 'Select a valid investment period.';
+      $('compoundYears')?.setAttribute('aria-invalid', 'true');
+    } else {
+      $('compoundYears')?.removeAttribute('aria-invalid');
+    }
+
+    if (invalidMessage) {
+      $('compoundResult').textContent = 'Invalid inputs';
+      $('compoundBreakdown').textContent = invalidMessage;
+      return;
+    }
+
+    const start = values.compoundStart;
+    const monthly = values.compoundMonthly;
+    const annual = annualPercent / 100;
+    const monthlyRate = Math.pow(1 + annual, 1 / 12) - 1;
+    const months = years * 12;
+
+    let balance = start;
+
+    for (let month = 0; month < months; month++) {
+      balance = balance * (1 + monthlyRate) + monthly;
+    }
+
+    const invested = start + monthly * months;
+    const growth = balance - invested;
+
+    if (![monthlyRate, balance, invested, growth].every(Number.isFinite)) {
+      $('compoundResult').textContent = 'Calculation unavailable';
+      $('compoundBreakdown').textContent =
+        'The entered values exceed the supported calculation range.';
+      return;
+    }
+
+    $('compoundResult').textContent = money(balance);
+    $('compoundBreakdown').textContent =
+      `Total contributions: ${money(invested)} · Estimated growth: ${money(growth)} · Assumes a steady return and month-end contributions.`;
   }
   function runDebtSimulation() {
     const method = $('debtMethod')?.value;
