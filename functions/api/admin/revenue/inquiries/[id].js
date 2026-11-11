@@ -1,8 +1,9 @@
-import { json, error, readJson, requireDatabase } from '../../../../../functions-shared/http.js';
+import { json, error, readJson, requireDatabase, isSameOrigin } from '../../../../../functions-shared/http.js';
 import { isRevenueAdmin } from '../../../../../functions-shared/admin.js';
 
 export async function onRequestPatch({ request, env, params }) {
   if (!isRevenueAdmin(request, env)) return error('Unauthorized.', 401, { 'WWW-Authenticate': 'Bearer' });
+  if (!isSameOrigin(request)) return error('Request origin not allowed.', 403);
   try {
     const body = await readJson(request, 1024);
     const status = String(body.status || '').toLowerCase();

@@ -4,6 +4,8 @@ import { isRevenueAdmin } from '../functions-shared/admin.js';
 import { onRequestGet as getPartnerOffers } from '../functions/api/partners.js';
 import { onRequestGet as getInquiryStatus, onRequestPost as submitInquiry } from '../functions/api/partner-inquiry.js';
 import { onRequestGet as getRevenueReport } from '../functions/api/admin/revenue.js';
+import { onRequestPost as saveConversion } from '../functions/api/admin/revenue/conversions.js';
+import { onRequestPatch as updateInquiry } from '../functions/api/admin/revenue/inquiries/[id].js';
 
 assert.deepEqual(getApprovedPartnerOffers({}), [], 'No offers must be active by default');
 assert.deepEqual(getApprovedPartnerOffers({ PARTNER_OFFERS_JSON: '[]' }), [], 'Explicit empty offer list must remain empty');
@@ -41,4 +43,69 @@ assert.equal(inquiryPost.status, 503, 'Inquiry submission must fail closed while
 const adminResponse = await getRevenueReport({ request: new Request('https://example.test/api/admin/revenue'), env: {} });
 assert.equal(adminResponse.status, 401, 'Owner revenue API must require its bearer token');
 
-console.log('Revenue safe-default, offer validation, and owner-access checks passed.');
+const adminEnv = { RAELINFO_ADMIN_TOKEN: adminToken };
+const conversionUrl = 'https://example.test/api/admin/revenue/conversions';
+const validConversion = {
+  offerId: 'wise-ca',
+  partnerName: 'Wise',
+  externalRef: 'network-ref-001',
+  market: 'CA',
+  currency: 'CAD',
+  status: 'pending',
+  commissionAmount: 10,
+  conversionDate: '2026-11-10'
+};
+
+function conversionRequest(body, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (options.authorization !== false) headers.Authorization = `Bearer ${adminToken}`;
+  if (options.origin !== false) headers.Origin = options.origin || 'https://example.test';
+  return new Request(conversionUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
+}
+
+async function conversionStatus(body, options) {
+  const response = await saveConversion({
+    request: conversionRequest(body, options),
+    env: adminEnv
+  });
+  return response.status;
+}
+
+assert.equal(await conversionStatus(validConversion, { authorization: false }), 401,
+  'Conversion writes must require the admin token');
+assert.equal(await conversionStatus(validConversion, { origin: false }), 403,
+  'Conversion writes must reject requests without an Origin header');
+assert.equal(await conversionStatus(validConversion, { origin: 'https://attacker.example' }), 403,
+  'Conversion writes must reject cross-origin requests');
+assert.equal(await conversionStatus({ ...validConversion, conversionDate: '2026-02-30' }), 400,
+  'Conversion writes must reject impossible calendar dates');
+assert.equal(await conversionStatus({ ...validConversion, conversionDate: '2026-02-29' }), 400,
+  'Conversion writes must reject non-leap-year February 29');
+assert.equal(await conversionStatus({ ...validConversion, conversionDate: '2024-02-29' }), 503,
+  'Valid leap-day dates must pass date validation and reach the database');
+assert.equal(await conversionStatus({ ...validConversion, commissionAmount: '' }), 400,
+  'Conversion writes must reject empty commission amounts');
+assert.equal(await conversionStatus({ ...validConversion, commissionAmount: '   ' }), 400,
+  'Conversion writes must reject whitespace-only commission amounts');
+
+const inquiryCrossOrigin = await updateInquiry({
+  request: new Request('https://example.test/api/admin/revenue/inquiries/test-id', {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${adminToken}`,
+      Origin: 'https://attacker.example',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ status: 'closed' })
+  }),
+  env: adminEnv,
+  params: { id: 'test-id' }
+});
+assert.equal(inquiryCrossOrigin.status, 403,
+  'Inquiry updates must reject cross-origin requests');
+
+console.log('Revenue safe-default, offer validation, admin origin protection, date validation, and amount validation checks passed.');
