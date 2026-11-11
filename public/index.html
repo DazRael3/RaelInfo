@@ -561,22 +561,104 @@
   }
 
   function calculateMortgage() {
-    const principal = clampNonNegative(number('mortgageAmount')); const annualRate = clampNonNegative(number('mortgageRate')) / 100; const years = Math.max(1, number('mortgageYears'));
-    const payments = Math.round(years * 12); const monthlyRate = annualRate / 12;
-    let pi = 0;
-    if (principal > 0) pi = monthlyRate === 0 ? principal / payments : principal * monthlyRate / (1 - Math.pow(1 + monthlyRate, -payments));
-    const extras = clampNonNegative(number('mortgageTax')) / 12 + clampNonNegative(number('mortgageInsurance')) / 12 + clampNonNegative(number('mortgageHoa'));
-    $('mortgageResult').textContent = money(pi + extras);
-    $('mortgageBreakdown').textContent = `Principal & interest: ${money(pi)} · Taxes, insurance & HOA: ${money(extras)} · Excludes PMI, utilities and closing costs.`;
-    let balance = principal; let rows = '<table class="mini-table"><thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead><tbody>';
-    for (let year = 1; year <= Math.min(5, years); year++) {
-      let principalPaid = 0, interestPaid = 0;
-      for (let month = 0; month < 12 && balance > 0; month++) {
-        const interest = balance * monthlyRate; const paymentPrincipal = Math.min(balance, Math.max(0, pi - interest));
-        principalPaid += paymentPrincipal; interestPaid += interest; balance = Math.max(0, balance - paymentPrincipal);
+    const fields = [
+      ['mortgageAmount', 'Loan amount'],
+      ['mortgageRate', 'Annual interest rate'],
+      ['mortgageTax', 'Annual property tax'],
+      ['mortgageInsurance', 'Annual home insurance'],
+      ['mortgageHoa', 'Monthly HOA / fees']
+    ];
+
+    let invalidMessage = '';
+    const values = {};
+
+    for (const [id, label] of fields) {
+      const el = $(id);
+      const raw = el?.value?.trim() ?? '';
+      const value = Number(raw);
+      const valid = raw !== '' && Number.isFinite(value) && value >= 0 &&
+        (id !== 'mortgageRate' || value <= 100);
+
+      if (el) {
+        if (valid) el.removeAttribute('aria-invalid');
+        else el.setAttribute('aria-invalid', 'true');
       }
+
+      if (!valid && !invalidMessage) {
+        invalidMessage = `${label} must be a valid non-negative number${id === 'mortgageRate' ? ' no greater than 100%' : ''}.`;
+      }
+
+      values[id] = value;
+    }
+
+    const years = Number($('mortgageYears')?.value);
+    const allowedTerms = [10, 15, 20, 25, 30];
+
+    if (!Number.isInteger(years) || !allowedTerms.includes(years)) {
+      invalidMessage ||= 'Select a valid loan term.';
+      $('mortgageYears')?.setAttribute('aria-invalid', 'true');
+    } else {
+      $('mortgageYears')?.removeAttribute('aria-invalid');
+    }
+
+    if (invalidMessage) {
+      $('mortgageResult').textContent = 'Invalid inputs';
+      $('mortgageBreakdown').textContent = invalidMessage;
+      $('mortgageSchedule').textContent = 'Correct the highlighted inputs to view amortization.';
+      return;
+    }
+
+    const principal = values.mortgageAmount;
+    const annualRate = values.mortgageRate / 100;
+    const payments = years * 12;
+    const monthlyRate = annualRate / 12;
+
+    let pi = 0;
+
+    if (principal > 0) {
+      pi = monthlyRate === 0
+        ? principal / payments
+        : principal * monthlyRate /
+          (1 - Math.pow(1 + monthlyRate, -payments));
+    }
+
+    const extras =
+      values.mortgageTax / 12 +
+      values.mortgageInsurance / 12 +
+      values.mortgageHoa;
+
+    const total = pi + extras;
+
+    if (![pi, extras, total].every(Number.isFinite)) {
+      $('mortgageResult').textContent = 'Calculation unavailable';
+      $('mortgageBreakdown').textContent = 'The entered values exceed the supported calculation range.';
+      $('mortgageSchedule').textContent = 'Reduce the entered amounts and try again.';
+      return;
+    }
+
+    $('mortgageResult').textContent = money(total);
+    $('mortgageBreakdown').textContent =
+      `Principal & interest: ${money(pi)} · Taxes, insurance & HOA: ${money(extras)} · Excludes PMI, utilities and closing costs.`;
+
+    let balance = principal;
+    let rows = '<table class="mini-table"><thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead><tbody>';
+
+    for (let year = 1; year <= Math.min(5, years); year++) {
+      let principalPaid = 0;
+      let interestPaid = 0;
+
+      for (let month = 0; month < 12 && balance > 0; month++) {
+        const interest = balance * monthlyRate;
+        const paymentPrincipal = Math.min(balance, Math.max(0, pi - interest));
+
+        principalPaid += paymentPrincipal;
+        interestPaid += interest;
+        balance = Math.max(0, balance - paymentPrincipal);
+      }
+
       rows += `<tr><td>${year}</td><td>${money(principalPaid)}</td><td>${money(interestPaid)}</td><td>${money(balance)}</td></tr>`;
     }
+
     $('mortgageSchedule').innerHTML = rows + '</tbody></table>';
   }
   function calculateCompound() {
