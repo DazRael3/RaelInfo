@@ -434,7 +434,7 @@
     });
     state.currency = state.currency === 'USD' ? 'CAD' : 'USD';
     safeStore.set(CONFIG.currencyKey, state.currency);
-    setCurrencyLabel(); calculateAll(); showToast(`Calculator amounts converted to ${state.currency}.`);
+    setCurrencyLabel(); calculateAll(); renderCrypto(); showToast(`Calculator amounts converted to ${state.currency}.`);
   }
   function setStatus(message, mode = 'idle') {
     const dot = $('cryptoStatus').querySelector('.dot');
@@ -452,9 +452,22 @@
       }
     } catch (_) { /* Ignore corrupt cache and request fresh data. */ }
   }
-  function formatCryptoPrice(value) {
+  function formatCryptoPrice(valueUsd, currency = state.currency) {
+    if (!Number.isFinite(valueUsd) || valueUsd <= 0) return '—';
+    let value = valueUsd;
+    if (currency === 'CAD') {
+      const rate = getEffectiveFxRate();
+      if (!Number.isFinite(rate) || rate <= 0) return '—';
+      value *= rate;
+    } else if (currency !== 'USD') {
+      return '—';
+    }
     if (!Number.isFinite(value) || value <= 0) return '—';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: value < 1 ? 6 : value < 100 ? 4 : 2 }).format(value);
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: value < 1 ? 6 : value < 100 ? 4 : 2
+    }).format(value);
   }
   function renderCrypto() {
     const map = { BTC: 'btc', ETH: 'eth', SOL: 'sol' };
@@ -466,15 +479,29 @@
       changeEl.textContent = change === null ? '24h change unavailable' : `${change > 0 ? '+' : ''}${change.toFixed(2)}% · 24h`;
       changeEl.className = `change ${change === null ? '' : change >= 0 ? 'positive' : 'negative'}`;
       $(`${prefix}Rank`).textContent = coin && coin.rank ? `Rank #${coin.rank}` : 'Rank —';
-      $(`${prefix}MarketCap`).textContent = coin && coin.marketCap ? `Mkt cap ${formatCompactUSD(coin.marketCap)}` : 'Market cap —';
+      $(`${prefix}MarketCap`).textContent = coin && coin.marketCap ? `Mkt cap ${formatCompactUSD(coin.marketCap, state.currency)}` : 'Market cap —';
     });
     const when = state.cryptoUpdatedAt ? new Date(state.cryptoUpdatedAt) : null;
     $('cryptoUpdated').textContent = when ? `${state.cryptoStale ? 'Last successful fetch' : 'Retrieved'}: ${when.toLocaleString()}` : 'No successful market-data fetch yet';
     calculateCryptoEstimate();
   }
-  function formatCompactUSD(value) {
-    if (!Number.isFinite(value)) return '—';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 1 }).format(value);
+  function formatCompactUSD(valueUsd, currency = state.currency) {
+    if (!Number.isFinite(valueUsd) || valueUsd <= 0) return '—';
+    let value = valueUsd;
+    if (currency === 'CAD') {
+      const rate = getEffectiveFxRate();
+      if (!Number.isFinite(rate) || rate <= 0) return '—';
+      value *= rate;
+    } else if (currency !== 'USD') {
+      return '—';
+    }
+    if (!Number.isFinite(value) || value <= 0) return '—';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency,
+      notation: 'compact',
+      maximumFractionDigits: 1
+    }).format(value);
   }
   async function refreshCrypto(force = false) {
     if (document.visibilityState === 'hidden' && !force) return;
@@ -504,7 +531,7 @@
   async function refreshFx(force = false) {
     const cached = (() => { try { return JSON.parse(safeStore.get(CONFIG.fxCacheKey) || 'null'); } catch (_) { return null; } })();
     if (!force && cached && cached.rate > 0 && Date.now() - cached.fetchedAt < CONFIG.fxRefreshMs) {
-      state.fxRate = cached.rate; state.fxDate = cached.date; calculateFx(); return;
+      state.fxRate = cached.rate; state.fxDate = cached.date; calculateFx(); renderCrypto(); return;
     }
     try {
       const data = await fetchFxRate('USD', 'CAD');
@@ -513,10 +540,12 @@
       state.fxRate = rate; state.fxDate = data.date;
       safeStore.set(CONFIG.fxCacheKey, JSON.stringify({ rate, date: data.date, fetchedAt: Date.now() }));
       calculateFx();
+      renderCrypto();
       showToast(`USD/CAD reference rate updated (${data.date}).`);
     } catch (error) {
       if (cached && cached.rate > 0) { state.fxRate = cached.rate; state.fxDate = cached.date; calculateFx(); $('fxRateNote').textContent = `Showing saved Frankfurter rate dated ${cached.date}; live refresh failed.`; }
       else { $('fxResult').textContent = 'Rate unavailable'; $('fxRateNote').textContent = 'Could not retrieve a USD/CAD reference rate. Retry while online.'; }
+      renderCrypto();
       console.warn('Frankfurter FX request failed:', error);
     }
   }
@@ -962,7 +991,7 @@
     const effectiveRate=getEffectiveFxRate();
     const price=state.currency==='CAD' ? coin.price*(effectiveRate||0) : coin.price;
     $('cryptoEstimate').textContent=price>0 ? `${(amount/price).toLocaleString('en-US',{maximumFractionDigits:8})} ${symbol}` : 'FX rate unavailable';
-    $('cryptoEstimateNote').textContent=`Indicative price: ${formatCryptoPrice(coin.price)} USD${state.currency==='CAD'&&state.fxRate?` / ${money(price,'CAD')}`:''}. Fees, spreads and network costs excluded.`;
+    $('cryptoEstimateNote').textContent=`Indicative price: ${formatCryptoPrice(coin.price, 'USD')} USD${state.currency==='CAD'&&effectiveRate>0?` / ${money(price,'CAD')}`:''}. Fees, spreads and network costs excluded.`;
   }
   function calculateInflation() {
     const amount=clampNonNegative(number('inflationAmount')); const rate=clampNonNegative(number('inflationRate'))/100; const years=Math.max(0,number('inflationYears'));
@@ -1046,7 +1075,7 @@
     $('currencyBtn').addEventListener('click',toggleCurrency);
     $('marketBtn').addEventListener('click',toggleMarket);
     $('refreshCrypto').addEventListener('click',()=>refreshCrypto(true));
-    $('fxAmount').addEventListener('input',calculateFx); $('fxDirection').addEventListener('change',calculateFx); $('manualFxRate').addEventListener('input',()=>{calculateFx();calculateCryptoEstimate();});
+    $('fxAmount').addEventListener('input',calculateFx); $('fxDirection').addEventListener('change',calculateFx); $('manualFxRate').addEventListener('input',()=>{calculateFx();renderCrypto();});
     const saveScenarioAction=()=>{saveLocalScenario();showToast('Scenario saved in this browser.');};
     $('saveBtn').addEventListener('click',saveScenarioAction); $('saveBtnMobile').addEventListener('click',saveScenarioAction);
     $('exportBtn').addEventListener('click',exportScenario); $('exportBtnMobile').addEventListener('click',exportScenario);
