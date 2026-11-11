@@ -21,7 +21,7 @@ export async function onRequestGet({ env }) {
       auth: Boolean(env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY),
       crypto: 'CoinLore (public endpoint)',
       fx: 'Frankfurter (public endpoint)',
-      news: 'GDELT DOC API (public endpoint)',
+      news: 'Official SEC, Federal Reserve and Bank of Canada feeds',
       stocks: {
         alpha: Boolean(env.ALPHA_VANTAGE_KEY),
         fmp: Boolean(env.FMP_KEY),

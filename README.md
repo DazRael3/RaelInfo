@@ -106,7 +106,7 @@ After deployment, open these URLs on the Pages preview:
 - `/api/health` — should return `ok: true`, `database: true`, and `providers.auth: true`.
 - `/api/crypto` — CoinLore prices (BTC, ETH, SOL).
 - `/api/fx?from=USD&to=CAD` — daily reference rate from Frankfurter.
-- `/api/news?q=stock%20market` — GDELT business/news headlines.
+- `/api/news?q=stock%20market` — official SEC, Federal Reserve and Bank of Canada financial announcements, filtered locally.
 - `/api/filings?cik=320193` — SEC submissions, after `SEC_USER_AGENT` is configured.
 - `/login.html` — email registration/sign-in via Supabase Auth.
 

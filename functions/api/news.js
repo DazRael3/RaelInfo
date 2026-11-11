@@ -1,10 +1,6 @@
 import { json, error, requireDatabase } from '../../functions-shared/http.js';
-import { cachedJson, cacheHeaders } from '../../functions-shared/cache.js';
-import {
-  enforceRateLimitOrThrow,
-  enforceProviderThrottleOrThrow
-} from '../../functions-shared/rate-limit.js';
-import { fetchJson } from '../../functions-shared/providers.js';
+import { enforceRateLimitOrThrow } from '../../functions-shared/rate-limit.js';
+import { getOfficialNews } from '../../functions-shared/news.js';
 
 export async function onRequestGet({ request, env }) {
   const query = String(
@@ -19,80 +15,51 @@ export async function onRequestGet({ request, env }) {
   try {
     requireDatabase(env);
 
-    const result = await cachedJson(
-      env,
-      `news:${query.toLowerCase()}`,
-      300,
-      async () => {
-        const url = new URL('https://api.gdeltproject.org/api/v2/doc/doc');
-        url.search = new URLSearchParams({
-          query,
-          mode: 'ArtList',
-          format: 'json',
-          maxrecords: '15',
-          timespan: '7d',
-          sort: 'datedesc'
-        });
-
-        const data = await fetchJson(url, {
-          headers: {
-            'User-Agent': 'RaelInfo/3.2.0 (contact=support@raelinfo.com)'
-          }
-        });
-
-        const docs = Array.isArray(data.articles) ? data.articles : [];
-
-        return docs.map(item => ({
-          title: String(item.title || '').slice(0, 400),
-          url: String(item.url || ''),
-          source: String(item.domain || item.source || ''),
-          publishedAt: item.seendate || item.datetime || null,
-          language: item.language || null
-        })).filter(item =>
-          item.title && /^https?:\/\//i.test(item.url)
-        );
-      },
-      86_400,
-      async () => {
-        await enforceRateLimitOrThrow(
-          env, request, 'market-news', 12, 60
-        );
-
-        await enforceProviderThrottleOrThrow(
-          env, 'gdelt', 5000
-        );
-      }
+    await enforceRateLimitOrThrow(
+      env, request, 'market-news', 30, 60
     );
+
+    const result = await getOfficialNews(env, query);
 
     return json({
       query,
-      articles: result.data,
+      articles: result.articles,
       stale: result.stale,
       retrievedAt: new Date(result.savedAt * 1000).toISOString(),
-      source: 'GDELT DOC API'
-    }, 200, cacheHeaders(result));
+      source: result.source,
+      availableSources: result.availableSources,
+      unavailableSources: result.unavailableSources
+    }, 200, {
+      'X-RaelInfo-Cache': result.stale ? 'stale' : 'fresh',
+      'X-RaelInfo-Data-Time': new Date(
+        result.savedAt * 1000
+      ).toISOString(),
+      ...(result.stale
+        ? { Warning: '110 - "Response is stale"' }
+        : {})
+    });
 
   } catch (err) {
     if (err?.status === 429) {
       return error(
-        'Market news is being requested too frequently. Please retry shortly.',
+        'News searches are being requested too frequently. Please retry shortly.',
         429,
         { 'Retry-After': String(err.retryAfter || 60) }
       );
     }
 
-    if (err?.code === 'PROVIDER_THROTTLED') {
+    if (err?.status === 503) {
       return error(
-        'The news provider is cooling down. Please retry shortly.',
+        'Official news sources are cooling down. Please retry shortly.',
         503,
-        { 'Retry-After': String(err.retryAfter || 5) }
+        { 'Retry-After': String(err.retryAfter || 30) }
       );
     }
 
-    console.error('News provider error:', err.message);
+    console.error('Official news service error:', err?.message || err);
 
     return error(
-      'Business news is temporarily unavailable. Please retry in a few minutes.',
+      'Official financial news is temporarily unavailable. Please retry later.',
       502
     );
   }
