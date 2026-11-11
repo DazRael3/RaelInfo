@@ -47,3 +47,26 @@ export async function enforceRateLimit(
 
   return { allowed: true, retryAfter };
 }
+
+
+export async function enforceRateLimitOrThrow(
+  env,
+  request,
+  scope,
+  limit,
+  windowSeconds,
+  identity = ''
+) {
+  const result = await enforceRateLimit(
+    env, request, scope, limit, windowSeconds, identity
+  );
+
+  if (!result.allowed) {
+    const err = new Error('Rate limit exceeded.');
+    err.status = 429;
+    err.retryAfter = result.retryAfter;
+    throw err;
+  }
+
+  return result;
+}

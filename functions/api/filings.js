@@ -1,5 +1,6 @@
 import { json, error, requireDatabase } from '../../functions-shared/http.js';
 import { cachedJson, cacheHeaders } from '../../functions-shared/cache.js';
+import { enforceRateLimitOrThrow } from '../../functions-shared/rate-limit.js';
 import { fetchJson } from '../../functions-shared/providers.js';
 
 export async function onRequestGet({ request, env }) {
@@ -32,9 +33,14 @@ export async function onRequestGet({ request, env }) {
         return { form, filingDate: dates[index] || '', accessionNumber: accession, description: descriptions[index] || '', url };
       });
       return { cik, companyName: data.name || '', tickers: data.tickers || [], exchanges: data.exchanges || [], filings };
-    }, 86_400);
+    }, 86_400, () => enforceRateLimitOrThrow(env, request, 'market-sec-filings', 12, 60));
     return json({ ...result.data, stale: result.stale, retrievedAt: new Date(result.savedAt * 1000).toISOString() }, 200, cacheHeaders(result));
   } catch (err) {
+    if (err?.status === 429) {
+      return error('Market data is being refreshed too frequently. Please retry shortly.', 429, {
+        'Retry-After': String(err.retryAfter || 60)
+      });
+    }
     console.error('SEC provider error:', err.message);
     return error('SEC filing data is temporarily unavailable. Check the CIK and try again later.', 502);
   }

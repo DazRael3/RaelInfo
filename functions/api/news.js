@@ -1,5 +1,6 @@
 import { json, error, requireDatabase } from '../../functions-shared/http.js';
 import { cachedJson, cacheHeaders } from '../../functions-shared/cache.js';
+import { enforceRateLimitOrThrow } from '../../functions-shared/rate-limit.js';
 import { fetchJson } from '../../functions-shared/providers.js';
 
 export async function onRequestGet({ request, env }) {
@@ -19,9 +20,14 @@ export async function onRequestGet({ request, env }) {
         publishedAt: item.seendate || item.datetime || null,
         language: item.language || null
       })).filter(item => item.title && /^https?:\/\//i.test(item.url));
-    });
+    }, 86_400, () => enforceRateLimitOrThrow(env, request, 'market-news', 12, 60));
     return json({ query, articles: result.data, stale: result.stale, retrievedAt: new Date(result.savedAt * 1000).toISOString(), source: 'GDELT DOC API' }, 200, cacheHeaders(result));
   } catch (err) {
+    if (err?.status === 429) {
+      return error('Market data is being refreshed too frequently. Please retry shortly.', 429, {
+        'Retry-After': String(err.retryAfter || 60)
+      });
+    }
     console.error('News provider error:', err.message);
     return error('Business news is temporarily unavailable. Please retry in a few minutes.', 502);
   }

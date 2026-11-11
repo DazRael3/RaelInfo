@@ -1,5 +1,6 @@
 import { json, error, requireDatabase } from '../../functions-shared/http.js';
 import { cachedJson, cacheHeaders } from '../../functions-shared/cache.js';
+import { enforceRateLimitOrThrow } from '../../functions-shared/rate-limit.js';
 import { fetchJson } from '../../functions-shared/providers.js';
 
 export async function onRequestGet({ request, env }) {
@@ -13,9 +14,14 @@ export async function onRequestGet({ request, env }) {
       const data = await fetchJson(`https://api.frankfurter.dev/v2/rate/${from.toLowerCase()}/${to.toLowerCase()}`);
       if (!data || !Number.isFinite(Number(data.rate)) || data.base !== from || data.quote !== to) throw new Error('Unexpected FX response.');
       return data;
-    });
+    }, 86_400, () => enforceRateLimitOrThrow(env, request, 'market-fx', 30, 60));
     return json(result.data, 200, cacheHeaders(result));
   } catch (err) {
+    if (err?.status === 429) {
+      return error('Market data is being refreshed too frequently. Please retry shortly.', 429, {
+        'Retry-After': String(err.retryAfter || 60)
+      });
+    }
     console.error('FX data error:', err.message);
     return error('Exchange-rate data is temporarily unavailable.', 502);
   }

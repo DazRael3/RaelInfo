@@ -3,7 +3,7 @@ import { requireDatabase } from './http.js';
 const memory = new Map();
 const inFlight = new Map();
 
-export async function cachedJson(env, key, ttlSeconds, loader, maxStaleSeconds = 86_400) {
+export async function cachedJson(env, key, ttlSeconds, loader, maxStaleSeconds = 86_400, beforeLoad = null) {
   const now = Math.floor(Date.now() / 1000);
   const warm = memory.get(key);
   if (warm && warm.expiresAt > now) return { data: warm.data, stale: false, savedAt: warm.savedAt };
@@ -25,6 +25,7 @@ export async function cachedJson(env, key, ttlSeconds, loader, maxStaleSeconds =
   if (inFlight.has(key)) return inFlight.get(key);
   const task = (async () => {
     try {
+      if (beforeLoad) await beforeLoad();
       const data = await loader();
       const savedAt = Math.floor(Date.now() / 1000);
       const entry = { data, savedAt, expiresAt: savedAt + ttlSeconds };
