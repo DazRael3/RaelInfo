@@ -1158,10 +1158,49 @@
   }
 
   function calculateNetWorth() {
-    const assets=['nwCash','nwInvestments','nwProperty','nwOtherAssets'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
-    const liabilities=clampNonNegative(number('nwMortgage'))+clampNonNegative(number('nwOtherDebt'));
-    $('netWorthResult').textContent=money(assets-liabilities); $('netWorthBreakdown').textContent=`Assets: ${money(assets)} · Liabilities: ${money(liabilities)}`;
+    const assetIds = ['nwCash', 'nwInvestments', 'nwProperty', 'nwOtherAssets'];
+    const liabilityIds = ['nwMortgage', 'nwOtherDebt'];
+    const allIds = [...assetIds, ...liabilityIds];
+    const values = {};
+
+    let valid = true;
+
+    allIds.forEach(id => {
+      const input = $(id);
+      const raw = input.value;
+      const value = Number(raw);
+
+      const inputValid = raw.trim() !== '' && Number.isFinite(value) && value >= 0;
+
+      if (inputValid) {
+        input.removeAttribute('aria-invalid');
+        values[id] = value;
+      } else {
+        input.setAttribute('aria-invalid', 'true');
+        valid = false;
+      }
+    });
+
+    if (!valid) {
+      $('netWorthResult').textContent = 'Invalid inputs';
+      $('netWorthBreakdown').textContent = 'Enter valid non-negative amounts for all fields.';
+      return;
+    }
+
+    const assets = assetIds.reduce((sum, id) => sum + values[id], 0);
+    const liabilities = liabilityIds.reduce((sum, id) => sum + values[id], 0);
+    const netWorth = assets - liabilities;
+
+    if (!Number.isFinite(assets) || !Number.isFinite(liabilities) || !Number.isFinite(netWorth)) {
+      $('netWorthResult').textContent = 'Calculation unavailable';
+      $('netWorthBreakdown').textContent = 'The entered amounts exceed the calculation limits.';
+      return;
+    }
+
+    $('netWorthResult').textContent = money(netWorth);
+    $('netWorthBreakdown').textContent = `Assets: ${money(assets)} · Liabilities: ${money(liabilities)}`;
   }
+
   function calculateRentBuy() {
     const rent=clampNonNegative(number('rentMonthly'));
     const owner=['buyMortgage','buyTax','buyInsurance','buyMaintenance','buyFees'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
