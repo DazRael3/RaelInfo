@@ -1202,10 +1202,65 @@
   }
 
   function calculateRentBuy() {
-    const rent=clampNonNegative(number('rentMonthly'));
-    const owner=['buyMortgage','buyTax','buyInsurance','buyMaintenance','buyFees'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
-    $('rentBuyResult').textContent=money(owner); const diff=owner-rent;
-    $('rentBuyBreakdown').textContent=`Ownership cash cost is ${money(Math.abs(diff))} ${diff>0?'higher':diff<0?'lower':'the same'} than rent per month. Excludes opportunity cost, tax effects, appreciation and transaction costs.`;
+    const ids = [
+      'rentMonthly',
+      'buyMortgage',
+      'buyTax',
+      'buyInsurance',
+      'buyMaintenance',
+      'buyFees'
+    ];
+
+    const values = {};
+    let valid = true;
+
+    ids.forEach(id => {
+      const input = $(id);
+      const raw = input.value;
+      const value = Number(raw);
+      const inputValid = raw.trim() !== '' && Number.isFinite(value) && value >= 0;
+
+      if (inputValid) {
+        input.removeAttribute('aria-invalid');
+        values[id] = value;
+      } else {
+        input.setAttribute('aria-invalid', 'true');
+        valid = false;
+      }
+    });
+
+    if (!valid) {
+      $('rentBuyResult').textContent = 'Invalid inputs';
+      $('rentBuyBreakdown').textContent = 'Enter valid non-negative amounts for all fields.';
+      return;
+    }
+
+    const rent = values.rentMonthly;
+    const owner = [
+      'buyMortgage',
+      'buyTax',
+      'buyInsurance',
+      'buyMaintenance',
+      'buyFees'
+    ].reduce((sum, id) => sum + values[id], 0);
+
+    const diff = owner - rent;
+
+    if (!Number.isFinite(owner) || !Number.isFinite(diff)) {
+      $('rentBuyResult').textContent = 'Calculation unavailable';
+      $('rentBuyBreakdown').textContent = 'The entered amounts exceed the calculation limits.';
+      return;
+    }
+
+    $('rentBuyResult').textContent = money(owner);
+    const comparison = diff > 0
+      ? `${money(diff)} higher than rent`
+      : diff < 0
+        ? `${money(Math.abs(diff))} lower than rent`
+        : 'the same as rent';
+
+    $('rentBuyBreakdown').textContent =
+      `Ownership cash cost is ${comparison} per month. Excludes opportunity cost, tax effects, appreciation and transaction costs.`;
   }
   function calculateTax() {
     const subtotal=clampNonNegative(number('taxSubtotal')); const rate=clampNonNegative(number('taxRate'))/100;
