@@ -83,9 +83,47 @@ function render(data) {
     cell(row, item.status);
     const actions = cell(row, '');
     for (const next of ['reviewing', 'contacted', 'closed']) {
-      const button = document.createElement('button'); button.type = 'button'; button.textContent = next;
-      button.addEventListener('click', () => updateInquiry(item.id, next)); actions.append(button, ' ');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = next;
+      button.addEventListener('click', () => updateInquiry(item.id, next));
+      actions.append(button, ' ');
     }
+
+    const holdButton = document.createElement('button');
+    holdButton.type = 'button';
+    holdButton.textContent = item.legalHold ? 'Clear legal hold' : 'Place legal hold';
+    holdButton.title = item.legalHoldReason || '';
+    holdButton.addEventListener('click', () => {
+      if (item.legalHold) {
+        if (confirm('Clear the documented legal hold for this inquiry?')) {
+          updateInquiryHold(item.id, false, '');
+        }
+        return;
+      }
+      const reason = prompt('Enter the documented legal, regulatory, or legitimate recordkeeping reason for this hold:');
+      if (reason !== null) updateInquiryHold(item.id, true, reason);
+    });
+    actions.append(holdButton, ' ');
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.disabled = Boolean(item.legalHold);
+    deleteButton.title = item.legalHold ? 'Clear the legal hold before deletion.' : 'Permanently delete this inquiry.';
+    deleteButton.addEventListener('click', () => {
+      if (confirm('Permanently delete this business inquiry? This cannot be undone.')) {
+        deleteInquiry(item.id);
+      }
+    });
+    actions.append(deleteButton);
+
+    if (item.legalHoldReason) {
+      const note = document.createElement('small');
+      note.textContent = 'Legal hold: ' + item.legalHoldReason;
+      actions.append(document.createElement('br'), note);
+    }
+
     inquiries.append(row);
   }
   if (!data.inquiries.length) { const row = document.createElement('tr'); cell(row, 'No business inquiries yet.').colSpan = 6; inquiries.append(row); }
@@ -106,8 +144,31 @@ async function loadReport() {
 async function updateInquiry(id, nextStatus) {
   try {
     await api(`/api/admin/revenue/inquiries/${encodeURIComponent(id)}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: nextStatus })
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: nextStatus })
     });
+    await loadReport();
+  } catch (error) { setStatus(error.message, true); }
+}
+
+async function updateInquiryHold(id, legalHold, reason = '') {
+  try {
+    await api(`/api/admin/revenue/inquiries/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ legalHold, reason })
+    });
+    await loadReport();
+  } catch (error) { setStatus(error.message, true); }
+}
+
+async function deleteInquiry(id) {
+  try {
+    await api(`/api/admin/revenue/inquiries/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    setStatus('Inquiry permanently deleted.');
     await loadReport();
   } catch (error) { setStatus(error.message, true); }
 }

@@ -18,7 +18,8 @@ export async function onRequestGet({ request, env }) {
         GROUP BY event_name, category, market ORDER BY events DESC`).all(),
       db.prepare("SELECT COUNT(*) AS total FROM pro_interest WHERE status = 'active'").first(),
       db.prepare(`SELECT id, contact_name AS contactName, contact_email AS contactEmail, organization,
-          inquiry_type AS inquiryType, website, message, status, created_at AS createdAt
+          inquiry_type AS inquiryType, website, message, status, legal_hold AS legalHold,
+          legal_hold_reason AS legalHoldReason, created_at AS createdAt
         FROM business_inquiries ORDER BY created_at DESC LIMIT 50`).all(),
       db.prepare('SELECT COUNT(*) AS total FROM business_inquiries').first()
     ]);

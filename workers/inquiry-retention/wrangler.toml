@@ -1,0 +1,11 @@
+name = "raelinfo-inquiry-retention"
+main = "index.js"
+compatibility_date = "2026-11-06"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "raelinfo-production"
+database_id = "6f1e1f06-50e1-4862-8ca2-fcf442399804"
+
+[triggers]
+crons = ["17 3 * * *"]
