@@ -1124,9 +1124,39 @@
   }
 
   function calculateRetirement() {
-    const income=clampNonNegative(number('retirementIncome')); const rate=number('withdrawalRate')/100;
-    $('retirementResult').textContent=rate>0 ? money(income/rate) : 'Enter a rate above zero';
+    const incomeInput = $('retirementIncome');
+    const rateInput = $('withdrawalRate');
+    const result = $('retirementResult');
+
+    const incomeRaw = incomeInput.value;
+    const rateRaw = rateInput.value;
+    const income = Number(incomeRaw);
+    const rate = Number(rateRaw);
+
+    const validIncome = incomeRaw.trim() !== '' && Number.isFinite(income) && income >= 0;
+    const validRate = rateRaw.trim() !== '' && Number.isFinite(rate) && rate >= 0.1 && rate <= 20;
+
+    if (validIncome) incomeInput.removeAttribute('aria-invalid');
+    else incomeInput.setAttribute('aria-invalid', 'true');
+
+    if (validRate) rateInput.removeAttribute('aria-invalid');
+    else rateInput.setAttribute('aria-invalid', 'true');
+
+    if (!validIncome || !validRate) {
+      result.textContent = 'Invalid inputs';
+      return;
+    }
+
+    const target = income / (rate / 100);
+
+    if (!Number.isFinite(target) || target < 0) {
+      result.textContent = 'Calculation unavailable';
+      return;
+    }
+
+    result.textContent = money(target);
   }
+
   function calculateNetWorth() {
     const assets=['nwCash','nwInvestments','nwProperty','nwOtherAssets'].reduce((sum,id)=>sum+clampNonNegative(number(id)),0);
     const liabilities=clampNonNegative(number('nwMortgage'))+clampNonNegative(number('nwOtherDebt'));
