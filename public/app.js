@@ -44,10 +44,6 @@ async function lookupStock(symbol) {
 
   output.replaceChildren();
 
-  const status = document.createElement('p');
-  status.className = 'muted';
-  status.textContent = `Loading ${tradingViewSymbol} market information from TradingView…`;
-
   const container = document.createElement('div');
   container.className = 'tradingview-widget-container';
   container.style.width = '100%';
@@ -82,7 +78,7 @@ async function lookupStock(symbol) {
   });
 
   container.append(script);
-  output.append(status, container);
+  output.append(container);
 }
 
 async function initializeAuth() {
