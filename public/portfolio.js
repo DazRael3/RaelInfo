@@ -1,4 +1,5 @@
 import { drawPortfolioChart } from './charts.js';
+import { calculatePortfolioTotals } from './portfolio-calculations.js';
 
 const $ = (id) => document.getElementById(id);
 let csrfToken = null;
@@ -27,8 +28,13 @@ export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled 
   if (deleteAction) deleteAction.hidden = !authenticated || !accountDeletionEnabled;
   if (!authenticated) {
     state.replaceChildren();
-    const note = document.createElement('span'); note.className = 'muted'; note.textContent = 'Sign in to save and manage your portfolio positions.';
-    const link = document.createElement('a'); link.className = 'text-btn'; link.href = '/login.html'; link.textContent = 'Sign in or create an account →';
+    const note = document.createElement('span');
+    note.className = 'muted';
+    note.textContent = 'Sign in to save and manage your portfolio positions.';
+    const link = document.createElement('a');
+    link.className = 'text-btn';
+    link.href = '/login.html';
+    link.textContent = 'Sign in or create an account →';
     state.append(note, link);
     visual.hidden = true;
     $('portfolioOutput').replaceChildren();
@@ -46,68 +52,173 @@ export async function loadPortfolio() {
     const data = await api('/api/portfolio');
     output.replaceChildren();
     if (!data.items?.length) {
-      const empty = document.createElement('p'); empty.className = 'muted'; empty.textContent = 'No positions saved yet. Add your first position above.';
+      const empty = document.createElement('p');
+      empty.className = 'muted';
+      empty.textContent = 'No positions saved yet. Add your first position above.';
       output.append(empty);
     }
-    for (const item of data.items) {
-      const row = document.createElement('div'); row.className = 'backend-list-item portfolio-position';
-      const left = document.createElement('div');
-      const title = document.createElement('strong'); title.textContent = item.symbol;
-      const detail = document.createElement('small');
-      const basis = Number(item.shares) * Number(item.averageCost);
-      detail.textContent = `${formatQuantity(item.shares)} shares · ${money(item.averageCost, item.currency)} average cost · ${money(basis, item.currency)} cost basis`;
-      left.append(title, detail);
-      const actions = document.createElement('div');
-      actions.style.display = 'flex'; actions.style.flexDirection = 'column'; actions.style.gap = '6px';
-      const quote = document.createElement('button'); quote.type = 'button'; quote.className = 'portfolio-remove'; quote.textContent = 'Get quote';
-      quote.addEventListener('click', () => lookupPositionQuote(item.symbol, item.shares, left));
-      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'portfolio-remove'; remove.textContent = 'Remove'; remove.addEventListener('click', () => removePosition(item.id));
-      actions.append(quote, remove);
-      row.append(left, actions); output.append(row);
-    }
-    const totals = new Map();
-    for (const item of data.items) {
+
+    const { costTotals, marketTotals, gainTotals, pricedCounts } =
+      calculatePortfolioTotals(data.items || []);
+
+    for (const item of data.items || []) {
       const currency = item.currency || 'USD';
-      totals.set(currency, (totals.get(currency) || 0) + Number(item.shares) * Number(item.averageCost));
+      const shares = Number(item.shares);
+      const averageCost = Number(item.averageCost);
+      const basis = shares * averageCost;
+
+      const row = document.createElement('div');
+      row.className = 'backend-list-item portfolio-position';
+
+      const left = document.createElement('div');
+      const title = document.createElement('strong');
+      title.textContent = item.symbol;
+
+      const detail = document.createElement('small');
+      detail.textContent = `${formatQuantity(shares)} shares · ${money(averageCost, currency)} average cost · ${money(basis, currency)} cost basis`;
+      left.append(title, detail);
+
+      const priceDetails = document.createElement('small');
+      const hasPrice = item.currentPrice !== null && item.currentPrice !== undefined &&
+        Number.isFinite(Number(item.currentPrice)) && Number(item.currentPrice) > 0;
+
+      if (hasPrice) {
+        const currentPrice = Number(item.currentPrice);
+        const marketValue = shares * currentPrice;
+        const gain = marketValue - basis;
+
+        priceDetails.textContent = `User-entered price: ${money(currentPrice, currency)} · Market value: ${money(marketValue, currency)} · Unrealized ${gain >= 0 ? 'gain' : 'loss'}: ${money(gain, currency)}`;
+        if (item.priceUpdatedAt) {
+          const updated = new Date(item.priceUpdatedAt);
+          const time = Number.isNaN(updated.getTime()) ? item.priceUpdatedAt : updated.toLocaleString();
+          priceDetails.textContent += ` · Price saved: ${time}`;
+        }
+      } else {
+        priceDetails.textContent = 'No manual price entered. Market value is not available.';
+      }
+      left.append(priceDetails);
+
+      const actions = document.createElement('div');
+      actions.style.display = 'flex';
+      actions.style.flexDirection = 'column';
+      actions.style.gap = '6px';
+
+      const priceInput = document.createElement('input');
+      priceInput.type = 'number';
+      priceInput.min = '0.00000001';
+      priceInput.max = '1000000000';
+      priceInput.step = 'any';
+      priceInput.inputMode = 'decimal';
+      priceInput.setAttribute('aria-label', `${item.symbol} current price in ${currency}`);
+      priceInput.placeholder = `Current price (${currency})`;
+      if (hasPrice) priceInput.value = String(item.currentPrice);
+
+      const savePrice = document.createElement('button');
+      savePrice.type = 'button';
+      savePrice.className = 'portfolio-remove';
+      savePrice.textContent = 'Save price';
+      savePrice.addEventListener('click', async () => {
+        if (!priceInput.value.trim()) {
+          priceInput.setCustomValidity('Enter a current price.');
+          priceInput.reportValidity();
+          return;
+        }
+        const value = Number(priceInput.value);
+        if (!Number.isFinite(value) || value <= 0 || value > 1_000_000_000) {
+          priceInput.setCustomValidity('Enter a price greater than zero and no more than 1,000,000,000.');
+          priceInput.reportValidity();
+          return;
+        }
+        priceInput.setCustomValidity('');
+        savePrice.disabled = true;
+        try {
+          await api(`/api/portfolio/${encodeURIComponent(item.id)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ currentPrice: value })
+          });
+          await loadPortfolio();
+        } catch (error) {
+          priceDetails.textContent = error.message;
+        } finally {
+          savePrice.disabled = false;
+        }
+      });
+
+      const clearPrice = document.createElement('button');
+      clearPrice.type = 'button';
+      clearPrice.className = 'portfolio-remove';
+      clearPrice.textContent = 'Clear price';
+      clearPrice.disabled = !hasPrice;
+      clearPrice.addEventListener('click', async () => {
+        clearPrice.disabled = true;
+        try {
+          await api(`/api/portfolio/${encodeURIComponent(item.id)}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ currentPrice: null })
+          });
+          await loadPortfolio();
+        } catch (error) {
+          priceDetails.textContent = error.message;
+          clearPrice.disabled = false;
+        }
+      });
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'portfolio-remove';
+      remove.textContent = 'Remove';
+      remove.addEventListener('click', () => removePosition(item.id));
+
+      actions.append(priceInput, savePrice, clearPrice, remove);
+      row.append(left, actions);
+      output.append(row);
     }
-    const total = document.createElement('p'); total.className = 'muted';
-    const summary = [...totals.entries()].map(([currency, value]) => money(value, currency)).join(' · ');
-    total.textContent = `Positions: ${data.items.length} · Cost basis by currency: ${summary || '—'}`;
-    if (data.items.length) output.prepend(total);
+
+    if (data.items?.length) {
+      const summary = document.createElement('div');
+      summary.className = 'muted';
+
+      const costText = [...costTotals.entries()]
+        .map(([currency, value]) => money(value, currency)).join(' · ') || '—';
+      const marketText = [...marketTotals.entries()]
+        .map(([currency, value]) => `${money(value, currency)} (${pricedCounts.get(currency) || 0} priced)`).join(' · ') || 'No prices entered';
+      const gainText = [...gainTotals.entries()]
+        .map(([currency, value]) => money(value, currency)).join(' · ') || '—';
+
+      const positions = document.createElement('p');
+      positions.textContent = `Positions: ${data.items.length} · Cost basis by currency: ${costText}`;
+      const market = document.createElement('p');
+      market.textContent = `Market value by currency (priced positions only): ${marketText}`;
+      const gain = document.createElement('p');
+      gain.textContent = `Unrealized gain/loss on priced positions by currency: ${gainText}`;
+      summary.append(positions, market, gain);
+      output.prepend(summary);
+    }
+
     drawPortfolioChart($('portfolioChart'), data.items);
   } catch (error) {
     output.textContent = error.message;
   }
 }
 
-async function lookupPositionQuote(symbol, shares, container) {
-  const existing = container.querySelector('[data-live-quote]');
-  if (existing) existing.textContent = 'Loading provider quote…';
-  else {
-    const status = document.createElement('small'); status.dataset.liveQuote = 'true'; status.textContent = 'Loading provider quote…'; container.append(status);
-  }
-  try {
-    const response = await fetch(`/api/stock?symbol=${encodeURIComponent(symbol)}`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || `Quote request failed (${response.status})`);
-    const status = container.querySelector('[data-live-quote]');
-    const value = Number(data.price) * Number(shares);
-    status.textContent = `Indicative market value: ${money(value, data.currency || 'USD')} · ${data.source}${data.stale ? ' · cached' : ''}`;
-  } catch (error) {
-    const status = container.querySelector('[data-live-quote]');
-    if (status) status.textContent = error.message;
-  }
-}
-
 async function removePosition(id) {
   if (!confirm('Remove this portfolio position?')) return;
-  try { await api(`/api/portfolio/${encodeURIComponent(id)}`, { method: 'DELETE' }); await loadPortfolio(); }
-  catch (error) { $('portfolioOutput').textContent = error.message; }
+  try {
+    await api(`/api/portfolio/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    await loadPortfolio();
+  } catch (error) {
+    $('portfolioOutput').textContent = error.message;
+  }
 }
 
 function money(value, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency, maximumFractionDigits: 2 }).format(Number(value) || 0);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 2
+  }).format(Number(value) || 0);
 }
+
 function formatQuantity(value) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 8 }).format(Number(value) || 0);
 }
@@ -115,6 +226,7 @@ function formatQuantity(value) {
 export function initPortfolio() {
   const form = $('portfolioForm');
   if (!form) return;
+
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!authenticated) return;
@@ -133,8 +245,11 @@ export function initPortfolio() {
       await loadPortfolio();
     } catch (error) {
       $('portfolioOutput').textContent = error.message;
-    } finally { submit.disabled = false; }
+    } finally {
+      submit.disabled = false;
+    }
   });
+
   $('deleteAccountAction')?.addEventListener('click', async () => {
     if (!confirm('Permanently delete your RaelInfo account and all saved portfolio positions? This cannot be undone.')) return;
     const password = prompt('Enter your password to confirm account deletion:');
@@ -146,6 +261,7 @@ export function initPortfolio() {
       $('portfolioOutput').textContent = error.message;
     }
   });
+
   window.addEventListener('resize', () => {
     if (authenticated) loadPortfolio().catch(() => {});
   });

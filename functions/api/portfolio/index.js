@@ -8,7 +8,7 @@ export async function onRequestGet({ request, env }) {
     if (!auth.user?.id) return error('Please sign in to view your portfolio.', 401);
     const db = requireDatabase(env);
     const result = await db.prepare(`
-      SELECT id, symbol, shares, average_cost AS averageCost, currency, created_at AS createdAt
+      SELECT id, symbol, shares, average_cost AS averageCost, currency, current_price AS currentPrice, price_updated_at AS priceUpdatedAt, created_at AS createdAt
       FROM portfolio_positions
       WHERE user_id = ?
       ORDER BY created_at DESC
