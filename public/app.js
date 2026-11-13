@@ -26,24 +26,63 @@ function formatMoney(value, currency = 'USD') {
 
 async function lookupStock(symbol) {
   const output = $('stockOutput');
-  setMessage(output, 'Checking configured stock data providers…');
-  try {
-    const data = await getJson(`/api/stock?symbol=${encodeURIComponent(symbol)}`);
-    output.replaceChildren();
-    const price = document.createElement('strong');
-    price.textContent = formatMoney(data.price, data.currency || 'USD');
-    const title = document.createElement('div');
-    title.textContent = `${data.symbol} · ${data.source}`;
-    const change = document.createElement('div');
-    change.className = data.change >= 0 ? 'backend-ok' : 'backend-error';
-    change.textContent = data.changePercent !== null ? `${data.change >= 0 ? '+' : ''}${Number(data.change).toFixed(2)} (${Number(data.changePercent).toFixed(2)}%)` : 'Change data not supplied';
-    const note = document.createElement('small');
-    note.className = 'muted';
-    note.textContent = `${data.quoteType || 'Provider quote'}${data.asOf ? ` · Provider timestamp: ${new Date(data.asOf).toLocaleString()}` : ''}${data.stale ? ' · Cached/stale quote' : ''}`;
-    output.append(price, title, change, note);
-  } catch (error) {
-    setMessage(output, error.message, true);
+  const entered = String(symbol || '').trim().toUpperCase();
+
+  const validTicker = /^[A-Z0-9][A-Z0-9.-]{0,14}$/;
+  const validQualified = /^[A-Z0-9_]+:[A-Z0-9][A-Z0-9.-]{0,14}$/;
+
+  let tradingViewSymbol = '';
+
+  if (validQualified.test(entered)) {
+    tradingViewSymbol = entered;
+  } else if (validTicker.test(entered)) {
+    tradingViewSymbol = `NASDAQ:${entered}`;
+  } else {
+    setMessage(output, 'Enter a valid ticker, such as AAPL, NASDAQ:AAPL or NYSE:IBM.', true);
+    return;
   }
+
+  output.replaceChildren();
+
+  const status = document.createElement('p');
+  status.className = 'muted';
+  status.textContent = `Loading ${tradingViewSymbol} market information from TradingView…`;
+
+  const container = document.createElement('div');
+  container.className = 'tradingview-widget-container';
+  container.style.width = '100%';
+  container.style.minHeight = '150px';
+
+  const widget = document.createElement('div');
+  widget.className = 'tradingview-widget-container__widget';
+  widget.style.width = '100%';
+
+  const attribution = document.createElement('div');
+  attribution.className = 'tradingview-widget-copyright';
+
+  const link = document.createElement('a');
+  link.href = 'https://www.tradingview.com/';
+  link.target = '_blank';
+  link.rel = 'noopener nofollow noreferrer';
+  link.textContent = 'Market data and quotes by TradingView';
+
+  attribution.append(link);
+  container.append(widget, attribution);
+
+  const script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js';
+  script.async = true;
+  script.textContent = JSON.stringify({
+    symbol: tradingViewSymbol,
+    width: '100%',
+    locale: 'en',
+    colorTheme: 'dark',
+    isTransparent: true
+  });
+
+  container.append(script);
+  output.append(status, container);
 }
 
 async function initializeAuth() {
