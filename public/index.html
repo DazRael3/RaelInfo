@@ -50,6 +50,28 @@
 .watchlist-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border,#d8dee8);border-radius:999px;padding:5px 10px}
 .watchlist-chip button{border:0;background:transparent;cursor:pointer;font-size:18px}
 </style>
+<style>
+.portfolio-analytics{margin-top:18px;border-top:1px solid var(--line,rgba(210,225,245,.13));padding-top:16px}
+.portfolio-analytics-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.portfolio-analytics-heading h3{margin:0;font-size:1.05rem}
+.portfolio-export-button{border:1px solid var(--line,#64748b);border-radius:9px;padding:8px 12px;background:transparent;color:var(--text,inherit);font:inherit;cursor:pointer}
+.portfolio-export-button:disabled{opacity:.45;cursor:not-allowed}
+.portfolio-coverage,.portfolio-metric-detail{color:var(--muted,#a3b2c7);font-size:.85rem}
+.portfolio-currency-block,.portfolio-analytics-section{margin-top:16px}
+.portfolio-currency-block h4,.portfolio-analytics-section h4{margin:0 0 10px;font-size:.96rem}
+.portfolio-metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:9px}
+.portfolio-metric{min-width:0;padding:12px;border:1px solid var(--line,rgba(210,225,245,.13));border-radius:11px;background:rgba(127,127,127,.045)}
+.portfolio-metric-label,.portfolio-metric-detail{display:block}
+.portfolio-metric-label{font-size:.78rem;color:var(--muted,#a3b2c7)}
+.portfolio-metric-value{display:block;margin:5px 0;font-size:1.08rem;overflow-wrap:anywhere}
+.portfolio-ranking-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.portfolio-analytics-list{list-style:none;padding:0;margin:0}
+.portfolio-analytics-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid var(--line,rgba(210,225,245,.13));font-size:.88rem}
+.portfolio-analytics-symbol{font-weight:600}
+.portfolio-positive{color:#16a36a}
+.portfolio-negative{color:#e05b66}
+@media(max-width:520px){.portfolio-analytics-row{flex-direction:column;gap:3px}}
+</style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -139,7 +161,7 @@
             <button class="btn primary" type="submit">Add position</button>
           </form>
           <div class="portfolio-account-actions"><button class="text-btn" id="deleteAccountAction" type="button" hidden>Delete account and portfolio</button></div>
-          <div class="portfolio-visual" id="portfolioVisual" hidden><canvas id="portfolioChart" width="600" height="240" aria-label="Portfolio allocation by cost basis"></canvas></div>
+          <div class="portfolio-visual" id="portfolioVisual" hidden><canvas id="portfolioChart" width="600" height="240" aria-label="Portfolio allocation by cost basis"></canvas><div id="portfolioAnalytics" class="portfolio-analytics" aria-label="Portfolio analytics"></div></div>
           <div class="backend-list" id="portfolioOutput" aria-live="polite"></div>
           <p class="backend-footnote">Portfolio positions are stored in RaelInfo's Cloudflare D1 database. Sign-in is managed by Supabase Auth. This is not a brokerage account or an encrypted financial vault.</p>
         </article>

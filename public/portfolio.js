@@ -1,5 +1,6 @@
 import { drawPortfolioChart } from './charts.js';
 import { calculatePortfolioTotals } from './portfolio-calculations.js';
+import { renderPortfolioAnalytics } from './portfolio-analytics.js';
 
 const $ = (id) => document.getElementById(id);
 let csrfToken = null;
@@ -196,6 +197,7 @@ export async function loadPortfolio() {
     }
 
     drawPortfolioChart($('portfolioChart'), data.items);
+    renderPortfolioAnalytics($('portfolioAnalytics'), data.items || []);
   } catch (error) {
     output.textContent = error.message;
   }
