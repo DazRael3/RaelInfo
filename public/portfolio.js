@@ -1,6 +1,7 @@
 import { drawPortfolioChart } from './charts.js';
 import { calculatePortfolioTotals } from './portfolio-calculations.js';
 import { renderPortfolioAnalytics } from './portfolio-analytics.js';
+import { setPriceAlertsAuth, initPriceAlerts, loadPriceAlerts } from './price-alerts.js';
 
 const $ = (id) => document.getElementById(id);
 let csrfToken = null;
@@ -19,6 +20,9 @@ async function api(url, options = {}) {
 export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled = false) {
   authenticated = Boolean(isAuthenticated);
   csrfToken = token || null;
+  setPriceAlertsAuth(isAuthenticated, token);
+  initPriceAlerts();
+
   const form = $('portfolioForm');
   const state = $('accountState');
   const visual = $('portfolioVisual');
@@ -138,6 +142,7 @@ export async function loadPortfolio() {
             body: JSON.stringify({ currentPrice: value })
           });
           await loadPortfolio();
+          await loadPriceAlerts();
         } catch (error) {
           priceDetails.textContent = error.message;
         } finally {
@@ -226,6 +231,8 @@ function formatQuantity(value) {
 }
 
 export function initPortfolio() {
+  initPriceAlerts();
+
   const form = $('portfolioForm');
   if (!form) return;
 

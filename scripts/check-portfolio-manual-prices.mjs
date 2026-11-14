@@ -8,17 +8,59 @@ const positions = new Map([
   ['owned-position', {
     id: 'owned-position',
     user_id: user.id,
+    symbol: 'AAPL',
+    currency: 'USD',
     current_price: null,
     price_updated_at: null
   }],
   ['foreign-position', {
     id: 'foreign-position',
     user_id: 'another-user',
+    symbol: 'AAPL',
+    currency: 'USD',
     current_price: null,
     price_updated_at: null
   }]
 ]);
+
+const alerts = new Map([
+  ['above-alert', {
+    id: 'above-alert',
+    user_id: user.id,
+    symbol: 'AAPL',
+    currency: 'USD',
+    direction: 'above',
+    target_price: 120,
+    status: 'active',
+    triggered_at: null,
+    triggered_price: null
+  }],
+  ['below-alert', {
+    id: 'below-alert',
+    user_id: user.id,
+    symbol: 'AAPL',
+    currency: 'USD',
+    direction: 'below',
+    target_price: 100,
+    status: 'active',
+    triggered_at: null,
+    triggered_price: null
+  }],
+  ['foreign-alert', {
+    id: 'foreign-alert',
+    user_id: 'another-user',
+    symbol: 'AAPL',
+    currency: 'USD',
+    direction: 'above',
+    target_price: 100,
+    status: 'active',
+    triggered_at: null,
+    triggered_price: null
+  }]
+]);
+
 const rateRows = new Map();
+let alertChecks = 0;
 
 const db = {
   prepare(sql) {
@@ -42,6 +84,47 @@ const db = {
           return {};
         }
 
+        if (sql.includes('UPDATE price_alerts')) {
+          const [
+            triggeredAt,
+            triggeredPrice,
+            updatedAt,
+            userId,
+            symbol,
+            currency,
+            abovePrice,
+            belowPrice
+          ] = values;
+
+          alertChecks++;
+          let changes = 0;
+
+          for (const alert of alerts.values()) {
+            if (
+              alert.user_id !== userId ||
+              alert.symbol !== symbol ||
+              alert.currency !== currency ||
+              alert.status !== 'active'
+            ) {
+              continue;
+            }
+
+            const matched =
+              (alert.direction === 'above' && abovePrice >= alert.target_price) ||
+              (alert.direction === 'below' && belowPrice <= alert.target_price);
+
+            if (matched) {
+              alert.status = 'triggered';
+              alert.triggered_at = triggeredAt;
+              alert.triggered_price = triggeredPrice;
+              alert.updated_at = updatedAt;
+              changes++;
+            }
+          }
+
+          return { meta: { changes } };
+        }
+
         if (sql.includes('UPDATE portfolio_positions')) {
           const [price, updatedAt, id, userId] = values;
           const position = positions.get(id);
@@ -59,6 +142,20 @@ const db = {
       },
 
       async first() {
+        if (sql.includes('SELECT symbol, currency')) {
+          const [id, userId] = values;
+          const position = positions.get(id);
+
+          if (!position || position.user_id !== userId) {
+            return null;
+          }
+
+          return {
+            symbol: position.symbol,
+            currency: position.currency
+          };
+        }
+
         if (sql.includes('SELECT hits FROM rate_limits')) {
           const [bucket, window] = values;
           return { hits: rateRows.get(`${bucket}:${window}`) || 0 };
@@ -129,6 +226,13 @@ try {
   assert.ok(savedBody.priceUpdatedAt, 'A saved price must have a timestamp');
   assert.equal(positions.get('owned-position').current_price, 125.50);
   assert.equal(positions.get('owned-position').price_updated_at, savedBody.priceUpdatedAt);
+
+  assert.equal(alerts.get('above-alert').status, 'triggered');
+  assert.equal(alerts.get('above-alert').triggered_price, 125.50);
+  assert.equal(alerts.get('below-alert').status, 'active');
+  assert.equal(alerts.get('foreign-alert').status, 'active');
+
+  console.log('PASS: Saving a price triggers matching above alerts only for the account owner.');
   console.log('PASS: Authenticated user can save a manual price.');
 
   // Updating the same position replaces the previous price.
@@ -158,6 +262,9 @@ try {
   assert.equal(positions.get('owned-position').current_price, 130.25);
   console.log('PASS: Zero, negative, excessive, and nonnumeric prices are rejected.');
 
+  // Clearing a price must not evaluate or trigger alerts.
+  const checksBeforeClear = alertChecks;
+
   // Clearing a price clears both the value and timestamp.
   const cleared = await patch({ currentPrice: null }, { ip: '192.0.2.30' });
   assert.equal(cleared.status, 200);
@@ -166,7 +273,19 @@ try {
   assert.equal(clearedBody.priceUpdatedAt, null);
   assert.equal(positions.get('owned-position').current_price, null);
   assert.equal(positions.get('owned-position').price_updated_at, null);
-  console.log('PASS: Clearing a manual price also clears its timestamp.');
+  assert.equal(alertChecks, checksBeforeClear);
+  console.log('PASS: Clearing a manual price does not evaluate alerts.');
+
+  // A later manual price can trigger a below-target alert.
+  const belowSaved = await patch(
+    { currentPrice: 95 },
+    { ip: '192.0.2.33' }
+  );
+
+  assert.equal(belowSaved.status, 200);
+  assert.equal(alerts.get('below-alert').status, 'triggered');
+  assert.equal(alerts.get('below-alert').triggered_price, 95);
+  console.log('PASS: Saving a price at or below the target triggers a below alert.');
 
   // CSRF and same-origin protections remain enforced.
   const noCsrf = await patch(

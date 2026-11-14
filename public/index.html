@@ -163,6 +163,42 @@
           <div class="portfolio-account-actions"><button class="text-btn" id="deleteAccountAction" type="button" hidden>Delete account and portfolio</button></div>
           <div class="portfolio-visual" id="portfolioVisual" hidden><canvas id="portfolioChart" width="600" height="240" aria-label="Portfolio allocation by cost basis"></canvas><div id="portfolioAnalytics" class="portfolio-analytics" aria-label="Portfolio analytics"></div></div>
           <div class="backend-list" id="portfolioOutput" aria-live="polite"></div>
+          <div class="price-alerts-workspace" id="priceAlertsWorkspace" hidden>
+            <div class="price-alerts-heading">
+              <h4>Price alerts</h4>
+              <p>Create a target for a ticker and currency in your portfolio.</p>
+            </div>
+            <form id="priceAlertForm" class="backend-form">
+              <div class="fields">
+                <div class="field">
+                  <label for="priceAlertSymbol">Ticker</label>
+                  <input id="priceAlertSymbol" maxlength="15" required placeholder="AAPL">
+                </div>
+                <div class="field">
+                  <label for="priceAlertCurrency">Currency</label>
+                  <select id="priceAlertCurrency">
+                    <option value="USD">USD</option>
+                    <option value="CAD">CAD</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="priceAlertDirection">Alert when price is</label>
+                  <select id="priceAlertDirection">
+                    <option value="above">At or above target</option>
+                    <option value="below">At or below target</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="priceAlertTarget">Target price</label>
+                  <input id="priceAlertTarget" type="number" min="0.00000001" max="1000000000" step="any" required placeholder="200.00">
+                </div>
+              </div>
+              <button class="btn primary" type="submit">Create price alert</button>
+            </form>
+            <p id="priceAlertsStatus" class="backend-footnote" role="status" aria-live="polite"></p>
+            <div id="priceAlertsOutput" class="backend-list" aria-live="polite"></div>
+            <p class="backend-footnote">Important: Alerts are checked only when you save a manual portfolio price. They do not monitor live market prices or send background notifications.</p>
+          </div>
           <p class="backend-footnote">Portfolio positions are stored in RaelInfo's Cloudflare D1 database. Sign-in is managed by Supabase Auth. This is not a brokerage account or an encrypted financial vault.</p>
         </article>
 

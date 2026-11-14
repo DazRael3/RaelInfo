@@ -75,3 +75,59 @@
 .login-form textarea{min-height:120px;resize:vertical}
 .login-form input:focus,.login-form select:focus,.login-form textarea:focus{outline:none;box-shadow:var(--focus,0 0 0 3px color-mix(in srgb,var(--accent) 28%,transparent));border-color:var(--accent)}
 @media(max-width:640px){.two-col{grid-template-columns:1fr}}
+
+/* Private manual-price alerts */
+.price-alerts-workspace {
+  border-top: 1px solid var(--line);
+  margin-top: 18px;
+  padding-top: 14px;
+}
+
+.price-alerts-heading h4 {
+  margin: 0 0 5px;
+  font-size: .95rem;
+}
+
+.price-alerts-heading p {
+  color: var(--muted);
+  font-size: .78rem;
+  margin: 0 0 12px;
+}
+
+.price-alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.price-alert-item strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.price-alert-item small {
+  display: block;
+  color: var(--muted);
+  font-size: .72rem;
+  margin-top: 4px;
+}
+
+.price-alert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+@media(max-width:520px) {
+  .price-alert-item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .price-alert-actions {
+    flex-direction: row;
+    width: 100%;
+  }
+}
