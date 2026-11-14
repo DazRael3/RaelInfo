@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {normalizeWatchlistName,normalizeWatchlistSymbol} from '../functions-shared/watchlists.js';
+assert.equal(normalizeWatchlistName('  Long-term   ideas  '),'Long-term ideas');
+assert.equal(normalizeWatchlistName(''),null);
+assert.equal(normalizeWatchlistName('x'.repeat(41)),null);
+assert.equal(normalizeWatchlistName('Bad\nName'),null);
+assert.equal(normalizeWatchlistSymbol(' aapl '),'AAPL');
+assert.equal(normalizeWatchlistSymbol('BRK.B'),'BRK.B');
+assert.equal(normalizeWatchlistSymbol('BTC-USD'),'BTC-USD');
+assert.equal(normalizeWatchlistSymbol('AAPL/TSLA'),null);
+assert.equal(normalizeWatchlistSymbol('A'.repeat(16)),null);
+console.log('Watchlist input validation checks passed.');

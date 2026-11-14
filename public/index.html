@@ -41,6 +41,15 @@
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
     @media print{body{background:#fff!important;color:#111!important}.wrap{width:100%}header,.hero-actions,.toolbar,.filters,.searchbox,.card-actions,.copy,.partner-slot,.footer,.market-panel .panel-head button,.toast{display:none!important}.tool-grid{display:block}.tool-card,.info-card,.market-panel{break-inside:avoid;box-shadow:none;border:1px solid #ccc;background:#fff;color:#111;margin:10px 0}.tool-card[hidden]{display:none!important}.field input,.field select{border:1px solid #aaa;background:#fff;color:#111}.result{background:#f1f5f9!important}.result strong{color:#065f46}.section-head{color:#111}.card-desc,.field label,.inline-note,.source-note,.info-card p,.info-card li{color:#444}.disclosure{color:#333}a{color:#111}}
   </style>
+<style>
+.watchlist-entry{border:1px solid var(--border,#d8dee8);border-radius:12px;padding:14px;margin:12px 0}
+.watchlist-entry h4{margin:0 0 10px}
+.watchlist-symbol-form{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:12px 0}
+.watchlist-symbol-form input{min-width:180px;flex:1}
+.watchlist-symbols{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.watchlist-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border,#d8dee8);border-radius:999px;padding:5px 10px}
+.watchlist-chip button{border:0;background:transparent;cursor:pointer;font-size:18px}
+</style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -134,10 +143,23 @@
           <div class="backend-list" id="portfolioOutput" aria-live="polite"></div>
           <p class="backend-footnote">Portfolio positions are stored in RaelInfo's Cloudflare D1 database. Sign-in is managed by Supabase Auth. This is not a brokerage account or an encrypted financial vault.</p>
         </article>
+
+        <article class="backend-card watchlists-card" aria-labelledby="watchlistsHeading">
+          <div class="backend-card-head"><span class="backend-icon" aria-hidden="true">☆</span><div><h3 id="watchlistsHeading">Saved watchlists</h3><p>Save ticker lists to your RaelInfo account and retrieve them when you return.</p></div></div>
+          <div id="watchlistsRoot">
+            <div id="watchlistsSignedOut" class="account-state" hidden><span class="muted">Sign in to create private watchlists.</span><a class="text-btn" href="/login.html">Sign in or create an account →</a></div>
+            <div id="watchlistsWorkspace" hidden>
+              <form id="watchlistCreateForm" class="backend-form"><div class="fields"><div class="field"><label for="watchlistName">New watchlist name</label><input id="watchlistName" maxlength="40" required placeholder="My long-term ideas"></div></div><button class="btn primary" type="submit">Create watchlist</button></form>
+              <p id="watchlistsStatus" class="backend-footnote" role="status" aria-live="polite"></p><div id="watchlistsOutput" class="backend-list"></div>
+            </div>
+          </div>
+          <p class="backend-footnote">Watchlists are private to your account. Tickers are identifiers only; no real-time quote or investment-advice service is included.</p>
+        </article>
       </div>
     </section>
 
-    <section id="calculators">
+
+        <section id="calculators">
       <div class="section-head"><div><h2>Financial calculators</h2><p>Start with a popular tool or search the full library.</p></div></div>
       <div class="toolbar">
         <label class="searchbox"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search calculators…" autocomplete="off" aria-label="Search calculators"></label>
@@ -1343,5 +1365,6 @@
   document.addEventListener('DOMContentLoaded',init);
   </script>
   <script type="module" src="/app.js"></script>
+  <script type="module" src="/watchlists.js"></script>
 </body>
 </html>
