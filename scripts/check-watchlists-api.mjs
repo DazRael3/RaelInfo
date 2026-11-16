@@ -162,6 +162,10 @@ const db = {
       },
 
       async first() {
+        if (sql.includes('account_deletion_pending')) {
+          return null;
+        }
+
         if (sql.includes('SELECT hits FROM rate_limits')) {
           const [bucket, window] = values;
           return { hits: state.rateLimits.get(`${bucket}:${window}`) || 0 };

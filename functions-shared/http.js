@@ -124,8 +124,22 @@ export function requireDatabase(env) {
   return env.DB;
 }
 
+export async function isAccountDeletionPending(db, userId) {
+  if (!userId) return false;
+  const pending = await db.prepare(
+    'SELECT user_id FROM account_deletion_pending WHERE user_id = ? LIMIT 1'
+  ).bind(userId).first();
+  return Boolean(pending);
+}
+
 export async function ensureUserProfile(db, user) {
   if (!user?.id || !user?.email) throw new Error('Authenticated user profile is incomplete.');
+  if (await isAccountDeletionPending(db, user.id)) {
+    const pendingError = new Error('Permanent account deletion is in progress. This account cannot sign in or use RaelInfo while deletion is pending.');
+    pendingError.status = 423;
+    pendingError.code = 'ACCOUNT_DELETION_PENDING';
+    throw pendingError;
+  }
   const now = new Date().toISOString();
   await db.prepare(`
     INSERT INTO users (id, email, created_at, updated_at)

@@ -1,3 +1,4 @@
+
 const $ = id => document.getElementById(id);
 
 let authenticated = false;
@@ -133,16 +134,37 @@ export async function loadPriceAlerts() {
       remove.textContent = 'Delete';
 
       remove.addEventListener('click', async () => {
+        if (!remove.dataset.confirming) {
+          remove.dataset.confirming = 'true';
+          remove.textContent = 'Confirm delete';
+          remove.classList.add('is-confirming');
+          const cancel = document.createElement('button');
+          cancel.type = 'button';
+          cancel.className = 'portfolio-remove';
+          cancel.textContent = 'Cancel';
+          cancel.addEventListener('click', () => {
+            delete remove.dataset.confirming;
+            remove.textContent = 'Delete';
+            remove.classList.remove('is-confirming');
+            cancel.remove();
+          });
+          actions.append(cancel);
+          return;
+        }
         remove.disabled = true;
-
+        remove.textContent = 'Deleting…';
         try {
           await api(`/api/price-alerts/${encodeURIComponent(alert.id)}`, {
             method: 'DELETE'
           });
           await loadPriceAlerts();
+          window.dispatchEvent(new CustomEvent('raelinfo:data-changed'));
         } catch (error) {
           status.textContent = error.message;
           remove.disabled = false;
+          remove.textContent = 'Delete';
+          delete remove.dataset.confirming;
+          remove.classList.remove('is-confirming');
         }
       });
 
@@ -212,6 +234,7 @@ export function initPriceAlerts() {
 
       status.textContent = 'Price alert created.';
       await loadPriceAlerts();
+      window.dispatchEvent(new CustomEvent('raelinfo:data-changed'));
     } catch (error) {
       status.textContent = error.message;
     } finally {

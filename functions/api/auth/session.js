@@ -19,6 +19,7 @@ export async function onRequestPost({ request, env }) {
     return setCookies(response, sessionCookieHeaders(request, { access_token: accessToken, refresh_token: refreshToken, expires_in: 3600 }, csrf));
   } catch (err) {
     console.error('Email authentication callback error:', err.message);
+    if (err.status === 423) return error('Permanent account deletion is in progress. This account cannot be authenticated.', 423);
     if (err.message.startsWith('Request body')) return error(err.message, 400);
     if (err.status === 401 || err.status === 403) return error('The email link is invalid or expired. Request a new link.', 401);
     return error('Email verification could not be completed. Please try signing in.', 503);

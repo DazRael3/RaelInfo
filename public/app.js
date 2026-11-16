@@ -95,7 +95,7 @@ async function initializeAuth() {
     authAction.hidden = false;
     logoutAction.hidden = true;
   }
-  setPortfolioAuth(session.authenticated, session.csrfToken, session.accountDeletionEnabled);
+  setPortfolioAuth(session.authenticated, session.csrfToken, session.accountDeletionEnabled, session.deletionPending);
   logoutAction.addEventListener('click', async () => {
     logoutAction.disabled = true;
     try {

@@ -103,7 +103,7 @@ export async function deleteSupabaseUser(env, userId, accessToken) {
   await authFetch(env, `/auth/v1/admin/users/${id}`, { method: 'DELETE', accessToken, admin: true });
 }
 
-export async function getAuthenticatedUser(request, env) {
+export async function getAuthenticatedUser(request, env, { skipProfileEnsure = false } = {}) {
   const accessToken = cookieValue(request, 'raelinfo_access');
   const refreshToken = cookieValue(request, 'raelinfo_refresh');
   let currentAccess = accessToken;
@@ -136,7 +136,7 @@ export async function getAuthenticatedUser(request, env) {
     }
   }
 
-  if (user?.id && user?.email) {
+  if (user?.id && user?.email && !skipProfileEnsure) {
     const db = requireDatabase(env);
     await ensureUserProfile(db, user);
   }

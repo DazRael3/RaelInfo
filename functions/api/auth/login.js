@@ -24,6 +24,7 @@ export async function onRequestPost({ request, env }) {
     return setCookies(response, sessionCookieHeaders(request, tokens, csrf));
   } catch (err) {
     console.error('Login error:', err.message);
+    if (err.status === 423) return error('Permanent account deletion is in progress. This account cannot sign in.', 423);
     if (err.status === 400 || err.status === 401 || err.status === 422) return error('Email address or password is incorrect. If you just registered, confirm your email first.', 401);
     if (err.status === 429) return error('Too many login attempts. Please wait and try again.', 429);
     if (err.message.startsWith('Request body')) return error(err.message, 400);

@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en" data-theme="dark">
 <head>
@@ -160,7 +161,27 @@
             </div>
             <button class="btn primary" type="submit">Add position</button>
           </form>
-          <div class="portfolio-account-actions"><button class="text-btn" id="deleteAccountAction" type="button" hidden>Delete account and portfolio</button></div>
+          <section class="account-data-management" id="accountDataManagement" hidden aria-labelledby="accountDataHeading">
+            <h4 id="accountDataHeading">Manage your saved account data</h4>
+            <p>Select exactly what you want to delete. This does <strong>not</strong> delete your RaelInfo login or account profile.</p>
+            <form id="accountDataForm" class="account-data-form">
+              <label class="field-check"><input type="checkbox" name="categories" value="portfolio"><span>Portfolio positions <small id="accountPortfolioCount">Loading…</small></span></label>
+              <label class="field-check"><input type="checkbox" name="categories" value="priceAlerts"><span>Price alerts <small id="accountAlertsCount">Loading…</small></span></label>
+              <label class="field-check"><input type="checkbox" name="categories" value="watchlists"><span>Watchlists and their saved tickers <small id="accountWatchlistsCount">Loading…</small></span></label>
+              <label class="field-check account-data-confirm"><input type="checkbox" id="confirmSelectedData"><span>I understand that the selected saved data will be permanently deleted.</span></label>
+              <div class="account-data-actions"><button class="btn danger" type="submit">Delete selected data</button><button class="btn subtle" id="selectAllSavedData" type="button">Select all saved data</button></div>
+            </form>
+            <p id="accountDataStatus" class="backend-footnote" role="status" aria-live="polite"></p>
+            <p class="backend-footnote">Your login, account profile and Pro-interest record remain. Site-wide and business records are not affected.</p>
+          </section>
+          <section class="account-delete-panel" id="accountDeletePanel" hidden aria-labelledby="accountDeleteHeading">
+            <h4 id="accountDeleteHeading">Permanently delete your RaelInfo account</h4>
+            <p>This is different from deleting saved data. It permanently removes your login and account profile, along with account-linked data. You will no longer be able to sign in. This cannot be undone.</p>
+            <div class="field"><label for="deleteAccountPassword">Current account password</label><input id="deleteAccountPassword" type="password" autocomplete="current-password" maxlength="200"></div>
+            <div class="field"><label for="deleteAccountPhrase">Type DELETE MY ACCOUNT to confirm</label><input id="deleteAccountPhrase" type="text" autocomplete="off" spellcheck="false"></div>
+            <button class="btn danger" id="deleteAccountAction" type="button">Permanently delete account</button>
+            <p id="deleteAccountStatus" class="backend-footnote" role="status" aria-live="polite"></p>
+          </section>
           <div class="portfolio-visual" id="portfolioVisual" hidden><canvas id="portfolioChart" width="600" height="240" aria-label="Portfolio allocation by cost basis"></canvas><div id="portfolioAnalytics" class="portfolio-analytics" aria-label="Portfolio analytics"></div></div>
           <div class="backend-list" id="portfolioOutput" aria-live="polite"></div>
           <div class="price-alerts-workspace" id="priceAlertsWorkspace" hidden>

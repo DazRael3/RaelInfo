@@ -6,6 +6,7 @@ import { setPriceAlertsAuth, initPriceAlerts, loadPriceAlerts } from './price-al
 const $ = (id) => document.getElementById(id);
 let csrfToken = null;
 let authenticated = false;
+let accountDeletionPending = false;
 
 async function api(url, options = {}) {
   const headers = { Accept: 'application/json', ...(options.headers || {}) };
@@ -13,25 +14,63 @@ async function api(url, options = {}) {
   if (options.method && options.method !== 'GET' && csrfToken) headers['X-CSRF-Token'] = csrfToken;
   const response = await fetch(url, { credentials: 'same-origin', ...options, headers });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error || `Request failed (${response.status})`);
+  if (!response.ok) {
+    const requestError = new Error(body.error || `Request failed (${response.status})`);
+    requestError.status = response.status;
+    throw requestError;
+  }
   return body;
 }
 
-export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled = false) {
-  authenticated = Boolean(isAuthenticated);
+export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled = false, deletionPending = false) {
+  const sessionAuthenticated = Boolean(isAuthenticated);
+  accountDeletionPending = sessionAuthenticated && Boolean(deletionPending);
+  authenticated = sessionAuthenticated && !accountDeletionPending;
   csrfToken = token || null;
-  setPriceAlertsAuth(isAuthenticated, token);
+  setPriceAlertsAuth(authenticated, token);
   initPriceAlerts();
 
   const form = $('portfolioForm');
   const state = $('accountState');
   const visual = $('portfolioVisual');
-  const deleteAction = $('deleteAccountAction');
+  const deletePanel = $('accountDeletePanel');
+  const dataPanel = $('accountDataManagement');
   if (!form || !state) return;
+
   form.hidden = !authenticated;
   state.hidden = authenticated;
-  if (deleteAction) deleteAction.hidden = !authenticated || !accountDeletionEnabled;
-  if (!authenticated) {
+  if (dataPanel) dataPanel.hidden = !authenticated;
+  if (deletePanel) deletePanel.hidden = !sessionAuthenticated || (!accountDeletionEnabled && !accountDeletionPending);
+  const deleteButton = $('deleteAccountAction');
+  if (deleteButton) {
+    deleteButton.textContent = accountDeletionPending
+      ? (accountDeletionEnabled ? 'Retry permanent deletion' : 'Deletion support unavailable')
+      : 'Permanently delete account';
+    deleteButton.disabled = accountDeletionPending && !accountDeletionEnabled;
+  }
+
+  if (accountDeletionPending) {
+    state.replaceChildren();
+    const note = document.createElement('span');
+    note.className = 'muted';
+    note.textContent = accountDeletionEnabled
+      ? 'Permanent account deletion is pending. Your saved account features are locked. Confirm your current password below to retry deletion.'
+      : 'Permanent account deletion is pending, but the deletion service is unavailable. Contact support@raelinfo.com for assistance. Do not email your password.';
+    state.append(note);
+    if ($('accountDataStatus')) $('accountDataStatus').textContent = '';
+    if ($('deleteAccountStatus')) {
+      $('deleteAccountStatus').textContent = accountDeletionEnabled
+        ? 'Deletion is pending. You can safely retry the permanent deletion below.'
+        : 'Deletion is pending, but the required deletion service is not configured. Contact support@raelinfo.com for assistance. Do not email your password.';
+    }
+    if (visual) visual.hidden = true;
+    $('portfolioOutput')?.replaceChildren();
+    return;
+  }
+
+  if (!sessionAuthenticated) {
+    if ($('accountDataStatus')) $('accountDataStatus').textContent = '';
+    if ($('deleteAccountStatus')) $('deleteAccountStatus').textContent = '';
     state.replaceChildren();
     const note = document.createElement('span');
     note.className = 'muted';
@@ -41,12 +80,37 @@ export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled 
     link.href = '/login.html';
     link.textContent = 'Sign in or create an account →';
     state.append(note, link);
-    visual.hidden = true;
-    $('portfolioOutput').replaceChildren();
+    if (visual) visual.hidden = true;
+    $('portfolioOutput')?.replaceChildren();
   } else {
-    visual.hidden = false;
+    if (visual) visual.hidden = false;
     loadPortfolio();
+    loadAccountDataSummary();
   }
+}
+
+async function loadAccountDataSummary() {
+  if (!authenticated) return;
+  const status = $('accountDataStatus');
+  try {
+    const data = await api('/api/account/data');
+    const counts = data.counts || {};
+    $('accountPortfolioCount').textContent = `${Number(counts.portfolio || 0)} saved`;
+    $('accountAlertsCount').textContent = `${Number(counts.priceAlerts || 0)} saved`;
+    $('accountWatchlistsCount').textContent = `${Number(counts.watchlists || 0)} saved`;
+    if (status && !status.textContent) status.textContent = 'Choose one or more categories, then confirm before deleting.';
+  } catch (error) {
+    if (status) status.textContent = error.message;
+  }
+}
+
+async function refreshAccountDataViews() {
+  await Promise.all([
+    loadPortfolio(),
+    loadPriceAlerts(),
+    loadAccountDataSummary()
+  ]);
+  window.dispatchEvent(new CustomEvent('raelinfo:data-changed'));
 }
 
 export async function loadPortfolio() {
@@ -173,7 +237,7 @@ export async function loadPortfolio() {
       remove.type = 'button';
       remove.className = 'portfolio-remove';
       remove.textContent = 'Remove';
-      remove.addEventListener('click', () => removePosition(item.id));
+      remove.addEventListener('click', () => removePosition(item.id, remove));
 
       actions.append(priceInput, savePrice, clearPrice, remove);
       row.append(left, actions);
@@ -208,13 +272,25 @@ export async function loadPortfolio() {
   }
 }
 
-async function removePosition(id) {
-  if (!confirm('Remove this portfolio position?')) return;
+async function removePosition(id, button) {
+  if (!button.dataset.confirming) {
+    button.dataset.confirming = 'true';
+    button.textContent = 'Confirm remove';
+    button.classList.add('is-confirming');
+    button.setAttribute('aria-label', 'Confirm removal of this portfolio position');
+    return;
+  }
+  button.disabled = true;
+  button.textContent = 'Removing…';
   try {
     await api(`/api/portfolio/${encodeURIComponent(id)}`, { method: 'DELETE' });
-    await loadPortfolio();
+    await refreshAccountDataViews();
   } catch (error) {
     $('portfolioOutput').textContent = error.message;
+    button.disabled = false;
+    button.textContent = 'Remove';
+    delete button.dataset.confirming;
+    button.classList.remove('is-confirming');
   }
 }
 
@@ -252,6 +328,7 @@ export function initPortfolio() {
       form.reset();
       $('portfolioCurrency').value = 'USD';
       await loadPortfolio();
+      await loadAccountDataSummary();
     } catch (error) {
       $('portfolioOutput').textContent = error.message;
     } finally {
@@ -259,17 +336,83 @@ export function initPortfolio() {
     }
   });
 
-  $('deleteAccountAction')?.addEventListener('click', async () => {
-    if (!confirm('Permanently delete your RaelInfo account and all saved portfolio positions? This cannot be undone.')) return;
-    const password = prompt('Enter your password to confirm account deletion:');
-    if (!password) return;
+  $('accountDataForm')?.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!authenticated) return;
+    const categories = [...$('accountDataForm').querySelectorAll('input[name="categories"]:checked')].map(input => input.value);
+    const confirmation = $('confirmSelectedData');
+    const status = $('accountDataStatus');
+    if (!categories.length) {
+      status.textContent = 'Select at least one category to delete.';
+      return;
+    }
+    if (!confirmation.checked) {
+      status.textContent = 'Check the confirmation box before deleting selected data.';
+      confirmation.focus();
+      return;
+    }
+    const submit = $('accountDataForm').querySelector('[type="submit"]');
+    submit.disabled = true;
+    submit.textContent = 'Deleting selected data…';
+    status.textContent = 'Deleting only the selected categories…';
     try {
-      await api('/api/auth/delete', { method: 'POST', body: JSON.stringify({ password }) });
-      location.assign('/');
+      await api('/api/account/data', { method: 'DELETE', body: JSON.stringify({ categories }) });
+      $('accountDataForm').reset();
+      status.textContent = 'Selected saved data deleted. Your RaelInfo login and account profile are unchanged.';
+      await refreshAccountDataViews();
     } catch (error) {
-      $('portfolioOutput').textContent = error.message;
+      status.textContent = error.message;
+    } finally {
+      submit.disabled = false;
+      submit.textContent = 'Delete selected data';
     }
   });
+
+  $('selectAllSavedData')?.addEventListener('click', () => {
+    $('accountDataForm').querySelectorAll('input[name="categories"]').forEach(input => { input.checked = true; });
+    $('confirmSelectedData').checked = false;
+    $('accountDataStatus').textContent = 'All three saved-data categories are selected. Review the selection and check the confirmation box before deleting.';
+  });
+
+  $('deleteAccountAction')?.addEventListener('click', async () => {
+    const password = $('deleteAccountPassword').value;
+    const phrase = $('deleteAccountPhrase').value.trim();
+    const status = $('deleteAccountStatus');
+    if (phrase !== 'DELETE MY ACCOUNT') {
+      status.textContent = 'Type DELETE MY ACCOUNT exactly to confirm permanent account deletion.';
+      $('deleteAccountPhrase').focus();
+      return;
+    }
+    if (!password || password.length > 200) {
+      status.textContent = 'Enter your current account password.';
+      $('deleteAccountPassword').focus();
+      return;
+    }
+    const button = $('deleteAccountAction');
+    button.disabled = true;
+    button.textContent = accountDeletionPending ? 'Retrying deletion…' : 'Deleting account…';
+    status.textContent = 'Verifying your password and deleting the account…';
+    try {
+      await api('/api/auth/delete', { method: 'POST', body: JSON.stringify({ password, confirmation: phrase }) });
+      location.assign('/');
+    } catch (error) {
+      status.textContent = error.message;
+
+      // A 503 can mean the server committed the pending marker but
+      // could not finish deleting the Supabase Auth user. Reloading
+      // asks /api/auth/me for the authoritative pending state.
+      if (error.status === 503) {
+        button.textContent = 'Checking deletion status…';
+        location.reload();
+        return;
+      }
+
+      button.disabled = false;
+      button.textContent = accountDeletionPending ? 'Retry permanent deletion' : 'Permanently delete account';
+    }
+  });
+
+  window.addEventListener('raelinfo:data-changed', () => { loadAccountDataSummary().catch(() => {}); });
 
   window.addEventListener('resize', () => {
     if (authenticated) loadPortfolio().catch(() => {});

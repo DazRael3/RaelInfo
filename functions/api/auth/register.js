@@ -37,6 +37,7 @@ export async function onRequestPost({ request, env }) {
     }, 201);
   } catch (err) {
     console.error('Registration error:', err.message);
+    if (err.status === 423) return error('Permanent account deletion is in progress for this account. Registration is blocked.', 423);
     if (err.status === 429) return error('Email registration is temporarily rate-limited. Please wait and try again.', 429);
     if (err.message.startsWith('Request body')) return error(err.message, 400);
     if (err.status === 422 || err.status === 400 || err.status === 409) return error('Registration could not be completed. Check the email address and password, or try signing in.', 400);

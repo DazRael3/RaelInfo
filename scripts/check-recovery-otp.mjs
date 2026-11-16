@@ -15,11 +15,15 @@ function request(body) {
 }
 
 const mockDb = {
-  prepare() {
+  prepare(sql = '') {
     return {
       bind() { return this; },
       async run() { return {}; },
-      async first() { return { hits: 1 }; }
+      async first() {
+        return String(sql).includes('account_deletion_pending')
+          ? null
+          : { hits: 1 };
+      }
     };
   }
 };

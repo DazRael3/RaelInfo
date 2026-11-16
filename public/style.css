@@ -1,3 +1,4 @@
+
 /* RaelInfo API widgets. Uses existing theme variables from index.html. */
 .backend-section{margin:38px 0 42px;scroll-margin-top:90px}
 .backend-section .section-head{align-items:center}
@@ -131,3 +132,33 @@
     width: 100%;
   }
 }
+
+
+
+/* Account data controls: clear distinctions, accessible confirmation and restrained motion. */
+.account-data-management,.account-delete-panel{margin-top:18px;padding:16px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+.account-data-management h4,.account-delete-panel h4{margin:0 0 7px;font-size:.98rem}
+.account-data-management>p,.account-delete-panel>p{margin:6px 0 12px;color:var(--muted);font-size:.8rem;line-height:1.5}
+.account-data-form{display:grid;gap:11px}
+.account-data-form .field-check{padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.account-data-form .field-check small{display:block;color:var(--muted);font-size:.72rem;margin-top:2px}
+.account-data-confirm{border-color:color-mix(in srgb,var(--warn) 40%,var(--line))!important}
+.account-data-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:3px}
+.account-delete-panel{border-color:color-mix(in srgb,var(--bad) 42%,var(--line));background:color-mix(in srgb,var(--bad) 4%,var(--surface))}
+.account-delete-panel .field{margin:10px 0}
+.account-delete-panel .field label{display:block;font-size:.76rem;font-weight:750;color:var(--muted);margin-bottom:5px}
+.account-delete-panel .field input{width:100%;min-height:44px;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font-size:16px}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#260610;font-weight:800}
+.btn.danger:hover{filter:brightness(1.06);border-color:var(--bad)}
+.btn,.icon-btn,.portfolio-remove,.text-btn,.watchlist-chip button{transition:transform .14s ease,border-color .14s ease,background-color .14s ease,color .14s ease,box-shadow .14s ease}
+.btn:hover,.icon-btn:hover,.portfolio-remove:hover{transform:translateY(-1px)}
+.btn:active,.icon-btn:active,.portfolio-remove:active{transform:translateY(0) scale(.98)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.58;cursor:not-allowed;transform:none!important}
+.portfolio-remove.is-confirming{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface));color:var(--bad);font-weight:800}
+.watchlist-actions{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0}
+.watchlist-rename-form{display:flex;align-items:end;gap:8px;flex-wrap:wrap;margin:8px 0}
+.watchlist-rename-form label{display:grid;gap:4px;flex:1;min-width:180px;color:var(--muted);font-size:.74rem;font-weight:700}
+.watchlist-rename-form input{width:100%;min-height:42px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+@media(max-width:520px){.account-data-actions{display:grid}.account-data-actions .btn{width:100%}.watchlist-rename-form>*{width:100%}.watchlist-actions{width:100%}}
+@media(prefers-reduced-motion:reduce){.btn,.icon-btn,.portfolio-remove,.text-btn,.watchlist-chip button{transition:none!important}}

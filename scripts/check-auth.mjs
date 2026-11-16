@@ -4,10 +4,11 @@ import { onRequestPost as register } from '../functions/api/auth/register.js';
 import { onRequestPost as recover } from '../functions/api/auth/recover.js';
 import { onRequestPost as exchange } from '../functions/api/auth/session.js';
 import { onRequestPost as updatePassword } from '../functions/api/auth/password.js';
+import { ensureUserProfile } from '../functions-shared/http.js';
 
 const origin = 'https://www.raelinfo.com';
 const request = (path, body, headers={}) => new Request(`${origin}${path}`, { method:'POST', headers:{ Origin:origin, 'Content-Type':'application/json', ...headers }, body:JSON.stringify(body) });
-const mockDb = { prepare() { return { bind() { return this; }, async run() { return {}; }, async first() { return { hits: 1 }; } }; } };
+const mockDb = { prepare(sql = '') { return { bind() { return this; }, async run() { return {}; }, async first() { return String(sql).includes('account_deletion_pending') ? null : { hits: 1 }; } }; } };
 const env = { DB: mockDb, SUPABASE_URL:'https://project.example.supabase.co', SUPABASE_PUBLISHABLE_KEY:'test-publishable-key' };
 const loginInvalid = await login({ request:request('/api/auth/login',{email:'invalid',password:'x'}), env });
 assert.equal(loginInvalid.status,401,'Malformed login must be rejected');
@@ -32,4 +33,10 @@ const exchangeInvalid = await exchange({ request:request('/api/auth/session',{ac
 assert.equal(exchangeInvalid.status,400,'Email callback must reject malformed tokens');
 const noCsrf = await updatePassword({ request:request('/api/auth/password',{password:'a-secure-password-123'}), env:{} });
 assert.equal(noCsrf.status,403,'Password updates must require CSRF protection');
-console.log('Authentication validation, recovery, callback, and CSRF checks passed.');
+const pendingDb = { prepare(sql = '') { return { bind() { return this; }, async first() { return { user_id:'user-test-1' }; }, async run() { throw new Error('A pending account must not be recreated.'); } }; } };
+await assert.rejects(
+  () => ensureUserProfile(pendingDb, { id:'user-test-1', email:'person@example.com' }),
+  error => error.status === 423 && error.code === 'ACCOUNT_DELETION_PENDING',
+  'A deletion-pending account must be blocked before profile upsert'
+);
+console.log('Authentication validation, recovery, callback, CSRF, and deletion-pending checks passed.');

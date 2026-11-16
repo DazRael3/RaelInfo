@@ -142,6 +142,10 @@ const db = {
       },
 
       async first() {
+        if (sql.includes('account_deletion_pending')) {
+          return null;
+        }
+
         if (sql.includes('SELECT symbol, currency')) {
           const [id, userId] = values;
           const position = positions.get(id);
