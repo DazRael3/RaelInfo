@@ -23,6 +23,21 @@
   <form id="resetForm" class="login-form" hidden><label>New password<input id="newPassword" type="password" required minlength="12" maxlength="200" autocomplete="new-password"></label><label>Confirm new password<input id="confirmPassword" type="password" required minlength="12" maxlength="200" autocomplete="new-password"></label><button class="btn primary" type="submit">Update password</button></form>
   <p id="accountMessage" class="login-message" role="status" aria-live="polite"></p>
   <p id="recoveryLink" class="muted" style="font-size:.82rem"><button id="forgotPassword" class="text-btn" type="button">Forgot your password?</button></p>
+  <!-- RaelInfo account deletion controls -->
+  <section class="account-delete-panel login-delete-panel" id="accountDeletePanel" aria-labelledby="accountDeleteHeading">
+    <h2 id="accountDeleteHeading">Delete your RaelInfo account</h2>
+    <p>This permanently deletes your RaelInfo login and account profile, along with account-linked data. This cannot be undone. Deleting saved data alone is a separate action.</p>
+    <div class="field">
+      <label for="deleteAccountPassword">Current account password</label>
+      <input id="deleteAccountPassword" type="password" autocomplete="current-password" maxlength="200">
+    </div>
+    <div class="field">
+      <label for="deleteAccountPhrase">Type DELETE MY ACCOUNT to confirm</label>
+      <input id="deleteAccountPhrase" type="text" autocomplete="off" spellcheck="false" maxlength="32">
+    </div>
+    <button class="btn danger" id="deleteAccountAction" type="button" disabled>Permanently delete account</button>
+    <p id="deleteAccountStatus" class="backend-footnote" role="status" aria-live="polite">Sign in first to verify your password and request permanent account deletion.</p>
+  </section>
   <a class="login-back" href="/">← Back to RaelInfo calculators</a>
   <p class="muted" style="font-size:.72rem;margin-top:18px">Email/password authentication is managed by Supabase Auth. Portfolio positions are stored in RaelInfo's Cloudflare D1 database. This is not a bank or brokerage account.</p>
 </main>
@@ -39,5 +54,122 @@ $('recoverForm').addEventListener('submit',async e=>{e.preventDefault();const bu
 $('verifyRecoveryForm').addEventListener('submit',async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;message('Verifying recovery code…');try{const r=await fetch('/api/auth/verify-recovery',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({email:$('verifyRecoveryEmail').value.trim(),token:$('recoveryCode').value.trim()})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'The recovery code is invalid or expired. Request a new one.');showPanel('reset');$('loginHeading').textContent='Choose a new password';$('loginDescription').textContent='Create a new password for your RaelInfo account.';$('newPassword').value='';$('confirmPassword').value='';message('Recovery code verified. Set your new password.','success');}catch(err){message(err.message,'error');}finally{button.disabled=false;}});
 $('resetForm').addEventListener('submit',async e=>{e.preventDefault();if($('newPassword').value!==$('confirmPassword').value){message('The passwords do not match.','error');return;}const button=e.submitter;button.disabled=true;message('Updating password…');try{const session=await fetch('/api/auth/me',{credentials:'same-origin',cache:'no-store'});const s=await session.json();if(!session.ok||!s.authenticated||!s.csrfToken)throw Error('Your recovery session has expired. Request a new recovery email.');const r=await fetch('/api/auth/password',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':s.csrfToken,Accept:'application/json'},body:JSON.stringify({password:$('newPassword').value})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||`Request failed (${r.status})`);message('Password updated. Redirecting to sign in…','success');await fetch('/api/auth/logout',{method:'POST',credentials:'same-origin',headers:{'X-CSRF-Token':s.csrfToken}}).catch(()=>{});setTimeout(()=>location.assign('/login.html'),1200);}catch(err){message(err.message,'error');}finally{button.disabled=false;}});
 async function processEmailLink(){const hash=new URLSearchParams(location.hash.slice(1));const access=hash.get('access_token'),refresh=hash.get('refresh_token'),type=hash.get('type');if(!access||!refresh)return;history.replaceState(null,'',location.pathname+location.search);if(!['recovery','signup','magiclink','email_change'].includes(type)){message('This email link type is not supported. Please sign in or request a new link.','error');return;}message('Verifying your email link…');try{const r=await fetch('/api/auth/session',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({access_token:access,refresh_token:refresh})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'This email link is invalid or expired.');if(type==='recovery'){showPanel('reset');$('loginHeading').textContent='Choose a new password';$('loginDescription').textContent='Create a new password for your RaelInfo account.';message('Email verified. Set your new password.','success');}else{message('Email verified. Your account is ready.','success');setTimeout(()=>location.assign('/'),1000);}}catch(err){message(err.message,'error');}}
+
+// Account deletion is available on this page only. A live session and CSRF token
+// are required; pending deletions remain retryable from this page.
+let deletionSession = null;
+async function refreshDeletionSession() {
+  const button = $('deleteAccountAction');
+  const status = $('deleteAccountStatus');
+  try {
+    const response = await fetch('/api/auth/me', {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' }
+    });
+    const session = await response.json().catch(() => ({}));
+    deletionSession = response.ok && session.authenticated && session.csrfToken ? session : null;
+    if (!deletionSession) {
+      button.disabled = true;
+      button.textContent = 'Sign in to delete account';
+      status.textContent = 'Sign in first to verify your password and request permanent account deletion.';
+      return;
+    }
+    if (session.deletionPending) {
+      $('loginHeading').textContent = 'Complete account deletion';
+      $('loginDescription').textContent = 'Your account deletion is pending. Re-enter your current password and confirmation phrase to retry.';
+      $('accountTabs').hidden = true;
+      $('accountForm').hidden = true;
+      $('recoveryLink').hidden = true;
+      button.disabled = !session.accountDeletionEnabled;
+      button.textContent = session.accountDeletionEnabled ? 'Retry permanent deletion' : 'Deletion service unavailable';
+      status.textContent = session.accountDeletionEnabled
+        ? 'Deletion is pending. You can safely retry it below.'
+        : 'Deletion is pending, but the deletion service is unavailable. Contact support@raelinfo.com. Do not email your password.';
+    } else {
+      button.disabled = !session.accountDeletionEnabled;
+      button.textContent = 'Permanently delete account';
+      status.textContent = session.accountDeletionEnabled
+        ? 'You are signed in. Enter your current password and the exact confirmation phrase to continue.'
+        : 'Permanent account deletion is currently unavailable. Contact support@raelinfo.com for assistance.';
+    }
+  } catch {
+    deletionSession = null;
+    button.disabled = true;
+    button.textContent = 'Sign in to delete account';
+    status.textContent = 'Could not verify your session. Refresh this page or sign in again.';
+  }
+}
+$('deleteAccountAction').addEventListener('click', async () => {
+  const password = $('deleteAccountPassword').value;
+  const phrase = $('deleteAccountPhrase').value.trim();
+  const button = $('deleteAccountAction');
+  const status = $('deleteAccountStatus');
+  if (!deletionSession || !deletionSession.csrfToken) {
+    status.textContent = 'Sign in first. Your session is required to verify your password.';
+    return;
+  }
+  if (phrase !== 'DELETE MY ACCOUNT') {
+    status.textContent = 'Type DELETE MY ACCOUNT exactly to confirm permanent account deletion.';
+    $('deleteAccountPhrase').focus();
+    return;
+  }
+  if (!password || password.length > 200) {
+    status.textContent = 'Enter your current account password.';
+    $('deleteAccountPassword').focus();
+    return;
+  }
+  button.disabled = true;
+  button.textContent = deletionSession.deletionPending ? 'Retrying deletion…' : 'Deleting account…';
+  status.textContent = 'Verifying your password and deleting the account…';
+  try {
+    const response = await fetch('/api/auth/delete', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'X-CSRF-Token': deletionSession.csrfToken
+      },
+      body: JSON.stringify({ password, confirmation: phrase })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(result.error || `Request failed (${response.status})`);
+      error.status = response.status;
+      throw error;
+    }
+    status.textContent = 'Account deletion completed. Returning to RaelInfo…';
+    location.assign('/');
+  } catch (error) {
+    status.textContent = error.message;
+    if (error.status === 503) {
+      button.textContent = 'Checking deletion status…';
+      await refreshDeletionSession();
+      if (deletionSession && deletionSession.deletionPending) {
+        status.textContent = 'Deletion is pending. If the service is available, retry with your current password.';
+      }
+    }
+    button.disabled = !deletionSession || !deletionSession.accountDeletionEnabled;
+    if (deletionSession) {
+      button.textContent = deletionSession.deletionPending ? 'Retry permanent deletion' : 'Permanently delete account';
+    }
+  }
+});
+refreshDeletionSession();
 showPanel('account');setMode('login');processEmailLink();
-</script></body></html>
+</script>
+  <style>
+    /* RaelInfo account deletion controls */
+    .login-delete-panel{margin-top:22px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--card);text-align:left}
+    .login-delete-panel h2{margin:0 0 8px;font-size:1rem}
+    .login-delete-panel p{font-size:.8rem;color:var(--muted)}
+    .login-delete-panel .field{margin:12px 0}
+    .login-delete-panel .field label{display:block;font-size:.76rem;color:var(--muted);font-weight:700;margin-bottom:5px}
+    .login-delete-panel .field input{display:block;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+    .login-delete-panel .field input:focus{outline:none;border-color:var(--accent)}
+    .login-delete-panel .btn{width:100%}
+    .login-delete-panel[hidden]{display:none}
+    @media(max-width:420px){.login-delete-panel{padding:14px}}
+  </style>
+</body></html>

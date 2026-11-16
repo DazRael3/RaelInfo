@@ -33,36 +33,30 @@ export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled 
   const form = $('portfolioForm');
   const state = $('accountState');
   const visual = $('portfolioVisual');
-  const deletePanel = $('accountDeletePanel');
   const dataPanel = $('accountDataManagement');
   if (!form || !state) return;
 
   form.hidden = !authenticated;
   state.hidden = authenticated;
   if (dataPanel) dataPanel.hidden = !authenticated;
-  if (deletePanel) deletePanel.hidden = !sessionAuthenticated || (!accountDeletionEnabled && !accountDeletionPending);
-  const deleteButton = $('deleteAccountAction');
-  if (deleteButton) {
-    deleteButton.textContent = accountDeletionPending
-      ? (accountDeletionEnabled ? 'Retry permanent deletion' : 'Deletion support unavailable')
-      : 'Permanently delete account';
-    deleteButton.disabled = accountDeletionPending && !accountDeletionEnabled;
-  }
 
   if (accountDeletionPending) {
     state.replaceChildren();
     const note = document.createElement('span');
     note.className = 'muted';
     note.textContent = accountDeletionEnabled
-      ? 'Permanent account deletion is pending. Your saved account features are locked. Confirm your current password below to retry deletion.'
-      : 'Permanent account deletion is pending, but the deletion service is unavailable. Contact support@raelinfo.com for assistance. Do not email your password.';
+      ? 'Permanent account deletion is pending. Your saved account features are locked. '
+      : 'Permanent account deletion is pending, but the deletion service is unavailable. Contact support@raelinfo.com for assistance. Do not email your password. ';
+
+    const deletionLink = document.createElement('a');
+    deletionLink.href = '/login.html#delete-account';
+    deletionLink.textContent = accountDeletionEnabled
+      ? 'Visit the sign-in page to retry deletion.'
+      : 'Visit the sign-in page to check deletion status.';
+    note.append(deletionLink);
     state.append(note);
     if ($('accountDataStatus')) $('accountDataStatus').textContent = '';
-    if ($('deleteAccountStatus')) {
-      $('deleteAccountStatus').textContent = accountDeletionEnabled
-        ? 'Deletion is pending. You can safely retry the permanent deletion below.'
-        : 'Deletion is pending, but the required deletion service is not configured. Contact support@raelinfo.com for assistance. Do not email your password.';
-    }
+
     if (visual) visual.hidden = true;
     $('portfolioOutput')?.replaceChildren();
     return;
@@ -70,7 +64,6 @@ export function setPortfolioAuth(isAuthenticated, token, accountDeletionEnabled 
 
   if (!sessionAuthenticated) {
     if ($('accountDataStatus')) $('accountDataStatus').textContent = '';
-    if ($('deleteAccountStatus')) $('deleteAccountStatus').textContent = '';
     state.replaceChildren();
     const note = document.createElement('span');
     note.className = 'muted';
@@ -374,43 +367,6 @@ export function initPortfolio() {
     $('accountDataStatus').textContent = 'All three saved-data categories are selected. Review the selection and check the confirmation box before deleting.';
   });
 
-  $('deleteAccountAction')?.addEventListener('click', async () => {
-    const password = $('deleteAccountPassword').value;
-    const phrase = $('deleteAccountPhrase').value.trim();
-    const status = $('deleteAccountStatus');
-    if (phrase !== 'DELETE MY ACCOUNT') {
-      status.textContent = 'Type DELETE MY ACCOUNT exactly to confirm permanent account deletion.';
-      $('deleteAccountPhrase').focus();
-      return;
-    }
-    if (!password || password.length > 200) {
-      status.textContent = 'Enter your current account password.';
-      $('deleteAccountPassword').focus();
-      return;
-    }
-    const button = $('deleteAccountAction');
-    button.disabled = true;
-    button.textContent = accountDeletionPending ? 'Retrying deletion…' : 'Deleting account…';
-    status.textContent = 'Verifying your password and deleting the account…';
-    try {
-      await api('/api/auth/delete', { method: 'POST', body: JSON.stringify({ password, confirmation: phrase }) });
-      location.assign('/');
-    } catch (error) {
-      status.textContent = error.message;
-
-      // A 503 can mean the server committed the pending marker but
-      // could not finish deleting the Supabase Auth user. Reloading
-      // asks /api/auth/me for the authoritative pending state.
-      if (error.status === 503) {
-        button.textContent = 'Checking deletion status…';
-        location.reload();
-        return;
-      }
-
-      button.disabled = false;
-      button.textContent = accountDeletionPending ? 'Retry permanent deletion' : 'Permanently delete account';
-    }
-  });
 
   window.addEventListener('raelinfo:data-changed', () => { loadAccountDataSummary().catch(() => {}); });
 

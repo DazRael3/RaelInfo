@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8');
 const app = read('../public/app.js');
 const portfolio = read('../public/portfolio.js');
+const login = read('../public/login.html');
+const index = read('../public/index.html');
 const priceAlerts = read('../public/price-alerts.js');
 const watchlists = read('../public/watchlists.js');
 const deletion = read('../functions/api/auth/delete.js');
@@ -19,16 +21,30 @@ assert.match(portfolio, /authenticated = sessionAuthenticated && !accountDeletio
   'Pending accounts must not be treated as available for normal account features.');
 assert.match(portfolio, /setPriceAlertsAuth\(authenticated, token\)/,
   'Price alerts must be disabled when deletion is pending.');
-assert.match(portfolio, /deletePanel\.hidden = !sessionAuthenticated \|\| \(!accountDeletionEnabled && !accountDeletionPending\)/,
-  'The permanent deletion panel must remain visible to authenticated pending accounts.');
-assert.match(portfolio, /accountDeletionPending && !accountDeletionEnabled/,
-  'Pending accounts must not be offered a retry when the deletion service is unavailable.');
-assert.match(portfolio, /support@raelinfo\.com/,
+assert.match(login, /id="accountDeletePanel"/,
+  'The permanent deletion panel must be present on the sign-in page.');
+assert.match(index, /Permanent account deletion is available on the sign-in page/,
+  'The dashboard must direct users to the sign-in page for permanent deletion.');
+assert.doesNotMatch(index, /id="accountDeletePanel"/,
+  'The dashboard must not contain the permanent deletion panel.');
+assert.match(login, /button\.disabled = !session\.accountDeletionEnabled/,
+  'The sign-in page must disable deletion retry when the deletion service is unavailable.');
+assert.match(login, /support@raelinfo\.com/,
   'Pending accounts must see the support contact when deletion is unavailable.');
-assert.match(portfolio, /Retry permanent deletion/,
-  'The pending account UI must clearly offer the retry action.');
-assert.match(portfolio, /skip|DELETE MY ACCOUNT/,
-  'The account deletion confirmation flow must remain present.');
+assert.match(login, /Retry permanent deletion/,
+  'The sign-in page must clearly offer the pending deletion retry action.');
+assert.match(login, /DELETE MY ACCOUNT/,
+  'The sign-in page must retain the exact deletion confirmation phrase.');
+assert.match(login, /\/api\/auth\/delete/,
+  'The sign-in page must submit deletion to the protected account deletion endpoint.');
+assert.match(login, /X-CSRF-Token/,
+  'The sign-in page must include the CSRF token in the deletion request.');
+assert.match(login, /signInWithSupabase|refreshDeletionSession/,
+  'The sign-in page must verify the current session before enabling deletion.');
+assert.match(login, /session\.deletionPending/,
+  'The sign-in page must preserve the pending-deletion retry path.');
+assert.match(login, /accountTabs'\)\.hidden = true/,
+  'Pending deletion must lock the normal sign-in and account creation tabs.');
 
 assert.match(priceAlerts, /if \(!authenticated\) return/,
   'Price-alert loading must be blocked when the portfolio auth state is unavailable.');
@@ -94,7 +110,7 @@ assert.match(deletion, /Account deletion could not be started\. Your account del
 
 assert.match(portfolio, /requestError\.status = response\.status/,
   'The frontend API helper must preserve HTTP status codes.');
-assert.match(portfolio, /if \(error\.status === 503\)[\s\S]*?location\.reload\(\)/,
-  'The deletion UI must reload after a potentially pending server failure.');
+assert.match(login, /if \(error\.status === 503\)[\s\S]*?refreshDeletionSession\(\)/,
+  'The sign-in page must refresh the authoritative session after a potentially pending server failure.');
 
 console.log('Account deletion UI lockout, retry controls, and backend retry safety checks passed.');
